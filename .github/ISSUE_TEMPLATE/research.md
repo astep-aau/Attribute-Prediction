@@ -12,3 +12,6 @@ assignees: ''
 ## Description
 
 ## Measureable requirement(s)
+
+
+- [ ] Knowledge shared

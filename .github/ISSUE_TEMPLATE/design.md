@@ -14,3 +14,4 @@ assignees: ''
 ## Measureable requirement(s)
 - [ ] Make flow diagram (In drawio exported as SVG)
 - [ ] Add to endpoint / function contract
+- [ ] Knowledge shared / Presented flow diagram
