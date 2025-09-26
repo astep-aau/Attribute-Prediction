@@ -1,0 +1,52 @@
+# This is a basic workflow to help you get started with Actions
+
+name: PR Build / Test
+
+# Controls when the workflow will run
+on:
+  pull_request:
+    branches: 
+      - main
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Code
+      - uses: actions/checkout@v4
+
+# sets up framework like dotnet or Node. Dont know what we will use for R
+      - name: Setup framework
+      - run: echo "Setting up framework"
+
+      - name: Restore dependencies
+      - run: |
+          echo "Restoring dependencies"
+
+      - name: Build application
+      - run: |
+          echo "building application"
+
+      - name: Test application
+      - run: |
+          echo "Testing application"
+
+      - name: Create summary
+      - run: |
+          echo "Creating test summary"
+      - if: always()
+
+      - name: Create summary
+      - run: |
+          echo "Creating test summary"
+      - if: always()
+
+      - name: Publish artefact
+      - run: |
+          echo "Publishing artefact"
+
+# uploading artefact to this workflow means it can be used in another workflow to deploy in e.g. Azure"
+      - name: Upload artefact
+      - run: |
+          echo "Uploading artefact to the workflow 
