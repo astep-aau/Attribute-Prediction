@@ -37,11 +37,6 @@ jobs:
           echo "Creating test summary"
         if: always()
 
-      - name: Create summary
-        run: |
-          echo "Creating test summary"
-        if: always()
-
       - name: Publish artefact
         run: |
           echo "Publishing artefact"
