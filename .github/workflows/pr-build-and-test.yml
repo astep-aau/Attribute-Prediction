@@ -14,39 +14,39 @@ jobs:
 
     steps:
       - name: Checkout Code
-      - uses: actions/checkout@v4
+        uses: actions/checkout@v4
 
 # sets up framework like dotnet or Node. Dont know what we will use for R
       - name: Setup framework
-      - run: echo "Setting up framework"
+        run: echo "Setting up framework"
 
       - name: Restore dependencies
-      - run: |
+        run: |
           echo "Restoring dependencies"
 
       - name: Build application
-      - run: |
+        run: |
           echo "building application"
 
       - name: Test application
-      - run: |
+        run: |
           echo "Testing application"
 
       - name: Create summary
-      - run: |
+        run: |
           echo "Creating test summary"
-      - if: always()
+        if: always()
 
       - name: Create summary
-      - run: |
+        run: |
           echo "Creating test summary"
-      - if: always()
+        if: always()
 
       - name: Publish artefact
-      - run: |
+        run: |
           echo "Publishing artefact"
 
 # uploading artefact to this workflow means it can be used in another workflow to deploy in e.g. Azure"
       - name: Upload artefact
-      - run: |
+        run: |
           echo "Uploading artefact to the workflow 
