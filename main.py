@@ -1,69 +1,115 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from torch.utils.data import TensorDataset, DataLoader
 import numpy as np
 import matplotlib.pyplot as plt
+import pandas as pd
+import time
+
+from lstm_model import LSTMModel
+from data_manipulation import DataManipulation
 
 # Data
-np.random.seed(0)
-torch.manual_seed(0)
-t = np.linspace(0, 10000, 10000)
-data = np.sin(t)
+# arr = [25, 50, 75, 100, 125, 150, 200]
 
-def create_sequences(data, seq_length):
-    xs, ys = [], []
-    for i in range(len(data) - seq_length):
-        x = data[i:(i + seq_length)]
-        y = data[i + seq_length]
-        xs.append(x)
-        ys.append(y)
-    return np.array(xs), np.array(ys)
+# for value in arr:
+#     dm = DataManipulation('edge_traversals_processed.json', value)
 
-seq_length = 100
-X, y = create_sequences(data, seq_length)
 
-trainX = torch.tensor(X[:, :, None], dtype=torch.float32)  # (samples, seq_len, 1)
-trainY = torch.tensor(y[:, None], dtype=torch.float32)     # (samples, 1)
 
-# Model
-class LSTMModel(nn.Module):
-    def __init__(self, input_dim, hidden_dim, output_dim, num_layers=1):
-        super().__init__()
-        self.hidden_size = hidden_dim
-        self.num_layers = num_layers
-        self.lstm = nn.LSTM(input_dim, hidden_dim, num_layers, batch_first=True)
-        self.fc = nn.Linear(hidden_dim, output_dim)
+device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+print(f"Using device: {device}")
 
-    def forward(self, x):
-        h0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size)
-        c0 = torch.zeros(self.num_layers, x.size(0), self.hidden_size)
-        out, _ = self.lstm(x, (h0, c0))
-        out = self.fc(out[:, -1, :])
-        return out
 
-model = LSTMModel(input_dim=1, hidden_dim=20, output_dim=1, num_layers=2)
+# Sequence Length is about the structure of one sample.
+Sequence_Length = 50
+dm = DataManipulation('data/edge_traversals_processed.json', 125, Sequence_Length)
+
+model = LSTMModel(input_dim=1, hidden_dim=20, output_dim=1, num_layers=2).to(device)
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=0.01)
 
 # Training
+
+# Batch Size is about how many samples you process in parallel.
+# determined by your GPU's memory (bigger is often faster, but uses more memory).
+batch_size = 64
+
+train_dataset = TensorDataset(dm.get_trainX(), dm.get_trainY())
+
+train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
+
 num_epochs = 100
+epoch_losses = [] # A list to store the average loss of each epoch
+
+start_time = time.time()
+print("Starting training...")
 for epoch in range(num_epochs):
-    optimizer.zero_grad()
-    outputs = model(trainX)
-    loss = criterion(outputs, trainY)
-    loss.backward()
-    optimizer.step()
+    model.train() # Set the model to training mode
+    
+    running_loss = 0.0
+    
+    for batch_X, batch_Y in train_loader:
+        batch_X = batch_X.to(device)
+        batch_Y = batch_Y.to(device)
 
-    if (epoch + 1) % 10 == 0:
-        print(f"Epoch [{epoch+1}/{num_epochs}], Loss: {loss.item():.6f}")
+        # Standard training steps
+        optimizer.zero_grad()
+        outputs = model(batch_X)
+        loss = criterion(outputs, batch_Y)
+        loss.backward()
+        optimizer.step()
+        
+        running_loss += loss.item()
 
-# Prediction
-model.eval()
-with torch.no_grad():
-    preds = model(trainX).numpy()
+    avg_epoch_loss = running_loss / len(train_loader)
+    epoch_losses.append(avg_epoch_loss)
+    
+    print(f"Epoch [{epoch+1}/{num_epochs}], Average Loss: {avg_epoch_loss:.6f}")
 
-# Plot
-plt.plot(data[seq_length:], label="True")
-plt.plot(preds, label="Predicted")
-plt.legend()
-plt.show()
+print("Training finished.")
+
+end_time = time.time()
+
+training_duration_seconds = end_time - start_time
+
+mins = int(training_duration_seconds // 60)
+secs = int(training_duration_seconds % 60)
+print(f"\nTraining finished.")
+print(f"Total training time: {mins} minutes, {secs} seconds")
+
+# --- SAVING THE MODEL AND METADATA ---
+
+filepath = "lstm_model_checkpoint.pth" 
+
+final_loss = epoch_losses[-1] 
+
+checkpoint = {
+    'epoch': num_epochs,
+    'model_state_dict': model.state_dict(),
+    'optimizer_state_dict': optimizer.state_dict(),
+    'loss': final_loss,
+    'training_duration_seconds': training_duration_seconds,
+    'training_duration_formatted': f"{mins}m {secs}s",
+    'hyperparameters': {
+        'input_dim': model.lstm.input_size,
+        'hidden_dim': model.hidden_size,
+        'num_layers': model.num_layers,
+        'output_dim': model.fc.out_features,
+        'sequence_length': Sequence_Length,
+        'batch_size': batch_size,
+        'learning_rate': optimizer.param_groups[0]['lr']
+    },
+    'data_info': {
+        'min_event_threshold': dm._min_event_threshold,
+        'truncation_length': len(dm.df_data),
+        'number_of_roads': len(dm.df_data.columns)
+    },
+    'loss_history': epoch_losses 
+}
+
+# Save the dictionary
+torch.save(checkpoint, filepath)
+
+print(f"\nModel and metadata saved to {filepath}")
