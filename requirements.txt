@@ -1,0 +1,6 @@
+# To install torch go to https://pytorch.org/get-started/locally/
+# and select the appropriate options for your system.
+# For cpu only, the command is: pip3 install torch torchvision
+
+matplotlib
+pandas

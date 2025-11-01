@@ -24,9 +24,9 @@ print(f"Using device: {device}")
 
 # Sequence Length is about the structure of one sample.
 Sequence_Length = 50
-dm = DataManipulation('data/edge_traversals_processed.json', 125, Sequence_Length)
+dm = DataManipulation('data\\edge_traversals_processed.json', 125, Sequence_Length)
 
-model = LSTMModel(input_dim=1, hidden_dim=20, output_dim=1, num_layers=2).to(device)
+model = LSTMModel(input_dim=1, hidden_dim=50, output_dim=1, num_layers=2).to(device)
 criterion = nn.MSELoss()
 optimizer = optim.Adam(model.parameters(), lr=0.01)
 
@@ -47,9 +47,9 @@ start_time = time.time()
 print("Starting training...")
 for epoch in range(num_epochs):
     model.train() # Set the model to training mode
-    
+
     running_loss = 0.0
-    
+
     for batch_X, batch_Y in train_loader:
         batch_X = batch_X.to(device)
         batch_Y = batch_Y.to(device)
@@ -60,13 +60,15 @@ for epoch in range(num_epochs):
         loss = criterion(outputs, batch_Y)
         loss.backward()
         optimizer.step()
-        
+
         running_loss += loss.item()
 
     avg_epoch_loss = running_loss / len(train_loader)
     epoch_losses.append(avg_epoch_loss)
-    
-    print(f"Epoch [{epoch+1}/{num_epochs}], Average Loss: {avg_epoch_loss:.6f}")
+    epoch_time = time.time() - start_time
+    epoch_mins = int(epoch_time // 60)
+    epoch_secs = int(epoch_time % 60)
+    print(f"Epoch [{epoch+1}/{num_epochs}], Average Loss: {avg_epoch_loss:.6f}, Time: {epoch_mins} minutes, {epoch_secs} seconds")
 
 print("Training finished.")
 
@@ -81,9 +83,9 @@ print(f"Total training time: {mins} minutes, {secs} seconds")
 
 # --- SAVING THE MODEL AND METADATA ---
 
-filepath = "lstm_model_checkpoint.pth" 
+filepath = "lstm_model_checkpoint.pth"
 
-final_loss = epoch_losses[-1] 
+final_loss = epoch_losses[-1]
 
 checkpoint = {
     'epoch': num_epochs,
@@ -106,7 +108,7 @@ checkpoint = {
         'truncation_length': len(dm.df_data),
         'number_of_roads': len(dm.df_data.columns)
     },
-    'loss_history': epoch_losses 
+    'loss_history': epoch_losses
 }
 
 # Save the dictionary
