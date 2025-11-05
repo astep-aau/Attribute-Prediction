@@ -54,7 +54,7 @@ for epoch in range(num_epochs):
         batch_X = batch_X.to(device)
         batch_Y = batch_Y.to(device)
 
-        # Standard training steps
+        # Standard training steps hello
         optimizer.zero_grad()
         outputs = model(batch_X)
         loss = criterion(outputs, batch_Y)
@@ -63,7 +63,7 @@ for epoch in range(num_epochs):
 
         running_loss += loss.item()
 
-    avg_epoch_loss = running_loss / len(train_loader)
+    avg_epoch_loss = running_loss / len()
     epoch_losses.append(avg_epoch_loss)
     epoch_time = time.time() - start_time
     epoch_mins = int(epoch_time // 60)
