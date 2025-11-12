@@ -13,7 +13,7 @@ from data_manipulation import DataManipulation
 # arr = [25, 50, 75, 100, 125, 150, 200]
 
 # for value in arr:
-#     dm = DataManipulation('edge_traversals_processed.json', value)
+#    dm = DataManipulation('data/edge_traversals_processed.json', value, 50)
 
 
 
@@ -23,7 +23,7 @@ print(f"Using device: {device}")
 
 # Sequence Length is about the structure of one sample.
 Sequence_Length = 50
-dm = DataManipulation('data\\edge_traversals_processed.json', 125, Sequence_Length)
+dm = DataManipulation('data/edge_traversals_processed.json', 125, Sequence_Length)
 
 model = LSTMModel(input_dim=1, hidden_dim=75, output_dim=1, num_layers=2).to(device)
 criterion = nn.MSELoss()
@@ -68,6 +68,7 @@ for epoch in range(num_epochs):
     epoch_mins = int(epoch_time // 60)
     epoch_secs = int(epoch_time % 60)
     print(f"Epoch [{epoch+1}/{num_epochs}], Average Loss: {avg_epoch_loss:.6f}, Time: {epoch_mins} minutes, {epoch_secs} seconds")
+
 
 print("Training finished.")
 

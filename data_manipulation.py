@@ -16,7 +16,7 @@ class DataManipulation():
         self.df_data = None
         with open(self._path_to_data, "r") as f:
             raw_data = json.load(f)
-        
+
         self.data = self._filter_roads_by_length(raw_data)
 
         self._load_data_into_pd()
@@ -25,7 +25,7 @@ class DataManipulation():
         if self._trainX is None:
             self._create_sequance(self.df_data, self._sequance_length)
         return self._trainX
-    
+
     def get_trainY(self):
         if self._trainY is None:
             self._create_sequance(self.df_data, self._sequance_length)
@@ -35,7 +35,7 @@ class DataManipulation():
         if os.path.exists(csv_name):
             self.df_data = pd.read_csv(csv_name)
             return
-        
+
         truncation_length = self._find_truncation_length()
 
         data_for_df = {}
@@ -44,12 +44,12 @@ class DataManipulation():
         target_key = "time to traverse (s)"
         for road_id in all_road_ids:
             road_data_dict = self.data[road_id]
-            
+
             full_series = [
                 road_data_dict.get("traversals", {}).get(str(i), {}).get(target_key, np.nan)  for i in range(truncation_length)
             ]
-            
-            data_for_df[road_id] = full_series      
+
+            data_for_df[road_id] = full_series
 
         df = pd.DataFrame(data_for_df)
 
@@ -76,11 +76,11 @@ class DataManipulation():
                 continue # Skip if no traversals key
 
             event_count = len([k for k in traversals_data.keys() if k.isdigit()])
-            
+
             # This is the core filtering logic
             if event_count >= self._min_event_threshold:
                 filtered_data[road_id] = road_data
-        
+
         print(f"Original number of roads: {len(raw_data)}")
         print(f"Number of roads after filtering (threshold >= {self._min_event_threshold}): {len(filtered_data)}")
         return filtered_data
@@ -90,19 +90,21 @@ class DataManipulation():
         y = []
         for column_name in df:
             road_series = df[column_name].values
+            if len(road_series) <= seq_len:
+                continue
             for i in range(seq_len, len(road_series)):
                 x.append(road_series[i-seq_len:i])
                 y.append(road_series[i])
         np_x = np.array(x)
         np_y = np.array(y)
-        
+
         # (batch_size, sequence_length, input_size)
         self._trainX = torch.tensor(np_x, dtype=torch.float32)[:, :, None]
         self._trainY = torch.tensor(np_y, dtype=torch.float32)[:, None]
 
     def _find_truncation_length(self):
         min_of_max_timesteps = float('inf')
-        
+
         for road_data in self.data.values():
             if not road_data:
                 continue
@@ -112,11 +114,11 @@ class DataManipulation():
 
             # For the current road, find its own maximum timestamp
             current_road_max_timestep = max([int(t) for t in traversals_data.keys()])
-            
+
             # Check if this road's max length is smaller than the smallest we've seen so far
             if current_road_max_timestep < min_of_max_timesteps:
                 min_of_max_timesteps = current_road_max_timestep
-        
+
         # The total length is the max index + 1 (e.g., index 155 means 156 steps)
         # If no data was found, return 0.
         print("trancation length: " + str(min_of_max_timesteps))
