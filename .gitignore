@@ -1,0 +1,11 @@
+# Data
+data/*
+
+# python
+__pycache__
+
+# env
+venv
+env
+myvenv
+myenv
