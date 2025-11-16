@@ -1,6 +1,6 @@
 import torch.nn as nn
 
-class gru(nn.Module):
+class Gru(nn.Module):
     def __init__(
             self,
             in_dim,
@@ -8,7 +8,7 @@ class gru(nn.Module):
             hidden_dim,
             num_layers,
             dropout):
-        super(gru, self).__init__()
+        super(Gru, self).__init__()
         
         # HyperParams
         self.hidden_dim = hidden_dim
