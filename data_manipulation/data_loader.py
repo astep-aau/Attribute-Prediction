@@ -1,15 +1,15 @@
 from abc import ABC, abstractmethod
 import pandas as pd
 
-class DataLoader(ABC): 
+class DataLoader(ABC):
     @abstractmethod
-    def getTravelData(self) -> pd.DataFrame:
+    def get_travel_data(self) -> pd.DataFrame:
         pass
 
     @abstractmethod
-    def getMetaData(self) -> pd.DataFrame:
+    def get_meta_data(self) -> pd.DataFrame:
         pass
 
     @abstractmethod
-    def getAdjacency(self) -> pd.DataFrame:
+    def get_adjacency(self) -> pd.DataFrame:
         pass

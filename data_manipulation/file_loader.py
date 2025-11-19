@@ -8,7 +8,7 @@ class FileLoader(DataLoader):
         self.edge_connections_path = edge_connections_path
         self.meta_data_path = meta_data_path
 
-    def getTravelData(self):
+    def get_travel_data(self):
         dataframes = [pd.read_csv(e) for e in self.edge_data_paths]
         all_edges = set()
 
@@ -31,7 +31,7 @@ class FileLoader(DataLoader):
 
         return pd.concat(new_dataframes, ignore_index=True)
 
-    def getMetaData(self):
+    def get_meta_data(self):
         with open(self.meta_data_path, "r") as f:
             data = json.load(f)
 
@@ -46,5 +46,5 @@ class FileLoader(DataLoader):
         ]
         return pd.DataFrame(rows)
 
-    def getAdjacency(self):
+    def get_adjacency(self):
         return pd.read_csv(self.edge_connections_path)
