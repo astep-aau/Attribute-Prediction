@@ -81,30 +81,59 @@ class GraphDatasetBuilder:
 
 
     def _build_node_features(self):
-        # One-hot encode road types
-        # road_types = ["motorway", "trunk", "primary", "secondary", "tertiary", "unclassified",
-        #              "residential", "motorway_link", "trunk_link", "primary_link", "secondary_link",
-        #              "tertiary_link", "living_street", "service", "pedestrian", "track", "bus_guideway",
-        #              "escape", "raceway", "road", "busway"]
-        #onehot_road_type = pd.get_dummies(self._meta_data_df["road_type"]).reindex(columns=road_types, fill_value=0)
+        """
+        Build the node features:
+            road_type : string -> one hot encoded
+            oneway : Boolean -> int
+        """
+        sorted_df = self._adjacency_df.sort_values(
+            by='edge_id',
+            key=lambda col: col.map(self._edge_as_node_map)
+        )
 
-        # Boolean feature: oneway
-        #self._meta_data_df["oneway"] = self._meta_data_df["oneway"].fillna(False).astype(int)
+        road_types = ["motorway", "trunk", "primary", "secondary", "tertiary", "unclassified",
+                      "residential", "motorway_link", "trunk_link", "primary_link", "secondary_link",
+                      "tertiary_link", "living_street", "service", "pedestrian", "track", "bus_guideway",
+                      "escape", "raceway", "road", "busway"]
 
-        # Combine features
-        #features_df = pd.concat([onehot_road_type, self._meta_data_df["oneway"]], axis=1)
+        # Build lookup by iterating ways first
+        edge_to_way = {}
+        for way in self._meta_data_df.itertuples():
+            nodes_set = set(way.nodes)
 
-        # Map edge IDs to line graph node IDs and sort
-        #features_df["mapped_id"] = self._meta_data_df["edgeId"].map(lambda x: self._edge_as_node_map[x])
-        #features_df = features_df.sort_values("mapped_id")
-        #features_df = features_df.drop(columns=["mapped_id"])
+            # Check which edges belong to this way
+            for row in sorted_df.itertuples():
+                start_str = str(row.vertex_start_id)
+                end_str = str(row.vertex_end_id)
 
-        #return torch.tensor(features_df.values, dtype=torch.float)
+                if start_str in nodes_set and end_str in nodes_set:
+                    edge_to_way[row.edge_id] = way
 
-        num_nodes = len(self._adjacency_df)
+        feature_list = []
+        missing_count = 0
+        unknown_road_types = set()
+        for row in sorted_df.itertuples():
+            if row.edge_id in edge_to_way:
+                way = edge_to_way[row.edge_id]
+                oneway = 1 if way.oneway else 0
+                type_encoded = [1 if way.road_type == rt else 0 for rt in road_types]
 
-        x = torch.zeros((num_nodes, 1), dtype=torch.float)
-        return x
+                # Track unknown road types
+                if way.road_type not in road_types:
+                    unknown_road_types.add(way.road_type)
+
+                feature_vector = type_encoded + [oneway]
+                feature_list.append(feature_vector)
+            else:
+                # Default features if no way found
+                feature_list.append([0] * (len(road_types) + 1))
+                #print(f"No meta data for edge: {row.edge_id}")
+                missing_count += 1
+
+        print(f"{missing_count} edges are missing metadata out of {len(sorted_df)}")
+        if unknown_road_types:
+            print(f"Warning: Found unknown road types: {unknown_road_types}")
+        return torch.tensor(feature_list, dtype=torch.float)
 
     def _build_target_tensor(self, timestep=0):
         # Pick a single timestep from travel data
