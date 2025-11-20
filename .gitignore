@@ -15,3 +15,6 @@ myenv
 .coverage.*
 htmlcov/
 .pytest_cache/
+
+# vscode
+.vscode

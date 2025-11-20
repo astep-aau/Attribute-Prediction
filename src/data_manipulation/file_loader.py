@@ -1,4 +1,4 @@
-from data_loader import DataLoader
+from src.data_manipulation.data_loader import DataLoader
 import pandas as pd
 
 class FileLoader(DataLoader):
