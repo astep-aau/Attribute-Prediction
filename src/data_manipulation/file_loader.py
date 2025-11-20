@@ -1,6 +1,5 @@
 from data_loader import DataLoader
 import pandas as pd
-import json
 
 class FileLoader(DataLoader):
     def __init__(self, edge_data_paths: str, edge_connections_path, meta_data_path):
