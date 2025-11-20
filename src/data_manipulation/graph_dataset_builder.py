@@ -1,4 +1,4 @@
-from data_loader import DataLoader
+from src.data_manipulation.data_loader import DataLoader
 import torch
 from torch_geometric.data import Data
 import pandas as pd
