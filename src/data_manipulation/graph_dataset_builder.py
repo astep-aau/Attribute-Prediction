@@ -5,7 +5,7 @@ import pandas as pd
 from collections import defaultdict
 
 class GraphDatasetBuilder:
-    def __init__(self, loader : DataLoader, timestep: int = 0):
+    def __init__(self, loader: DataLoader, timestep: int = 0):
         self._adjacency_df = loader.get_adjacency()
         self._travel_data = loader.get_travel_data()
         self._meta_data_df = loader.get_meta_data()
