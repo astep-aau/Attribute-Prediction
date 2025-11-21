@@ -82,11 +82,10 @@ class GraphDatasetBuilder:
 
     def _build_node_features(self):
         # One-hot encode road types
-        # road_types = ["motorway", "trunk", "primary", "secondary", "tertiary", "unclassified",
-        #              "residential", "motorway_link", "trunk_link", "primary_link", "secondary_link",
-        #              "tertiary_link", "living_street", "service", "pedestrian", "track", "bus_guideway",
-        #              "escape", "raceway", "road", "busway"]
-        #onehot_road_type = pd.get_dummies(self._meta_data_df["road_type"]).reindex(columns=road_types, fill_value=0)
+        road_types = ["motorway", "trunk", "primary", "secondary", "tertiary", "unclassified",
+                      "residential", "motorway_link", "trunk_link", "primary_link", "secondary_link",
+                      "tertiary_link", "living_street", "service", "pedestrian", "track", "bus_guideway",
+                      "escape", "raceway", "road", "busway"]
 
         # Boolean feature: oneway
         #self._meta_data_df["oneway"] = self._meta_data_df["oneway"].fillna(False).astype(int)
