@@ -9,3 +9,12 @@ venv
 env
 myvenv
 myenv
+
+# Coverage files
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+
+# vscode
+.vscode
