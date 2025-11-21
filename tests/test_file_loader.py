@@ -131,17 +131,15 @@ class TestGetTravelData:
         """Test that original values are preserved"""
         result = file_loader.get_travel_data()
 
-        print("\n=== Full Result DataFrame ===")
-        print(result)
-        print("\n=== Unique time_slot values ===")
-        print(result['time_slot'].unique())
-        print("\n=== Day 1 data ===")
-        print(result[result['day'] == 1])
+
+
+
+
+
+
 
         # Check day 1, time_slot 00:05, edge0 should be 10
         day1_slot0 = result[(result['day'] == 1) & (result['time_slot'] == '00:05')]
-        print("\n=== Filtered day1_slot0 ===")
-        print(day1_slot0)
         assert day1_slot0['edge0_traversal_time_sec'].values[0] == 10
 
         # Check day 2, time_slot 00:10, edge2 should be 27
