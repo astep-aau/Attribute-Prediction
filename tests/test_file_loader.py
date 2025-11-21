@@ -131,13 +131,6 @@ class TestGetTravelData:
         """Test that original values are preserved"""
         result = file_loader.get_travel_data()
 
-
-
-
-
-
-
-
         # Check day 1, time_slot 00:05, edge0 should be 10
         day1_slot0 = result[(result['day'] == 1) & (result['time_slot'] == '00:05')]
         assert day1_slot0['edge0_traversal_time_sec'].values[0] == 10
