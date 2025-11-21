@@ -1,6 +1,5 @@
-from data_loader import DataLoader
+from src.data_manipulation.data_loader import DataLoader
 import pandas as pd
-import json
 
 class FileLoader(DataLoader):
     def __init__(self, edge_data_paths: str, edge_connections_path, meta_data_path):
@@ -32,19 +31,8 @@ class FileLoader(DataLoader):
         return pd.concat(new_dataframes, ignore_index=True)
 
     def get_meta_data(self):
-        with open(self.meta_data_path, "r") as f:
-            data = json.load(f)
-
-        rows = [
-            {
-                "node_id": node,
-                "oneway": info["oneway"],
-                "road_type": info["road_type"]
-            }
-            for info in data.values()         # iterate over the value dicts directly
-            for node in info["nodes"]         # iterate over each node in the list
-        ]
-        return pd.DataFrame(rows)
+        # Transpose so edge IDs become the index and columns are oneway, road_type, nodes
+        return pd.read_json(self.meta_data_path).T
 
     def get_adjacency(self):
         return pd.read_csv(self.edge_connections_path)
