@@ -1,3 +1,20 @@
-data/
+# Data
+data/*
 
-__pycache__/
+# python
+__pycache__
+
+# env
+venv
+env
+myvenv
+myenv
+
+# Coverage files
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/
+
+# vscode
+.vscode
