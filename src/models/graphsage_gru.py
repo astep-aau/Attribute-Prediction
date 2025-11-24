@@ -47,7 +47,6 @@ class GraphSAGEGru(nn.Module):
         """
         seq_len, num_nodes, _ = graph_sequence.shape
 
-        # Process each timestep with GNN to capture spatial dependencies
         spatial_temporal_features = []
         for t in range(seq_len):
             node_features = graph_sequence[t]  # [num_nodes, in_dim]

@@ -30,8 +30,8 @@ class GraphSAGE(nn.Module):
 
     def forward(self, node_feature, edge_index):
         """
-            node_feature = matrix [num_nodes, in_dim]
-            edge_index = COO format [2, num_edges]
+            - node_feature = matrix [num_nodes, in_dim]
+            - edge_index = COO format [2, num_edges]
         """
         for i, conv in enumerate(self.convs):
             node_feature = conv(node_feature, edge_index)
