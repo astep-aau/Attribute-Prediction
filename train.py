@@ -38,7 +38,7 @@ CONFIG = {
     'device': 'cuda' if torch.cuda.is_available() else 'cpu'
 }
 
-def train_epoch(model, dataloader, optimizer, criterion, device, edge_index, graph_builder):
+def train_epoch(model, indices, temp_dataset, optimizer, criterion, device, edge_index, graph_builder):
     """Train for one epoch."""
     model.train()
     total_loss = 0
@@ -46,9 +46,9 @@ def train_epoch(model, dataloader, optimizer, criterion, device, edge_index, gra
     total_valid = 0
     num_batches = 0
 
-    for idx in range(len(dataloader.dataset)):
+    for idx in indices:
         # Get sample and target
-        sample = dataloader.dataset[idx].to(device)
+        sample = temp_dataset[idx].to(device)
         target_timestep = idx + CONFIG['sequence_length']
 
         # Skip if target would be out of bounds
@@ -87,7 +87,7 @@ def train_epoch(model, dataloader, optimizer, criterion, device, edge_index, gra
     return avg_loss, avg_mae, total_valid // num_batches if num_batches > 0 else 0
 
 
-def validate(model, dataloader, criterion, device, edge_index, graph_builder):
+def validate(model, indices, temp_dataset, criterion, device, edge_index, graph_builder):
     """Validate the model."""
     model.eval()
     total_loss = 0
@@ -96,8 +96,8 @@ def validate(model, dataloader, criterion, device, edge_index, graph_builder):
     num_batches = 0
 
     with torch.no_grad():
-        for idx in range(len(dataloader.dataset)):
-            sample = dataloader.dataset[idx].to(device)
+        for idx in indices:
+            sample = temp_dataset[idx].to(device)
             target_timestep = idx + CONFIG['sequence_length']
 
             if target_timestep >= len(graph_builder._travel_data):
@@ -156,23 +156,16 @@ def main():
     print("\n[2/6] Creating temporal dataset...")
     temp_dataset = TemporalDatasetBuilder(graph_builder, CONFIG['sequence_length'])
 
-    # Split into train/val
+    # Split into train/val using sequential split
     train_size = int(CONFIG['train_split'] * len(temp_dataset))
     val_size = len(temp_dataset) - train_size
 
-    train_dataset, val_dataset = random_split(
-        temp_dataset,
-        [train_size, val_size],
-        generator=torch.Generator().manual_seed(42)
-    )
+    train_indices = list(range(train_size))
+    val_indices = list(range(train_size, len(temp_dataset)))
 
     print(f"  ✓ Total sequences: {len(temp_dataset)}")
-    print(f"  ✓ Train sequences: {len(train_dataset)}")
-    print(f"  ✓ Val sequences: {len(val_dataset)}")
-
-    # Create "dataloaders" (we'll just use the datasets directly)
-    train_loader = train_dataset
-    val_loader = val_dataset
+    print(f"  ✓ Train sequences: {len(train_indices)}")
+    print(f"  ✓ Val sequences: {len(val_indices)}")
 
     # ===== 3. Initialize Model =====
     print("\n[3/6] Initializing model...")
@@ -211,8 +204,7 @@ def main():
         optimizer,
         mode='min',
         factor=0.5,
-        patience=5,
-        verbose=True
+        patience=5
     )
 
     print(f"  ✓ Loss: MSE")
@@ -231,12 +223,12 @@ def main():
 
         # Train
         train_loss, train_mae, train_valid = train_epoch(
-            model, train_loader, optimizer, criterion, device, edge_index, graph_builder
+            model, train_indices, temp_dataset, optimizer, criterion, device, edge_index, graph_builder
         )
 
         # Validate
         val_loss, val_mae, val_valid = validate(
-            model, val_loader, criterion, device, edge_index, graph_builder
+            model, val_indices, temp_dataset, criterion, device, edge_index, graph_builder
         )
 
         # Update scheduler
@@ -282,7 +274,7 @@ def main():
 
     # Evaluate on validation set
     val_loss, val_mae, val_valid = validate(
-        model, val_loader, criterion, device, edge_index, graph_builder
+        model, val_indices, temp_dataset, criterion, device, edge_index, graph_builder
     )
 
     print(f"\nBest Model Performance:")

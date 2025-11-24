@@ -18,8 +18,9 @@ class TemporalDatasetBuilder():
         self.static_features = self.graph_builder.x       # [num_nodes, static_dim]
 
     def __len__(self):
-        """Total number of sequences that can be create"""
-        return len(self.graph_builder._travel_data)
+        """Total number of sequences that can be created"""
+        # Need sequence_length timesteps for input, so max valid idx is total - sequence_length
+        return len(self.graph_builder._travel_data) - self.sequence_length
 
     def __getitem__(self, idx):
         """
