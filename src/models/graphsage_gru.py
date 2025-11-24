@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
-from src.models.graphsage import GraphSAGEGru
-from gru import Gru
+from src.models.graphsage import GraphSAGE
+from src.models.gru import Gru
 
 class GraphSAGEGru(nn.Module):
     def __init__(
@@ -17,7 +17,7 @@ class GraphSAGEGru(nn.Module):
             gnn_agg_method):
        super(GraphSAGEGru, self).__init__()
 
-       self.Gnn = GraphSAGEGru(
+       self.Gnn = GraphSAGE(
                in_dim= in_dim,
                out_dim = gnn_hidden_dim,  # Keep as embeddings, not predictions
                num_layers = gnn_num_layers,
