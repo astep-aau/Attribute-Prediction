@@ -1,31 +1,25 @@
-from src.sampling.data_generation.spatial_data import generate_graph
-import torch
-from torch_geometric.loader import NeighborLoader
-from torch_geometric.data import Data
+from src.data_manipulation.file_loader import FileLoader
+from src.data_manipulation.graph_dataset_builder import GraphDatasetBuilder
+from src.sampling.neighbor_sampling import NeighborSampling
+from pathlib import Path
 
-import networkx as nx
-import matplotlib.pyplot as plt
-from torch_geometric.utils import to_networkx
+data_dir = Path("data")
+edge_files = [str(data_dir / "edge_data_day3.csv")]
 
-print("hello")
-data = generate_graph(100, 10, 50, 15)
+edge_data = ",".join(edge_files)
+edge_connection = str(data_dir / "edge_connections.csv")
+osm = str(data_dir / "osm_roads_output.json")
 
-#x = torch.randn(8, 32)  # Node features of shape [num_nodes, num_features]
-#y = torch.randint(0, 4, (8, ))  # Node labels of shape [num_nodes]
-#edge_index = torch.tensor([
-#    [2, 3, 3, 4, 5, 6, 7],
-#    [0, 0, 1, 1, 2, 3, 4]],
-#)
+fileloader = FileLoader(edge_data, edge_connection, osm)
+graph_builder = GraphDatasetBuilder(fileloader)
 
-#data = Data(x=x, y=y, edge_index = edge_index)
+data = graph_builder.get_data()
 
-loader = NeighborLoader(
-    data,
-    input_nodes= torch.tensor([0,10,20,30,40,50,60,70,80,90]),
-    num_neighbors=[2,2,2],
-    batch_size=2,
-    replace=False
-)
+print(data)
 
-for batch in loader:
-    print(batch.e_id)
+sampledData = NeighborSampling(data)
+
+print(sampledData)
+
+for batch in sampledData:
+    print(batch)
