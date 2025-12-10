@@ -1,7 +1,7 @@
 from fastapi import FastAPI
-from src.app.routes import model_routes, metric_routes
+from src.app.routes import metric_routes, model_type_routes
 
 app = FastAPI()
 
-app.include_router(model_routes.router)
+app.include_router(model_type_routes.router)
 app.include_router(metric_routes.router)
