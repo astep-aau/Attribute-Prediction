@@ -2,3 +2,4 @@ torch_geometric
 torch
 pandas
 FastAPI
+uvicorn
