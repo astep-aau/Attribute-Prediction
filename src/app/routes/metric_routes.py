@@ -1,6 +1,6 @@
 from fastapi import APIRouter
-from src.app.data_models.model_metrics import ModelMetrics
-from src.app.data_models import hyperparameters, model_loss
+from src.app.schemas.model_metrics import ModelMetrics
+from src.app.schemas import hyperparameters, model_loss
 
 router = APIRouter(prefix="/model-metrics", tags=["metrics"])
 

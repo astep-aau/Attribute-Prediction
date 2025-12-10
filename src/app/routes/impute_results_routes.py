@@ -1,5 +1,5 @@
 from fastapi import APIRouter
-from src.app.data_models.place_holder import PlaceHolder
+from src.app.schemas.place_holder import PlaceHolder
 
 router = APIRouter(prefix="/impute-result", tags=["impute result"])
 
