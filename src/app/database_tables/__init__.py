@@ -1,7 +1,7 @@
-from .hyperparam_table import HyperparamTable
-from .loss_table import LossTable
-from .model_metric_table import ModelMetricsTable
-from .model_type_table import ModelTypeTable
+from src.app.database_tables.hyperparam_table import HyperparamTable
+from src.app.database_tables.loss_table import LossTable
+from src.app.database_tables.model_metric_table import ModelMetricsTable
+from src.app.database_tables.model_type_table import ModelTypeTable
 
 __all__ = [
     "HyperparamTable",

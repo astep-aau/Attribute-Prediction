@@ -2,7 +2,7 @@ from sqlalchemy import Column, String, Integer, Float, ForeignKey, DateTime
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.sql import func
 import uuid
-from app.database import Base
+from src.app.database import Base
 
 class ModelMetricsTable(Base):
     __tablename__ = "model_metrics"

@@ -1,8 +1,8 @@
-from .hyperparam import Hyperparam
-from .model_loss import ModelLoss
-from .model_metrics import ModelMetrics
-from .model_type import ModelType
-from .place_holder import PlaceHolder
+from src.app.schemas.hyperparam import Hyperparam
+from src.app.schemas.model_loss import ModelLoss
+from src.app.schemas.model_metrics import ModelMetrics
+from src.app.schemas.model_type import ModelType
+from src.app.schemas.place_holder import PlaceHolder
 
 __all__ = [
     "Hyperparam",

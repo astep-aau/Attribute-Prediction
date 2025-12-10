@@ -1,7 +1,7 @@
 from sqlalchemy import Column, String, Float, ForeignKey
 from sqlalchemy.dialects.postgresql import UUID
 import uuid
-from app.database import Base
+from src.app.database import Base
 
 class LossTable(Base):
     __tablename__ = "loss"
