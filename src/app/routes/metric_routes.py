@@ -1,6 +1,5 @@
 from fastapi import APIRouter
-from src.app.schemas.model_metrics import ModelMetrics
-from src.app.schemas import hyperparameters, model_loss
+from src.app.schemas import ModelMetrics, Hyperparam, ModelLoss
 
 router = APIRouter(prefix="/model-metrics", tags=["metrics"])
 
@@ -11,5 +10,5 @@ def get_metrics(model_id: str):
                         train_time_min=21,
                         bias= 2.2,
                         gap= .2,
-                        hyperparameters=[hyperparameters.Hyperparameters(model_id=model_id, param_name="Your mama", param_value="Joe")],
-                        loss=[model_loss.ModelLoss(model_id=model_id, type="Training", loss_unit="MEA", loss_value=183.2 )])
+                        hyperparameters=[Hyperparam(model_id=model_id, param_name="Your mama", param_value="Joe")],
+                        loss=[ModelLoss(model_id=model_id, type="Training", loss_unit="MEA", loss_value=183.2 )])

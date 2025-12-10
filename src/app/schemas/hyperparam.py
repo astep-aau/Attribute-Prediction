@@ -1,10 +1,9 @@
 from pydantic import BaseModel, ConfigDict
 from uuid import UUID
 
-class ModelLoss(BaseModel):
+class Hyperparam(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     model_id: UUID
-    type: str
-    loss_value: float
-    loss_unit: str
+    param_name: str
+    param_value: str

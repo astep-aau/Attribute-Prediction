@@ -2,4 +2,8 @@ torch_geometric
 torch
 pandas
 FastAPI
-uvicorn
+uvicorn[standard]
+sqlalchemy[asyncio]
+asyncpg
+pydantic
+pydantic-settings

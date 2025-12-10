@@ -18,3 +18,6 @@ htmlcov/
 
 # vscode
 .vscode
+
+# env
+.env

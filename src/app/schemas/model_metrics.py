@@ -1,13 +1,16 @@
-from pydantic import BaseModel
-from src.app.schemas.hyperparameters import Hyperparameters
+from pydantic import BaseModel, ConfigDict
+from src.app.schemas.hyperparam import Hyperparam
 from src.app.schemas.model_loss import ModelLoss
-from typing import List
+from typing import List, Optional
+from uuid import UUID
 
 class ModelMetrics(BaseModel):
-    id: str
-    model_type: str
+    model_config = ConfigDict(from_attributes=True)
+
+    id: UUID
+    model_type: UUID
     train_time_min: int
-    bias: float
-    gap: float
-    hyperparameters: List[Hyperparameters]
+    bias: Optional[float] = None
+    gap: Optional[float] = None
+    hyperparameters: List[Hyperparam]
     loss: List[ModelLoss]
