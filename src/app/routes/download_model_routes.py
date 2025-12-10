@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi.responses import FileResponse
 
-router = APIRouter(prefix="/download_model", tags=["download", "model", "download model"])
+router = APIRouter(prefix="/download_model", tags=["download model"])
 
 @router.get("/{model_id}", response_class=FileResponse)
 def download_model(model_id: str):
