@@ -3,15 +3,21 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from src.app.database_tables import ModelMetricsTable, HyperparamTable, LossTable
 from src.app.schemas import ModelMetrics
+from src.app.exceptions import InvalidUUIDException, NotFoundException
 
 async def find_metric(model_type: str, db: AsyncSession):
-    uuid_type = UUID(model_type)
+    try:
+        uuid = UUID(model_type)
+    except ValueError:
+        raise InvalidUUIDException(f"Invalid UUID format: {model_type}")
     result = await db.execute(
         select(ModelMetricsTable)
-        .where(ModelMetricsTable.model_type == uuid_type)
+        .where(ModelMetricsTable.model_type == uuid)
         )
 
     metric_seq = result.scalars().all()
+    if not metric_seq:
+        return None
 
     model_metrics_list = []
     for metric in metric_seq:
