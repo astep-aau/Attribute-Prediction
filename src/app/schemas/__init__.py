@@ -1,13 +1,11 @@
-from src.app.schemas.hyperparam import Hyperparam
-from src.app.schemas.model_loss import ModelLoss
-from src.app.schemas.model_metrics import ModelMetrics
-from src.app.schemas.model_type import ModelType
-from src.app.schemas.place_holder import PlaceHolder
+from src.app.schemas.model_metrics_schemas import ModelMetrics
+from src.app.schemas.model_type_schemas import ModelType
+from src.app.schemas.place_holder_schemas import PlaceHolder
+from src.app.schemas.impute_result_schemas import Test
 
 __all__ = [
-    "Hyperparam",
-    "ModelLoss",
     "ModelMetrics",
     "ModelType",
-    "PlaceHolder"
+    "PlaceHolder",
+    "Test"
 ]

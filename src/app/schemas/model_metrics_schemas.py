@@ -1,8 +1,21 @@
 from pydantic import BaseModel, ConfigDict
-from src.app.schemas.hyperparam import Hyperparam
-from src.app.schemas.model_loss import ModelLoss
 from typing import List, Optional
 from uuid import UUID
+
+class Hyperparam(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    model_id: UUID
+    param_name: str
+    param_value: str
+
+class ModelLoss(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    model_id: UUID
+    type: str
+    loss_value: float
+    loss_unit: str
 
 class ModelMetrics(BaseModel):
     model_config = ConfigDict(from_attributes=True)
