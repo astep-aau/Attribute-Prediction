@@ -4,7 +4,7 @@ from src.app.database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from src.app.database_tables import ModelMetricsTable, HyperparamTable, LossTable
-from src.app.schemas import ModelMetrics, Hyperparam, ModelLoss
+from src.app.schemas import ModelMetrics
 
 async def find_metric(model_type: str, db: AsyncSession):
     uuid_type = UUID(model_type)
