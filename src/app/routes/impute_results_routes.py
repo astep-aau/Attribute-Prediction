@@ -7,7 +7,6 @@ from src.app.schemas import (
     TimeIntervalResponse,
     ImputeResultResonse,
     )
-from datetime import datetime
 
 router = APIRouter(prefix="/impute-result", tags=["impute result"])
 
