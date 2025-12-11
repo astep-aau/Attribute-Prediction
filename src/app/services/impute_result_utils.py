@@ -5,6 +5,7 @@ from src.app.schemas import (
     ImputeResultResonse
 )
 from src.app.database_tables import ImputeResultTable
+from src.app.exceptions import NotFoundException, InvalidUUIDException
 
 async def find_impute_results(
         model_id: str,
@@ -13,7 +14,11 @@ async def find_impute_results(
         end_time: int,
         db: AsyncSession):
 
-    uuid = UUID(model_id)
+    try:
+        uuid = UUID(model_id)
+    except ValueError:
+        raise InvalidUUIDException(f"Invalid UUID format: {model_id}")
+    
     result = await db.execute(
         select(
             ImputeResultTable.tms,
@@ -35,7 +40,11 @@ async def find_impute_results(
     return response
 
 async def find_road_ids(model_id: str, db: AsyncSession):
-    uuid = UUID(model_id)
+    try:
+        uuid = UUID(model_id)
+    except ValueError:
+        raise InvalidUUIDException(f"Invalid UUID format: {model_id}")
+    
     result = await db.execute(
         select(ImputeResultTable.road_id)
         .where(ImputeResultTable.model_id == uuid)
@@ -44,7 +53,11 @@ async def find_road_ids(model_id: str, db: AsyncSession):
     return roads
 
 async def find_timespan(model_id: str,  road_id: int, db: AsyncSession):
-    uuid = UUID(model_id)
+    try:
+        uuid = UUID(model_id)
+    except ValueError:
+        raise InvalidUUIDException(f"Invalid UUID format: {model_id}")
+    
     result = await db.execute(
         select(
             func.min(ImputeResultTable.tms),

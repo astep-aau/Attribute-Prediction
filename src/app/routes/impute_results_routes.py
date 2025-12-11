@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, status, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.app.database import get_db
 from src.app.services import impute_result_utils as utils
@@ -7,6 +7,7 @@ from src.app.schemas import (
     TimeIntervalResponse,
     ImputeResultResonse,
     )
+from src.app.exceptions import NotFoundException
 
 router = APIRouter(prefix="/impute-result", tags=["impute result"])
 
@@ -22,25 +23,17 @@ async def get_impute_result(
         end_time: int,
         db: AsyncSession = Depends(get_db)
     ):
-    try:
-        response = await utils.find_impute_results(
-            model_id=model_id,
-            road_id=road_id,
-            start_time=start_time,
-            end_time=end_time,
-            db=db)
+    response = await utils.find_impute_results(
+        model_id=model_id,
+        road_id=road_id,
+        start_time=start_time,
+        end_time=end_time,
+        db=db)
 
-        if not response:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail="Not Found")
+    if not response:
+        raise NotFoundException(f"No impute results found for model {model_id}, road {road_id}")
 
-        return response
-
-    except Exception as e:
-        raise HTTPException(
-            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
-            detail=str(e))
+    return response
 
 @router.get(
         "/roads/{model_id}",
@@ -48,19 +41,12 @@ async def get_impute_result(
         status_code=status.HTTP_200_OK
         )
 async def get_road_ids(model_id: str, db: AsyncSession = Depends(get_db)):
-    try:
-        response = await utils.find_road_ids(model_id=model_id, db=db)
+    response = await utils.find_road_ids(model_id=model_id, db=db)
 
-        if not response:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND,
-                detail=f"No roads for {model_id} or invalid id"
-                )
+    if not response:
+        raise NotFoundException(f"No roads found for model {model_id}")
 
-        return response
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return response
 
 @router.get(
         "/time-interval/{model_id}/{road_id}",
@@ -72,17 +58,12 @@ async def get_time_interval(
     road_id: int,
     db: AsyncSession = Depends(get_db)
     ):
-    try:
-        response = await utils.find_timespan(
-            model_id= model_id,
-            road_id= road_id,
-            db= db)
+    response = await utils.find_timespan(
+        model_id=model_id,
+        road_id=road_id,
+        db=db)
 
-        if not response:
-            raise HTTPException(
-                status_code=status.HTTP_404_NOT_FOUND)
+    if not response:
+        raise NotFoundException(f"No time interval found for model {model_id}, road {road_id}")
 
-        return response
-
-    except Exception as e:
-        raise HTTPException(status_code=500, detail=str(e))
+    return response
