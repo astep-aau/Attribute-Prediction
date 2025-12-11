@@ -3,7 +3,7 @@ from sqlalchemy.dialects.postgresql import UUID
 import uuid
 from src.app.database import Base
 
-class ImputeResult(Base):
+class ImputeResultTable(Base):
     __tablename__ = "impute_result"
 
     road_id = Column(String, primary_key=True)

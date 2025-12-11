@@ -1,6 +1,4 @@
-from fastapi import APIRouter, Depends
 from uuid import UUID
-from src.app.database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from src.app.database_tables import ModelMetricsTable, HyperparamTable, LossTable

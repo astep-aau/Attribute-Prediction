@@ -3,7 +3,7 @@ from typing import List
 from src.app.database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
 from src.app.schemas import ModelMetrics
-from src.app.services.metric_finder import find_metric
+from src.app.services.metric_utils import find_metric
 
 router = APIRouter(prefix="/model-metrics", tags=["metrics"])
 
