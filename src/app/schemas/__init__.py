@@ -1,6 +1,5 @@
 from src.app.schemas.model_metrics_schemas import ModelMetricsResponse
 from src.app.schemas.model_type_schemas import ModelTypeResponse
-from src.app.schemas.place_holder_schemas import PlaceHolder
 from src.app.schemas.impute_result_schemas import (
     RoadIdResponse, TimeIntervalResponse, ImputeResultResponse
 )
@@ -8,7 +7,6 @@ from src.app.schemas.impute_result_schemas import (
 __all__ = [
     "ModelMetricsResponse",
     "ModelTypeResponse",
-    "PlaceHolder",
     "RoadIdResponse",
     "TimeIntervalResponse",
     "ImputeResultResponse"
