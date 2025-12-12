@@ -5,6 +5,7 @@ from src.app.database import Base
 
 class ImputeResultTable(Base):
     __tablename__ = "impute_result"
+    __table_args__ = {"schema": "models"}
 
     road_id = Column(String, primary_key=True)
     model_id = Column(UUID(as_uuid=True), ForeignKey("model_metrics.id"), primary_key=True)
