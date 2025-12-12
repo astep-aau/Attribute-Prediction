@@ -1,11 +1,12 @@
 from fastapi import APIRouter, status, Depends
 from sqlalchemy.ext.asyncio import AsyncSession
+from typing import List
 from src.app.database import get_db
 from src.app.services import impute_result_utils as utils
 from src.app.schemas import (
-    RoadResponse,
+    RoadIdResponse,
     TimeIntervalResponse,
-    ImputeResultResonse,
+    ImputeResultResponse,
     )
 from src.app.exceptions import NotFoundException
 
@@ -13,12 +14,12 @@ router = APIRouter(prefix="/impute-result", tags=["impute result"])
 
 @router.get(
         "/{model_id}/{road_id}/{start_time}/{end_time}",
-        response_model=ImputeResultResonse,
+        response_model=List[ImputeResultResponse],
         status_code=status.HTTP_200_OK
         )
 async def get_impute_result(
         model_id: str,
-        road_id: int,
+        road_id: str,
         start_time: int,
         end_time: int,
         db: AsyncSession = Depends(get_db)
@@ -37,7 +38,7 @@ async def get_impute_result(
 
 @router.get(
         "/roads/{model_id}",
-        response_model=RoadResponse,
+        response_model=List[RoadIdResponse],
         status_code=status.HTTP_200_OK
         )
 async def get_road_ids(model_id: str, db: AsyncSession = Depends(get_db)):
@@ -55,7 +56,7 @@ async def get_road_ids(model_id: str, db: AsyncSession = Depends(get_db)):
         )
 async def get_time_interval(
     model_id: str,
-    road_id: int,
+    road_id: str,
     db: AsyncSession = Depends(get_db)
     ):
     response = await utils.find_timespan(

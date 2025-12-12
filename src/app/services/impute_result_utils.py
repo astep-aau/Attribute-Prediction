@@ -2,7 +2,9 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from src.app.schemas import (
-    ImputeResultResonse
+    ImputeResultResponse,
+    RoadIdResponse,
+    TimeIntervalResponse,
 )
 from src.app.database_tables import ImputeResultTable
 from src.app.exceptions import NotFoundException, InvalidUUIDException
@@ -18,7 +20,7 @@ async def find_impute_results(
         uuid = UUID(model_id)
     except ValueError:
         raise InvalidUUIDException(f"Invalid UUID format: {model_id}")
-    
+
     result = await db.execute(
         select(
             ImputeResultTable.tms,
@@ -32,7 +34,7 @@ async def find_impute_results(
         ))
 
     res = result.all()
-    response = [ImputeResultResonse(
+    response = [ImputeResultResponse(
         tms=r[0],
         value=r[1],
         imputed=r[2]
@@ -44,20 +46,21 @@ async def find_road_ids(model_id: str, db: AsyncSession):
         uuid = UUID(model_id)
     except ValueError:
         raise InvalidUUIDException(f"Invalid UUID format: {model_id}")
-    
+
     result = await db.execute(
         select(ImputeResultTable.road_id)
         .where(ImputeResultTable.model_id == uuid)
+        .distinct()
         )
     roads = result.scalars().all()
-    return roads
+    return [RoadIdResponse(road_id=road_id) for road_id in roads]
 
 async def find_timespan(model_id: str,  road_id: int, db: AsyncSession):
     try:
         uuid = UUID(model_id)
     except ValueError:
         raise InvalidUUIDException(f"Invalid UUID format: {model_id}")
-    
+
     result = await db.execute(
         select(
             func.min(ImputeResultTable.tms),
@@ -67,4 +70,4 @@ async def find_timespan(model_id: str,  road_id: int, db: AsyncSession):
                ImputeResultTable.road_id == road_id)
     )
     min_time, max_time = result.one()
-    return min_time, max_time
+    return TimeIntervalResponse(start_time= min_time, end_time= max_time)

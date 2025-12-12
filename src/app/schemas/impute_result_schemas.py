@@ -1,10 +1,10 @@
 from pydantic import BaseModel, ConfigDict
 from typing import List
 
-class RoadResponse(BaseModel):
+class RoadIdResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
-    road_id: List[int]
+    road_id: str
 
 class TimeIntervalResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -12,7 +12,7 @@ class TimeIntervalResponse(BaseModel):
     start_time: int
     end_time: int
 
-class ImputeResultResonse(BaseModel):
+class ImputeResultResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     tms: int
