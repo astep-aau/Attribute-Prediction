@@ -18,7 +18,4 @@ async def get_metrics(model_type: str, db: AsyncSession = Depends(get_db)):
     """
     result = await find_metric(model_type, db)
 
-    if not result:
-        raise NotFoundException(f"No models for type: {model_type}")
-
     return result

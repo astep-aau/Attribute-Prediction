@@ -32,6 +32,9 @@ async def find_metric(model_type: str, db: AsyncSession):
         )
         model_metrics_list.append(m)
 
+    if not model_metrics_list:
+        raise NotFoundException(f"No models for type: {model_type}")
+
     return model_metrics_list
 
 async def find_hyperparams(model_id: UUID, db: AsyncSession):

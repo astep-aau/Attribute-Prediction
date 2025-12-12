@@ -34,11 +34,16 @@ async def find_impute_results(
         ))
 
     res = result.all()
+
+    if not res:
+        raise NotFoundException(f"No impute results found for model {model_id}, road {road_id}")
+
     response = [ImputeResultResponse(
         tms=r[0],
         value=r[1],
         imputed=r[2]
         ) for r in res]
+
     return response
 
 async def find_road_ids(model_id: str, db: AsyncSession):
@@ -53,6 +58,10 @@ async def find_road_ids(model_id: str, db: AsyncSession):
         .distinct()
         )
     roads = result.scalars().all()
+
+    if not roads:
+        raise NotFoundException(f"No roads found for model {model_id}")
+
     return [RoadIdResponse(road_id=road_id) for road_id in roads]
 
 async def find_timespan(model_id: str,  road_id: int, db: AsyncSession):
@@ -70,4 +79,11 @@ async def find_timespan(model_id: str,  road_id: int, db: AsyncSession):
                ImputeResultTable.road_id == road_id)
     )
     min_time, max_time = result.one()
+
+    if not min_time:
+        raise NotFoundException(f"No min time found for model {model_id}, road {road_id}")
+
+    if not max_time:
+        raise NotFoundException(f"No max time found for model {model_id}, road {road_id}")
+
     return TimeIntervalResponse(start_time= min_time, end_time= max_time)

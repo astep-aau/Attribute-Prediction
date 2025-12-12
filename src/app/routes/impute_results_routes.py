@@ -31,9 +31,6 @@ async def get_impute_result(
         end_time=end_time,
         db=db)
 
-    if not response:
-        raise NotFoundException(f"No impute results found for model {model_id}, road {road_id}")
-
     return response
 
 @router.get(
@@ -43,9 +40,6 @@ async def get_impute_result(
         )
 async def get_road_ids(model_id: str, db: AsyncSession = Depends(get_db)):
     response = await utils.find_road_ids(model_id=model_id, db=db)
-
-    if not response:
-        raise NotFoundException(f"No roads found for model {model_id}")
 
     return response
 
@@ -59,12 +53,10 @@ async def get_time_interval(
     road_id: str,
     db: AsyncSession = Depends(get_db)
     ):
+
     response = await utils.find_timespan(
         model_id=model_id,
         road_id=road_id,
         db=db)
-
-    if not response:
-        raise NotFoundException(f"No time interval found for model {model_id}, road {road_id}")
 
     return response
