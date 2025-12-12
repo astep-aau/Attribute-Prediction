@@ -17,7 +17,7 @@ async def find_metric(model_type: str, db: AsyncSession):
 
     metric_seq = result.scalars().all()
     if not metric_seq:
-        return None
+        raise NotFoundException(f"No metrics for type: {model_type}")
 
     model_metrics_list = []
     for metric in metric_seq:
