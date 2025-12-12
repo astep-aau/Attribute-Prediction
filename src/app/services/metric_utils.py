@@ -2,7 +2,7 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from src.app.database_tables import ModelMetricsTable, HyperparamTable, LossTable
-from src.app.schemas import ModelMetrics
+from src.app.schemas import ModelMetricsResponse
 from src.app.exceptions import InvalidUUIDException, NotFoundException
 
 async def find_metric(model_type: str, db: AsyncSession):
@@ -21,7 +21,7 @@ async def find_metric(model_type: str, db: AsyncSession):
 
     model_metrics_list = []
     for metric in metric_seq:
-        m = ModelMetrics(
+        m = ModelMetricsResponse(
             id= metric.id,
             model_type= metric.model_type,
             train_time_min= metric.train_time_min,

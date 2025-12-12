@@ -17,7 +17,7 @@ class ModelLoss(BaseModel):
     loss_value: float
     loss_unit: str
 
-class ModelMetrics(BaseModel):
+class ModelMetricsResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: UUID
