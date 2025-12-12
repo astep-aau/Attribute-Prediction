@@ -13,11 +13,10 @@ from src.app.exceptions import (
 async def build_file_response(model_id :str, db: AsyncSession):
     file_path = await get_model_path(model_id, db)
     file_name = get_file_name(file_path)
-
     return FileResponse(
         path=file_path,
         media_type="application/octet-stream",
-        filename=file_name)
+        filename=f"{file_name}.pth")
 
 async def get_model_path(model_id: str, db: AsyncSession):
     try:

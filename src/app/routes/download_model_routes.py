@@ -11,5 +11,5 @@ router = APIRouter(prefix="/download_model", tags=["download model"])
         response_class=FileResponse,
         status_code=status.HTTP_200_OK)
 async def download_model(model_id: str, db: AsyncSession = Depends(get_db)):
-    file_response = build_file_response(model_id, db)
+    file_response = await build_file_response(model_id, db)
     return file_response
