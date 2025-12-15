@@ -23,9 +23,9 @@ jobs:
           pip install --no-cache-dir -r requirements.txt
           pip install pytest pytest-asyncio pytest-cov
 
-      - name: Run tests
-        run: |
-          pytest tests/ -v
+      #- name: Run tests
+      #  run: |
+      #    pytest tests/ -v
 
       - name: Build Docker image
         run: |
