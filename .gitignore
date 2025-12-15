@@ -21,3 +21,6 @@ htmlcov/
 
 # env
 .env
+
+# scripts data
+src/app/scripts/data/

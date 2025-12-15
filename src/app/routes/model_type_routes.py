@@ -3,9 +3,10 @@ from typing import List
 from src.app.schemas import ModelTypeResponse, ModelTypeCreate
 from src.app.database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
-from sqlalchemy import select
-from src.app.database_tables import ModelTypeTable
-from src.app.exceptions import NotFoundException
+from src.app.services.model_type_utils import (
+    create_model_type as create_model_type_service,
+    get_all_model_types
+)
 
 router = APIRouter(prefix="/model-types", tags=["models types"])
 
@@ -25,17 +26,9 @@ async def create_model_type(
         Created model type with generated ID
 
     Raises:
-        IntegrityError: If model type name already exists (if unique constraint added)
+        ForeignKeyViolationException: If database constraint violated
     """
-    new_model_type = ModelTypeTable(
-        name=model_type_data.name
-    )
-
-    db.add(new_model_type)
-    await db.commit()
-    await db.refresh(new_model_type)
-
-    return new_model_type
+    return await create_model_type_service(model_type_data, db)
 
 @router.get("/", response_model=List[ModelTypeResponse], status_code=status.HTTP_200_OK)
 async def get_models(db: AsyncSession = Depends(get_db)):
@@ -51,10 +44,4 @@ async def get_models(db: AsyncSession = Depends(get_db)):
     Raises:
         NotFoundException: If no model types found in the database
     """
-    result = await db.execute(select(ModelTypeTable))
-    models = result.scalars().all()
-
-    if not models:
-        raise NotFoundException(f"no model types found")
-
-    return models
+    return await get_all_model_types(db)
