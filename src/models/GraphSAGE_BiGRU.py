@@ -6,26 +6,23 @@ from src.models.logging_utils import logger
 
 
 class GraphSAGE_BiGRU_Imputer(nn.Module):
-    def __init__(self, in_feat_static, in_feat_dynamic, gnn_hidden, gru_hidden, out_dim=1, heads=2, dropout=0.3, num_gnn_layers=1):
+    # --- UPDATED CONSTRUCTOR SIGNATURE ---
+    def __init__(self, in_feat, gnn_hidden, gru_hidden, out_dim=1, heads=2, dropout=0.3, num_gnn_layers=1):
         super(GraphSAGE_BiGRU_Imputer, self).__init__()
 
         # --- GNN Output Dimension ---
         self.num_gnn_layers = num_gnn_layers
         self.dropout_rate = dropout
-        self.sage_output_dim = gnn_hidden  # Note: gnn_hidden is the output dim of the last layer
-        total_in_features = in_feat_static + in_feat_dynamic
+        self.sage_output_dim = gnn_hidden
 
-        # 1. GraphSAGE (Spatial)
-        # GraphSAGE does not have heads/dropout in the init like GAT, but the input size is the same.
-        # 1. GraphSAGE Layers (Use ModuleList)
+        # 1. GraphSAGE Layers
         self.sage_layers = nn.ModuleList()
         self.dropout_layer = nn.Dropout(p=dropout)
 
-        # Input dimension for the first layer
-        in_dim = total_in_features
+        # Total input features is simply 'in_feat' (e.g., 32)
+        in_dim = in_feat
 
         for i in range(num_gnn_layers):
-            # Output dim of all layers (except potentially the last one) is gnn_hidden
             current_out_dim = gnn_hidden
 
             self.sage_layers.append(
@@ -33,8 +30,7 @@ class GraphSAGE_BiGRU_Imputer(nn.Module):
                          out_channels=current_out_dim)
             )
 
-            # The output of the current layer becomes the input for the next layer
-            in_dim = current_out_dim
+            in_dim = current_out_dim  # Output becomes input
 
         self.gru_input_size = self.sage_output_dim
 
@@ -48,53 +44,33 @@ class GraphSAGE_BiGRU_Imputer(nn.Module):
         # 3. Imputation Head (Projection)
         self.head = nn.Linear(gru_hidden * 2, out_dim)
 
-    def forward(self, x_dynamic, x_static, edge_index, time_features):
+    # --- UPDATED FORWARD SIGNATURE ---
+    def forward(self, x_combined, edge_index):
 
-        # 1. Get initial dimensions (x_dynamic is B, T, N, F)
-        batch_size, seq_len, num_nodes, num_features = x_dynamic.shape
+        # x_combined is (B, T, N, F_feat)
+        batch_size, seq_len, num_nodes, num_features = x_combined.shape
 
-        # 2. Perform the shift and concatenation
+        # 1. Perform the shift and concatenation of edge_index for batched graph processing
         flat_edge_index_list = []
 
-        # Ensure edge_index is on the same device as the model/other tensors
-        if edge_index.device != x_dynamic.device:
-            edge_index = edge_index.to(x_dynamic.device)
+        if edge_index.device != x_combined.device:
+            edge_index = edge_index.to(x_combined.device)
 
         for i in range(batch_size):
-            # Shift all node indices in the current graph by (i * num_nodes)
-            # edge_index[i] is now (2, E)
             shifted_edges = edge_index[i] + i * num_nodes
             flat_edge_index_list.append(shifted_edges)
 
-        # Concatenate all (2, E) tensors into one (2, B*E) tensor
         edge_index = torch.cat(flat_edge_index_list, dim=1)
 
         all_time_outputs = []
 
-        # Ensure x_static is (N_total, F_static) by squeezing off extra dimensions
-        num_features_static = x_static.shape[-1]
-        x_static = x_static.view(-1, num_features_static)
-
         # Loop over Time (T)
         for t in range(seq_len):
-            # --- 1. Prepare Features for GNN Input ---
-
-            # a. Dynamic (Travel Time)
-            xt_dyn = x_dynamic[:, t, :, 0].unsqueeze(-1)
-            # b. Temporal (Time of Day/Week)
-            xt_time = time_features[:, t, :].unsqueeze(1)
-            xt_time_expanded = xt_time.expand(-1, num_nodes, -1)
-            # c. Static (Road Type/Oneway)
-            xt_stat = x_static.reshape(batch_size, num_nodes,
-                                       -1)  # Note: x_static is already flattened, this reshapes it for cat.
-
-            # Combine: (B, N, Total_Features)
-            xt_combined = torch.cat([xt_dyn, xt_stat, xt_time_expanded], dim=2)
-
-            # Reshape (B, N, F) to (B*N, F)
+            # 2. Get GNN Input: (B, N, F_feat) -> (B*N, F_feat)
+            xt_combined = x_combined[:, t, :, :]
             x_b_input = xt_combined.reshape(batch_size * num_nodes, -1)
 
-            # --- 2. GraphSAGE Layer
+            # 3. GraphSAGE Layers
             h_t = x_b_input
             for i, layer in enumerate(self.sage_layers):
                 h_t = layer(h_t, edge_index)
@@ -108,21 +84,20 @@ class GraphSAGE_BiGRU_Imputer(nn.Module):
             h_t = h_t.reshape(batch_size, num_nodes, -1)
             all_time_outputs.append(h_t)
 
-        # 3. Stack over Time: (T, B, N, SAGE_OUT_DIM)
+        # 4. Stack over Time: (T, B, N, SAGE_OUT_DIM)
         gnn_output_tensor = torch.stack(all_time_outputs, dim=0)
 
-        # 4. Prepare for GRU: Flatten (B, N) into the GRU's batch dimension
+        # 5. Prepare for GRU: Reshape to (B*N, T, SAGE_OUT_DIM)
         gru_in = gnn_output_tensor.permute(1, 2, 0, 3).reshape(batch_size * num_nodes, seq_len, -1)
 
-        # 5. BiGRU
+        # 6. BiGRU
         gru_out, _ = self.bigru(gru_in)  # (B*N, T, Hidden*2)
 
-        # 6. Imputation Head
+        # 7. Imputation Head
         prediction = self.head(gru_out)  # (B*N, T, 1)
 
-        # 7. Reshape and Transpose to match the expected output format (B, T, N)
+        # 8. Reshape and Transpose to match the expected output format (B, T, N)
         prediction = prediction.reshape(batch_size, num_nodes, seq_len)
-
         final_output = prediction.permute(0, 2, 1)
 
         return final_output

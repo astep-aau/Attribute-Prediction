@@ -162,14 +162,23 @@ def main(model_name, run_name, lr, gnn_dim, gru_dim, heads, dropout, gnn_layers)
         SEQ_LEN, MASK_RATE, BATCH_SIZE
     )
 
-    # Calculate dynamic input dimensions using a sample batch
+    # Calculate input dimensions using a sample batch
     sample_batch = next(iter(train_loader))
-    static_feat_dim = sample_batch['x_static'].shape[2]
 
-    TIME_FEAT_DIM = 9
-    GAT_TOTAL_DYNAMIC_INPUT = 1 + TIME_FEAT_DIM
+    # --- CHANGE 1: Use the new 'x_combined' key ---
+    X_COMBINED = sample_batch['x_combined']
 
-    print(f"Data ready. Train Batches: {len(train_loader)} | Nodes: {sample_batch['x_static'].shape[1]}")
+    # F_feat is the total feature dimension (Static + Dynamic + Temporal)
+    total_feat_dim = X_COMBINED.shape[3]  # Index 3 is F_feat in (B, N, T, F_feat)
+
+    # We no longer need GAT_TOTAL_DYNAMIC_INPUT and static_feat_dim as separate variables
+    # The model should now be initialized with the single total_feat_dim
+    # We redefine these to ensure the model input is correctly calculated
+
+    # The GNN input is now F_feat = 32
+    GNN_INPUT_DIM = total_feat_dim
+
+    print(f"Data ready. Train Batches: {len(train_loader)} | Nodes: {X_COMBINED.shape[1]}")
 
     logger.info("Data loading and preparation complete. DataLoaders are ready.")
     logger.info(f"training on {DEVICE}")
@@ -193,10 +202,9 @@ def main(model_name, run_name, lr, gnn_dim, gru_dim, heads, dropout, gnn_layers)
 
     print(f"--- STARTING EXPERIMENT using {use_model}-BiGRU ---")
 
-    # --- PASS PARSED ARGUMENTS TO MODEL INITIALIZATION ---
+    # --- CHANGE 2: Pass the single total input dimension to the model ---
     model = ModelClass(
-        in_feat_static=static_feat_dim,
-        in_feat_dynamic=GAT_TOTAL_DYNAMIC_INPUT,
+        in_feat=GNN_INPUT_DIM,
         gnn_hidden=gnn_hidden_arg,
         gru_hidden=GRU_HIDDEN,
         out_dim=1,

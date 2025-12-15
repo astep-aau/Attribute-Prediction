@@ -33,65 +33,37 @@ def train_epoch(model, loader, criterion, optimizer, device):
 
     for i, batch in enumerate(loader):
 
-        # Transpose x_dynamic from (B, N, T, F) to (B, T, N, F)
-        # This matches the standard temporal model input (Batch, Time, Nodes, Features)
-        x_dyn = batch['x_dynamic'].permute(0, 2, 1, 3).to(device)
+        # 1. Get the combined feature tensor (B, N, T, F_feat)
+        x_combined = batch['x_combined'].to(device)
+
+        # 2. Transpose to match the diagram input (T, N, F_feat) --> (B, T, N, F_feat)
+        # B, N, T, F_feat -> B, T, N, F_feat
+        X_feat_input = x_combined.permute(0, 2, 1, 3)
 
         # Transpose y_true and mask from (B, N, T) to (B, T, N)
-        # This ensures consistency for the loss calculation, assuming the model outputs (B, T, N).
         y_true = batch['y_true'].permute(0, 2, 1).to(device)
         mask = batch['mask'].permute(0, 2, 1).to(device)
 
-        x_stat = batch['x_static'].to(device)
-
+        # Get Edge Index
         edge_index = batch['edge_index'].to(device)
 
-        time_feats = batch['time_features'].to(device)
-
-        # --- FEATURE VECTOR INSPECTION BLOCK ---
+        # --- FEATURE INSPECTION BLOCK UPDATE ---
+        # Update print statements to reflect the new structure:
         if not PRINTED_FEATURES:
-            print("\n================ INPUT TENSOR STRUCTURE ================")
-            print(f"DEVICE: {device}")
-            print(f"Batch Size (B): {x_dyn.shape[0]}")
-            print(f"Num Nodes (N): {x_dyn.shape[2]}")
-            print(f"Sequence Length (T): {x_dyn.shape[1]}")
-
-            # Define the timesteps to inspect
-            T_START = 0
-            T_MIDDLE = 6
-
-            # --- 1. DYNAMIC (Traffic) FEATURES (B, T, N, F_dyn) ---
-            print("\n--- 1. DYNAMIC (Traffic) FEATURES (B, T, N, F_dyn) ---")
-            print(f"Shape: {x_dyn.shape}")
-            print(f"Sample (Node 0, Time {T_START}): {x_dyn[0, T_START, 0, :]}")
-            print(f"Sample (Node 0, Time {T_MIDDLE}): {x_dyn[0, T_MIDDLE, 0, :]}")  # Check Time 6
-
-            # --- 2. STATIC (Road) FEATURES (B, N, F_stat) ---
-            print("\n--- 2. STATIC (Road) FEATURES (B, N, F_stat) ---")
-            # Static features should be identical for all T, so we only check T=0
-            print(f"Shape: {x_stat.shape}")
-            print(f"Sample (Node 0): {x_stat[0, 0, :]}")
-
-            # --- 3. TEMPORAL (Time) FEATURES (B, T, F_temp) ---
-            print("\n--- 3. TEMPORAL (Time) FEATURES (B, T, F_temp) ---")
-            print(f"Shape: {time_feats.shape}")
-
-            # Check Time 0
-            print(f"Sample (Time {T_START}): {time_feats[0, T_START, :]}")
-
-            # Check Time 6
-            print(f"Sample (Time {T_MIDDLE}): {time_feats[0, T_MIDDLE, :]}")
-
-            print("\n================ END INPUT TENSOR STRUCTURE ==============\n")
-
+            print("\n================ FINAL INPUT TENSOR STRUCTURE ================")
+            print(f"Shape (B, T, N, F_feat): {X_feat_input.shape}")
+            # F_feat = 32
+            print(f"Sample (Time 0, Node 0): {X_feat_input[0, 0, 0, :]}")
+            print(f"Total Features (F_feat): {X_feat_input.shape[-1]}")
+            print("----------------------------------------------------------\n")
             PRINTED_FEATURES = True
         # --- END INSPECTION BLOCK ---
 
+        # 3. Forward Pass
+        prediction = model(X_feat_input, edge_index)
+
         if device.type == 'cuda':
             torch.cuda.synchronize()
-
-        # 1. Forward Pass
-        prediction = model(x_dyn, x_stat, edge_index, time_feats)
 
         # 2. Loss Calculation
         loss_matrix = criterion(prediction, y_true)

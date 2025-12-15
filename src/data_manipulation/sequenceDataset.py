@@ -98,26 +98,35 @@ class SequenceDataset(Dataset):
         # 6. Create Target (y_true)
         # y_true is the ground truth travel time (same as sequence_data)
         y_true = sequence_data.clone()
-        # a. Dynamic Feature (Travel Time) - (T, N) -> (N, T, 1)
+
+        # --- NEW STEP 6: CONSTRUCT X_FEAT (N, T, F_feat) ---
+
+        # a. Travel Time Input (Dynamic, F_dyn=1): (T, N) -> (N, T, 1)
         x_dynamic_t = x_dynamic.permute(1, 0).unsqueeze(-1)
 
-        # b. Temporal Features (F_temp) - (T, F_temp) -> (N, T, F_temp)
+        # b. Temporal Features (F_temp=9): (T, F_temp) -> (N, T, F_temp)
         # Repeat the sequence of temporal features (T) N times for the nodes
         temp_feats_repeated = sequence_temp_feats.unsqueeze(0).repeat(self.static_features.shape[0], 1, 1)
 
-        # c. Final Dynamic Input (N, T, 1 + F_temp)
-        final_x_dynamic = torch.cat([x_dynamic_t, temp_feats_repeated], dim=-1)
+        # c. Time-variant features (N, T, 1 + F_temp)
+        x_time_variant = torch.cat([x_dynamic_t, temp_feats_repeated], dim=-1)  # (N, T, 10)
 
-        # d. Final Mask and Target (N, T)
+        # d. Static Features (F_stat=22): (N, F_stat) -> (N, 1, F_stat)
+        # Expand static features across the T dimension (T=12)
+        x_static_expanded = self.static_features.unsqueeze(1).repeat(1, self.seq_len, 1)  # (N, 12, 22)
+
+        # e. Final Combined Features (N, T, F_feat)
+        # F_feat = 1 (Traffic) + 9 (Temporal) + 22 (Static) = 32
+        x_combined = torch.cat([x_time_variant, x_static_expanded], dim=-1)  # (N, T, 32)
+        # The order is now: [Traffic, Temporal_9D, Static_22D]
+
+        # f. Final Mask and Target (N, T)
         final_mask = final_mask.permute(1, 0)
         final_y_true = y_true.permute(1, 0)
 
         return {
-            'x_dynamic': final_x_dynamic,  # (N, T, 10)
-            'x_static': self.static_features,  # (N, F_stat)
+            'x_combined': x_combined,  # (N, T, 32)
             'edge_index': self.edge_index,  # (2, E)
-            'edge_ids': self.edge_ids,  # (N,)
-            'time_features': sequence_temp_feats,  # (T, F_temp)
             'y_true': final_y_true,  # (N, T)
             'mask': final_mask,  # (N, T)
         }
