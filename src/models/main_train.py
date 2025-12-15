@@ -19,11 +19,42 @@ from src.data_manipulation.data_pipeline import setup_data_loaders
 from src.models.GAT_BiGRU import GAT_BiGRU_Imputer
 from src.models.trainer import run_training_and_testing
 from src.models.GraphSAGE_BiGRU import GraphSAGE_BiGRU_Imputer
+import pandas as pd
+from src.data_manipulation.static_graph_builder import StaticGraphBuilder
 
 MODEL_MAP = {
     "GAT": GAT_BiGRU_Imputer,
     "GraphSAGE": GraphSAGE_BiGRU_Imputer
 }
+
+
+def get_global_edge_columns_and_ids(file_paths):
+    """
+    Helper function to find the union of all edge IDs and their column names
+    across all daily traffic files, ensuring a consistent node count (N).
+    """
+    all_edges_set = set()
+    for path in file_paths:
+        try:
+            # We only read the first few rows for columns, as the data itself is large
+            df = pd.read_csv(path, nrows=1)
+            edge_cols = [c for c in df.columns if c.startswith("edge")]
+            all_edges_set.update(edge_cols)
+        except FileNotFoundError:
+            logger.warning(f"Traffic file not found: {path}")
+
+    # Remove the 'time_slot' column if it somehow got included
+    all_edges_set.discard("time_slot")
+
+    # 1. Get the list of physical IDs (int) used for StaticGraphBuilder
+    # Example: ['edge1_...', 'edge5_...'] -> [1, 5, ...]
+    global_edge_ids = sorted([int(c.split('_')[0].replace("edge", "")) for c in all_edges_set])
+
+    # 2. Get the list of full column names (str) used for FileLoader consistency
+    edges_sorted = sorted(all_edges_set, key=lambda x: int(x.split("_")[0].replace("edge", "")))
+    master_cols = ["time_slot"] + edges_sorted
+
+    return master_cols, global_edge_ids
 
 
 def main(model_name, run_name, lr, gnn_dim, gru_dim, heads, dropout, gnn_layers):
@@ -76,26 +107,55 @@ def main(model_name, run_name, lr, gnn_dim, gru_dim, heads, dropout, gnn_layers)
     edge_connections_path = os.path.join(DATA_ROOT, "connections", "edge_connections.csv")
     meta_data_path = os.path.join(DATA_ROOT, "osm_data", "osm_roads_output.json")
 
+    # --- PHASE 1: GLOBAL PRE-PROCESSING ---
+    print("\n--- Phase 1: Determining Global Edge Set (for consistent node count) ---")
+    file_paths = [cfg['path'] for cfg in FILE_CONFIG]
+    global_master_cols, global_edge_ids = get_global_edge_columns_and_ids(file_paths)
+
+    # --- PHASE 2: STATIC GRAPH BUILDING (ONE TIME) ---
+    print("--- Phase 2: Building Static Graph Structure ---")
+
+    # The loader needs a file path for edge_data_path, even if the StaticBuilder ignores its content
+    static_loader = FileLoader(
+        edge_data_path=FILE_CONFIG[0]['path'],  # Placeholder path
+        edge_connections_path=edge_connections_path,
+        meta_data_path=meta_data_path,
+        # IMPORTANT: The static loader must still receive master_cols,
+        # as the FileLoader constructor now requires it.
+        master_cols=global_master_cols
+    )
+
+    static_builder = StaticGraphBuilder(static_loader, global_edge_ids)
+    static_components = static_builder.get_static_components()
+
+    # Log the resulting static graph size
+    N_nodes = static_components['x'].shape[0]
+    E_edges = static_components['edge_index'].shape[1]
+    F_features = static_components['x'].shape[1]
+    print(f"Static Graph Built: Nodes (N)={N_nodes}, Edges (E)={E_edges}, Static Features (F)={F_features}")
+
+    # --- PHASE 3: DAILY DATA PROCESSING LOOP ---
     all_builders = []
-    print("Building graph structures for each day...")
+    print("\n--- Phase 3: Processing Daily Data (Reusing Static Graph) ---")
 
     # Iterate through the file configurations to create a builder for each day
     for config in FILE_CONFIG:
-        # 1. Create a temporary FileLoader to process just ONE day's data
+        # 1. Create a FileLoader for the current day's travel data, ensuring consistent columns
         fileloader = FileLoader(
-            edge_data_path=config['path'],  # <-- CORRECTED ARGUMENT NAME
+            edge_data_path=config['path'],
             edge_connections_path=edge_connections_path,
-            meta_data_path=meta_data_path
+            meta_data_path=meta_data_path,
+            master_cols=global_master_cols  # CRUCIAL: Fixes the N-mismatch error
         )
 
-        # 2. Instantiate the GraphDatasetBuilder with the required day_of_week_index
+        # 2. Instantiate the GraphDatasetBuilder (now the Daily Data Processor)
         builder = GraphDatasetBuilder(
             loader=fileloader,
-            day_of_week_index=config['day_index']
+            day_of_week_index=config['day_index'],
+            **static_components  # PASS ALL STATIC COMPONENTS
         )
         all_builders.append(builder)
-        print(f"Built dataset for file: {os.path.basename(config['path'])} (Day Index: {config['day_index']})")
-
+        print(f"Processed file: {os.path.basename(config['path'])} (Day Index: {config['day_index']})")
     # --- 2. SETUP DATA LOADERS (Unchanged) ---
     train_loader, val_loader, test_loader = setup_data_loaders(
         all_builders,

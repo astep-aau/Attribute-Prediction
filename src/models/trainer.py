@@ -9,6 +9,8 @@ import json
 from src.models.config import *
 from src.models.logging_utils import logger
 
+PRINTED_FEATURES = False
+
 # Define the project root path relative to this script's location (src/models)
 _project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
@@ -21,6 +23,9 @@ def train_epoch(model, loader, criterion, optimizer, device):
 
     model.train()
     total_loss = 0
+
+    global PRINTED_FEATURES
+
     accumulate_steps = 8
 
     batch_start_time = time.time()
@@ -43,7 +48,47 @@ def train_epoch(model, loader, criterion, optimizer, device):
 
         time_feats = batch['time_features'].to(device)
 
-        torch.cuda.synchronize()
+        # --- FEATURE VECTOR INSPECTION BLOCK ---
+        if not PRINTED_FEATURES:
+            print("\n================ INPUT TENSOR STRUCTURE ================")
+            print(f"DEVICE: {device}")
+            print(f"Batch Size (B): {x_dyn.shape[0]}")
+            print(f"Num Nodes (N): {x_dyn.shape[2]}")
+            print(f"Sequence Length (T): {x_dyn.shape[1]}")
+
+            # Define the timesteps to inspect
+            T_START = 0
+            T_MIDDLE = 6
+
+            # --- 1. DYNAMIC (Traffic) FEATURES (B, T, N, F_dyn) ---
+            print("\n--- 1. DYNAMIC (Traffic) FEATURES (B, T, N, F_dyn) ---")
+            print(f"Shape: {x_dyn.shape}")
+            print(f"Sample (Node 0, Time {T_START}): {x_dyn[0, T_START, 0, :]}")
+            print(f"Sample (Node 0, Time {T_MIDDLE}): {x_dyn[0, T_MIDDLE, 0, :]}")  # Check Time 6
+
+            # --- 2. STATIC (Road) FEATURES (B, N, F_stat) ---
+            print("\n--- 2. STATIC (Road) FEATURES (B, N, F_stat) ---")
+            # Static features should be identical for all T, so we only check T=0
+            print(f"Shape: {x_stat.shape}")
+            print(f"Sample (Node 0): {x_stat[0, 0, :]}")
+
+            # --- 3. TEMPORAL (Time) FEATURES (B, T, F_temp) ---
+            print("\n--- 3. TEMPORAL (Time) FEATURES (B, T, F_temp) ---")
+            print(f"Shape: {time_feats.shape}")
+
+            # Check Time 0
+            print(f"Sample (Time {T_START}): {time_feats[0, T_START, :]}")
+
+            # Check Time 6
+            print(f"Sample (Time {T_MIDDLE}): {time_feats[0, T_MIDDLE, :]}")
+
+            print("\n================ END INPUT TENSOR STRUCTURE ==============\n")
+
+            PRINTED_FEATURES = True
+        # --- END INSPECTION BLOCK ---
+
+        if device.type == 'cuda':
+            torch.cuda.synchronize()
 
         # 1. Forward Pass
         prediction = model(x_dyn, x_stat, edge_index, time_feats)

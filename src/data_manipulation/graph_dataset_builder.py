@@ -1,156 +1,57 @@
-from src.data_manipulation.data_loader import DataLoader
 import torch
 from torch_geometric.data import Data
 import pandas as pd
 from collections import defaultdict
+from src.data_manipulation.file_loader import FileLoader
+from typing import Dict
+
 
 class GraphDatasetBuilder:
-    def __init__(self, loader: DataLoader, day_of_week_index: int, timestep: int = 0):
-        self._adjacency_df = loader.get_adjacency()
+    def __init__(self, loader: FileLoader, day_of_week_index: int,
+                 x: torch.Tensor, edge_index: torch.Tensor,
+                 edge_ids: torch.Tensor, edge_as_node_map: Dict[int, int]):  # ADDED STATIC ARGS
+
+        # Daily Data
         self._travel_data = loader.get_travel_data()
-        self._meta_data_df = loader.get_meta_data()
         self._day_of_week_index = day_of_week_index
 
-        # Filter adjacency to only include edges that have travel data
-        self._filter_adjacency_to_travel_edges()
+        # --- 1. Static Graph Components (PASSED IN) ---
+        # These fields are NO LONGER calculated here.
+        self.x = x
+        self.edge_index = edge_index
+        self.edge_ids = edge_ids
+        self._edge_as_node_map = edge_as_node_map
 
-        # Map each edge to a consecutive line-graph node ID
-        self._edge_as_node_map = self._create_edge_as_node_map()
-
-        # Build line graph connectivity
-        self.edge_index = self._build_line_graph_edge_index()
-
-        self.edge_ids = torch.tensor(
-            sorted(self._edge_as_node_map, key=lambda k: self._edge_as_node_map[k]),
-            dtype=torch.long
-        )
-
-        # Build node features (per edge)
-        self.x = self._build_node_features()
-
-        # Build target vector (travel time) for the specified timestep
-        self.y = self._build_target_tensor(timestep=timestep)
+        # --- 2. Dynamic/Daily Data Construction (REMAINS) ---
+        # Build target vector (y) for the entire time span (not just timestep=0)
+        # Note: We remove the 'timestep' argument from __init__ since we now work with the full matrix.
+        # The first implementation of _build_target_tensor only returned one timestep,
+        # so this is a placeholder adjustment to match the full matrix logic.
 
         # Build temporal features (time of day, day of week)
         self.temporal_features = self._generate_temporal_features()
 
-    def _filter_adjacency_to_travel_edges(self):
-        """
-        Filter adjacency to only include edges that have travel data.
-        In a line graph, each road segment (edge) becomes a node.
-        """
-        # Get edge_ids from travel data columns
-        travel_columns = [c for c in self._travel_data.columns
-                         if c.startswith("edge") and c.endswith("_traversal_time_sec")]
+        # NOTE: The self.y attribute (for a single timestep) is often not used
+        # when full matrix methods are available. We rely on get_full_traffic_matrix().
 
-        travel_edge_ids = set()
-        for col in travel_columns:
-            # Parse "edge123_traversal_time_sec" -> 123
-            edge_num_str = col.split('_')[0].replace("edge", "")
-            travel_edge_ids.add(int(edge_num_str))
+    # --- REMOVED STATIC GRAPH BUILDING METHODS ---
+    # The following methods are DELETED or MOVED to StaticGraphBuilder:
+    # - _filter_adjacency_to_travel_edges
+    # - _create_edge_as_node_map
+    # - _build_line_graph_edge_index
+    # - _build_node_features
+    # ---------------------------------------------
 
-        original_count = len(self._adjacency_df)
-        self._adjacency_df = self._adjacency_df[self._adjacency_df["edge_id"].isin(travel_edge_ids)].copy()
-
-        print(f"Filtered from {original_count} edges to {len(self._adjacency_df)} edges with travel data")
-
-    def _create_edge_as_node_map(self):
-        # Map original edges to consecutive node IDs
-        return {old_edge_id: new_id for new_id, old_edge_id in enumerate(self._adjacency_df["edge_id"])}
-
-    def _build_line_graph_edge_index(self):
-        """
-        Build line graph edge connectivity.
-
-        directed edge A -> edge B exists if A's end vertex = B's start vertex
-        (traffic can flow from road A into road B)
-        """
-        # Directed: A -> B only if A ends where B starts
-        vertex_end_to_edges = defaultdict(list)  # Edges that START at this vertex
-        vertex_start_from_edges = {}  # Where each edge ENDS
-
-        for _, row in self._adjacency_df.iterrows():
-            edge_id = row["edge_id"]
-            vertex_end_to_edges[row["vertex_start_id"]].append(edge_id)
-            vertex_start_from_edges[edge_id] = row["vertex_end_id"]
-
-        line_edges = []
-        for edge_from, vertex_end in vertex_start_from_edges.items():
-            # Find all edges that start where edge_from ends
-            for edge_to in vertex_end_to_edges.get(vertex_end, []):
-                if edge_from != edge_to:  # No self-loops
-                    n1 = self._edge_as_node_map[edge_from]
-                    n2 = self._edge_as_node_map[edge_to]
-                    line_edges.append((n1, n2))
-
-        if not line_edges:
-            return torch.empty((2, 0), dtype=torch.long)
-
-        return torch.tensor(list(zip(*line_edges)), dtype=torch.long)
-
-
-    def _build_node_features(self):
-        """
-        Build the node features:
-            road_type : string -> one hot encoded
-            oneway : Boolean -> int
-        """
-        sorted_df = self._adjacency_df.sort_values(
-            by='edge_id',
-            key=lambda col: col.map(self._edge_as_node_map)
-        )
-
-        road_types = ["motorway", "trunk", "primary", "secondary", "tertiary", "unclassified",
-                      "residential", "motorway_link", "trunk_link", "primary_link", "secondary_link",
-                      "tertiary_link", "living_street", "service", "pedestrian", "track", "bus_guideway",
-                      "escape", "raceway", "road", "busway"]
-
-        # Build lookup by iterating ways first
-        edge_to_way = {}
-        for way in self._meta_data_df.itertuples():
-            nodes_set = set(way.nodes)
-
-            # Check which edges belong to this way
-            for row in sorted_df.itertuples():
-                start_str = str(row.vertex_start_id)
-                end_str = str(row.vertex_end_id)
-
-                if start_str in nodes_set and end_str in nodes_set:
-                    edge_to_way[row.edge_id] = way
-
-        feature_list = []
-        missing_count = 0
-        unknown_road_types = set()
-        for row in sorted_df.itertuples():
-            if row.edge_id in edge_to_way:
-                way = edge_to_way[row.edge_id]
-                oneway = 1 if way.oneway else 0
-                type_encoded = [1 if way.road_type == rt else 0 for rt in road_types]
-
-                # Track unknown road types
-                if way.road_type not in road_types:
-                    unknown_road_types.add(way.road_type)
-
-                feature_vector = type_encoded + [oneway]
-                feature_list.append(feature_vector)
-            else:
-                # Default features if no way found
-                feature_list.append([0] * (len(road_types) + 1))
-                #print(f"No meta data for edge: {row.edge_id}")
-                missing_count += 1
-
-        print(f"{missing_count} edges are missing metadata out of {len(sorted_df)}")
-        if unknown_road_types:
-            print(f"Warning: Found unknown road types: {unknown_road_types}")
-        return torch.tensor(feature_list, dtype=torch.float)
-
+    # --- UPDATED: _build_target_tensor (simplified, relies on static map) ---
+    # NOTE: Since the full matrix is used by the dataloader, this method
+    # might only be needed for debugging or single-timestep access.
     def _build_target_tensor(self, timestep=0):
         # Pick a single timestep from travel data
         row = self._travel_data.iloc[timestep]
 
         # Columns corresponding to edges
         travel_columns = [c for c in row.index
-                         if c.startswith("edge") and c.endswith("_traversal_time_sec")]
+                          if c.startswith("edge") and c.endswith("_traversal_time_sec")]
 
         # Map travel times to edge_ids
         travel_dict = {}
@@ -162,32 +63,55 @@ class GraphDatasetBuilder:
         # Build target tensor ordered by line graph node IDs
         y_list = []
         for edge_id in sorted(self._edge_as_node_map, key=lambda k: self._edge_as_node_map[k]):
+            # Check for data presence. If column was present in master_cols but data is missing:
             if edge_id not in travel_dict:
-                raise ValueError(f"Edge {edge_id} missing travel data at timestep {timestep}")
-            y_list.append(travel_dict[edge_id])
+                # The FileLoader should have ensured this column exists with a -1.0 sentinel
+                # but we will stick to the previous implementation and trust the data is in the correct place
+                # based on your previous error trace.
+
+                # IMPORTANT: Due to the global column fix, this should rarely be a ValueError
+                # if the FileLoader correctly sets missing values to -1.0.
+                # For safety, use -1.0 if not found, as travel_dict should contain all columns
+                # (even if they are -1.0 after FileLoader processing).
+                y_list.append(travel_dict.get(edge_id, -1.0))
+            else:
+                y_list.append(travel_dict[edge_id])
 
         return torch.tensor(y_list, dtype=torch.float)
 
+    # --- get_data (REVISED to use passed static data) ---
     def get_data(self):
-        # Return as PyTorch Geometric Data object
-        return Data(x=self.x, edge_index=self.edge_index, y=self.y)
+        # Return as PyTorch Geometric Data object for the full time series
+        # Note: Typically, Data objects hold single samples (N, F).
+        # For time series, this often holds the N-dimensional static graph structure (x, edge_index).
+
+        # Since the SequenceDataset handles the full time series, this is likely
+        # only used for static representation:
+        return Data(x=self.x, edge_index=self.edge_index)
+
+        # --- get_full_traffic_matrix (REMAINS, relies on _edge_as_node_map) ---
 
     def get_full_traffic_matrix(self):
         """
         Returns a tensor of shape (TimeSteps, Num_Nodes)
         Rows are timesteps, Columns are Nodes (sorted by _edge_as_node_map)
         """
+        # ... (Method logic remains the same, as it only uses self._travel_data and self._edge_as_node_map) ...
+        # (See original code for full implementation - it is correct for the new structure)
+
         # Get all travel data columns
         travel_columns = [c for c in self._travel_data.columns
                           if c.startswith("edge") and c.endswith("_traversal_time_sec")]
 
         # Ensure columns are sorted by the node IDs you assigned
-        # 1. Create a map of {column_name: node_id}
         col_to_node_id = {}
         for col in travel_columns:
             edge_id = int(col.split('_')[0].replace("edge", ""))
+            # Use the global map created by StaticGraphBuilder
             if edge_id in self._edge_as_node_map:
                 col_to_node_id[col] = self._edge_as_node_map[edge_id]
+            # Else: If an edge is in the travel data but not in the map (shouldn't happen
+            # if FileLoader uses master_cols), it is ignored.
 
         # 2. Sort columns based on Node ID
         sorted_cols = sorted(col_to_node_id, key=col_to_node_id.get)
@@ -240,51 +164,3 @@ class GraphDatasetBuilder:
 
         # Convert final DataFrame to Tensor (T, 9)
         return torch.tensor(temporal_features_df.values, dtype=torch.float)
-
-    def get_full_dataset(self, seq_len: int, mask_rate: float, apply_split: bool):
-        """
-        Creates the full dataset of graph sequences for training/evaluation.
-
-        This method is now used for both training (with split/masking)
-        and imputation (without split/masking).
-        """
-
-        from .sequenceDataset import SequenceDataset
-        # NOTE: Since you don't have the implementation for the SequenceDataset
-        # class (which takes seq_len, mask_rate), I will assume its logic.
-
-        # 1. Get the full traffic matrix (Num_Timesteps x Num_Nodes)
-        full_traffic_matrix = self.get_full_traffic_matrix()
-
-        # 2. Get the static features (Num_Nodes x Num_Features)
-        static_features = self.x
-
-        # 3. Get temporal features (Num_Timesteps x Num_Temporal_Features)
-        temporal_features = self._generate_temporal_features()
-
-        # 4. Get connectivity
-        edge_index = self.edge_index
-
-        # 5. Get edge IDs (for saving imputation results)
-        edge_ids = torch.tensor(
-            sorted(self._edge_as_node_map, key=lambda k: self._edge_as_node_map[k]),
-            dtype=torch.long
-        )
-
-        full_dataset = SequenceDataset(
-            data_matrix=full_traffic_matrix,
-            static_features=static_features,
-            temporal_features=temporal_features,
-            edge_index=edge_index,
-            edge_ids=edge_ids,
-            seq_len=seq_len,
-            mask_rate=mask_rate,
-            split_ratio=(0, 0, 1) if not apply_split else (0.7, 0.15, 0.15)  # Default split ratios
-        )
-
-        if apply_split:
-            # Assumes SequenceDataset returns split loaders if apply_split=True
-            return full_dataset.train_set, full_dataset.val_set, full_dataset.test_set
-        else:
-            # If not split, return the entire dataset
-            return full_dataset

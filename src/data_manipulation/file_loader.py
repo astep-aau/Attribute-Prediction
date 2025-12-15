@@ -1,45 +1,63 @@
-from src.data_manipulation.data_loader import DataLoader
-import pandas as pd
+# src/data_manipulation/file_loader.py
 
-class FileLoader(DataLoader):
-    def __init__(self, edge_data_path: str, edge_connections_path, meta_data_path):
+import pandas as pd
+import os
+from typing import List, Dict
+
+
+class FileLoader:
+    # --- MODIFIED: Added master_cols argument ---
+    def __init__(self, edge_data_path: str, edge_connections_path: str, meta_data_path: str, master_cols: List[str]):
+        """
+        Initializes the FileLoader with paths and the global master column list.
+        """
         self.edge_data_path = edge_data_path
         self.edge_connections_path = edge_connections_path
         self.meta_data_path = meta_data_path
+        self.master_cols = master_cols  # List of all columns required across all days
 
-    def get_travel_data(self):
+    def get_travel_data(self) -> pd.DataFrame:
+        """
+        Loads the daily travel data and ensures it conforms to the global master_cols set.
+        Missing columns are padded with -1.0.
+        """
         df = pd.read_csv(self.edge_data_path)
-        all_edges = set(df.columns)
-        all_edges.discard("time_slot")
 
-        # Sort edges (only used to ensure column order, still relevant)
-        edges_sorted = sorted(all_edges, key=lambda x: int(x.split("_")[0].replace("edge", "")))
-        master_cols = ["time_slot"] + edges_sorted
+        # --- CRITICAL FIX FOR CONSISTENT N (NODE COUNT) ---
 
-        # --- REMOVED: base_date and day offset logic ---
-        base_date = pd.to_datetime("2025-11-26 00:00:00")
+        # 1. Identify columns present in master_cols but missing in the daily file
+        missing_cols = [col for col in self.master_cols if col not in df.columns]
 
-        # Fill missing edges with -1 (Necessary if not all 5 days have the same edge set)
-        missing_cols = {col: -1 for col in master_cols if col not in df.columns}
+        # 2. Add missing columns, filling them with the missing data sentinel (-1.0)
         if missing_cols:
-            df = pd.concat([df, pd.DataFrame(missing_cols, index=df.index)], axis=1)
-        df = df[master_cols]
+            missing_data = pd.DataFrame({col: -1.0 for col in missing_cols}, index=df.index)
+            df = pd.concat([df, missing_data], axis=1)
 
-        # 1. Calculate Time Offset from the [hours;minutes] data
+        # 3. Ensure the final DataFrame has the exact global column order and set
+        df = df[self.master_cols]
+        # --- END CRITICAL FIX ---
+
+        # ... (rest of time calculation logic should remain the same) ...
+        base_date = pd.to_datetime("2025-11-26 00:00:00")
         time_parts = df["time_slot"].str.split(':', expand=True).astype(int)
-        hours = time_parts[0]
-        minutes = time_parts[1]
-
-        time_offset = pd.to_timedelta(hours, unit='h') + pd.to_timedelta(minutes, unit='m')
-
-        # 2. Create the final Timestamp column
+        time_offset = pd.to_timedelta(time_parts[0], unit='h') + pd.to_timedelta(time_parts[1], unit='m')
         df["Timestamp"] = base_date + time_offset
 
         return df
 
-    def get_meta_data(self):
-        # Transpose so edge IDs become the index and columns are oneway, road_type, nodes
-        return pd.read_json(self.meta_data_path).T
+    # --- get_adjacency ---
+    def get_adjacency(self) -> pd.DataFrame:
+        # Assuming your adjacency file has 'edge_id', 'vertex_start_id', 'vertex_end_id'
+        df = pd.read_csv(self.edge_connections_path)
+        return df
 
-    def get_adjacency(self):
-        return pd.read_csv(self.edge_connections_path)
+    # --- get_meta_data ---
+    def get_meta_data(self) -> pd.DataFrame:
+        """
+        Loads the OSM metadata, transposes it, and ensures the Edge ID index is an integer.
+        """
+        df = pd.read_json(self.meta_data_path).T
+
+        df.index = df.index.astype(int)
+
+        return df

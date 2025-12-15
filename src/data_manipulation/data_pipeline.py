@@ -3,7 +3,7 @@
 import random
 import torch
 import numpy as np
-import torch_geometric.loader as DataLoader
+from torch_geometric.loader import DataLoader
 from src.data_manipulation.sequenceDataset import SequenceDataset
 
 # ... (other imports)
