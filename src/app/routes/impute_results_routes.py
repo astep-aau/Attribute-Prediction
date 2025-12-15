@@ -8,8 +8,7 @@ from src.app.schemas import (
     TimeIntervalResponse,
     ImputeResultResponse,
     ImputeResultCreate,
-    )
-from src.app.exceptions import NotFoundException
+)
 
 router = APIRouter(prefix="/impute-result", tags=["impute result"])
 

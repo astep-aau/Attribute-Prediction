@@ -1,6 +1,5 @@
 from sqlalchemy import Column, String, Float, ForeignKey, Integer, Boolean
 from sqlalchemy.dialects.postgresql import UUID
-import uuid
 from src.app.database import Base
 
 class ImputeResultTable(Base):

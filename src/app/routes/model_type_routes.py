@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, status, Depends
 from typing import List
 from src.app.schemas import ModelTypeResponse, ModelTypeCreate
 from src.app.database import get_db

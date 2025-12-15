@@ -2,7 +2,7 @@ from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
 from src.app.database_tables import ModelTypeTable
-from src.app.schemas import ModelTypeResponse, ModelTypeCreate
+from src.app.schemas import ModelTypeCreate
 from src.app.exceptions import NotFoundException, ForeignKeyViolationException
 
 

@@ -1,5 +1,4 @@
 from pydantic import BaseModel, ConfigDict
-from typing import List
 from uuid import UUID
 
 class RoadIdResponse(BaseModel):

@@ -66,7 +66,7 @@ async def get_model_path(model_id: str, db: AsyncSession):
         raise NotFoundException(f"No path for model: {model_id}")
 
     if not os.path.isfile(path):
-        raise NotFoundException(f"Model wfile not found at: {path}")
+        raise NotFoundException(f"Model file not found at: {path}")
     return path
 
 def get_file_name(filepath: str):

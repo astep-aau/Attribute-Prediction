@@ -40,7 +40,7 @@ async def main():
 
     # Get database session
     async with AsyncSessionLocal() as db:
-        # Get model_type name (this is under the assumtion that Bi-GRU is always the temporal model)
+        # Get model_type name (this is under the assumption that Bi-GRU is always the temporal model)
         model_type_name = model_data_json["gnn_model_used"] + "-BiGRU"
 
         # Get model_type id
@@ -49,7 +49,7 @@ async def main():
         # Insert model metric into database
         model_metric = await insert_model_metric(model_data_json, type_id, db)
 
-        # Insert hyperparams into databse
+        # Insert hyperparams into database
         await insert_hyperparam(model_data_json, model_metric.id, db)
 
         # Insert loss into database
@@ -101,7 +101,7 @@ async def insert_loss(model_data: dict, metric_id: UUID,  db: AsyncSession):
         if ("test" not in key):
             continue
 
-        # Removes prefixs texts fx: test_mape into mape
+        # Removes prefix text e.g.,: test_mape into mape
         loss_unit = str(key).split("_")[-1]
         new_loss = ModelLoss(
             model_id= metric_id,
@@ -111,14 +111,14 @@ async def insert_loss(model_data: dict, metric_id: UUID,  db: AsyncSession):
         )
         await create_loss(new_loss, db)
 
-    # Add losses from best_epich_metrics
+    # Add losses from best_epoch_metrics
     for key, value in model_data["best_epoch_metrics"].items():
         if ("train" in key):
-            loss_type = "test"
+            loss_type = "train"
         elif ("val" in key):
             loss_type = "validation"
 
-        # Removes prefixs texts fx: test_mape into mape
+        # Removes prefix text e.g.,: test_mape into mape
         loss_unit = str(key).split("_")[-1]
         new_loss = ModelLoss(
             model_id= metric_id,

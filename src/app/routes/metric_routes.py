@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status, Depends
+from fastapi import APIRouter, status, Depends
 from typing import List
 from src.app.database import get_db
 from sqlalchemy.ext.asyncio import AsyncSession
