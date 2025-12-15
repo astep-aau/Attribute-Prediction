@@ -97,7 +97,7 @@ async def find_road_ids(model_id: str, db: AsyncSession):
 
     return [RoadIdResponse(road_id=road_id) for road_id in roads]
 
-async def find_timespan(model_id: str,  road_id: int, db: AsyncSession):
+async def find_timespan(model_id: str, road_id: str, db: AsyncSession):
     """
     Find the minimum and maximum timestamps for imputation data
 
