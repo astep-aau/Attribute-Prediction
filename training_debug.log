@@ -1,0 +1,21 @@
+2025-12-12 08:35:00,409 - INFO - \u2705 Data loading and preparation complete. DataLoaders are ready.
+2025-12-12 08:35:00,409 - INFO - training on cpu
+2025-12-12 08:56:58,211 - INFO - \u2705 Data loading and preparation complete. DataLoaders are ready.
+2025-12-12 08:56:58,225 - INFO - training on cpu
+2025-12-12 08:56:59,060 - INFO - Model defined
+2025-12-12 08:56:59,060 - INFO - Everything set up
+2025-12-12 08:56:59,060 - INFO - First epoch started at 1765526219.060483
+2025-12-12 08:57:02,814 - INFO - --- Starting first batch processing ---
+2025-12-12 08:57:02,815 - INFO - Batch keys: ['x_dynamic', 'x_static', 'edge_index', 'edge_ids', 'time_features', 'y_true', 'mask']
+2025-12-12 09:50:42,348 - INFO - \u2705 Data loading and preparation complete. DataLoaders are ready.
+2025-12-12 09:50:42,348 - INFO - training on cpu
+2025-12-12 09:50:42,489 - INFO - Model defined
+2025-12-12 09:50:42,489 - INFO - Everything set up
+2025-12-12 09:50:42,489 - INFO - First epoch started at 1765529442.4895918
+2025-12-12 09:50:42,552 - INFO - --- Starting first batch processing ---
+2025-12-12 09:50:42,552 - INFO - Batch keys: ['x_dynamic', 'x_static', 'edge_index', 'edge_ids', 'time_features', 'y_true', 'mask']
+2025-12-12 09:50:42,552 - INFO - x_dyn done
+2025-12-12 09:50:42,552 - INFO - y_true, mask done
+2025-12-12 09:50:42,552 - INFO - x_stat, mask done
+2025-12-12 09:50:42,552 - INFO - edge_index, mask done
+2025-12-12 09:50:42,552 - INFO - time_feats, mask done
