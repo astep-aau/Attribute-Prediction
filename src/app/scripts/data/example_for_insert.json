@@ -1,0 +1,32 @@
+{
+    "model_name": "GraphSAGE_HPT15_L0.002_GNN256_GRU256_D0.2_A1",
+    "gnn_model_used": "GraphSAGE",
+    "hyperparameters": {
+        "SEQ_LEN": 12,
+        "BATCH_SIZE": 1,
+        "MASK_RATE": 0.2,
+        "LEARNING_RATE": 0.002,
+        "GNN_HIDDEN_DIM": 256,
+        "GRU_HIDDEN_DIM": 256,
+        "GRU_LAYERS": 2,
+        "GAT_HEADS": 1,
+        "DROPOUT": 0.2,
+        "PATIENCE": 10
+    },
+    "metrics": {
+        "test_mse": 244.08018112182617,
+        "test_rmse": 15.62306567616696,
+        "test_mape": 76.95929002761841,
+        "best_val_mse": 146.6393482685089,
+        "bias": 0.47763309365836903,
+        "overfitting_gap_val_diff": 39.31259277064879
+    },
+    "final_epoch_metrics": {
+        "final_train_loss_mse": 185.9519410391577,
+        "final_val_loss_mse": 146.6393482685089
+    },
+    "timing": {
+        "total_training_time_s": 199.59887981414795,
+        "epochs_completed": 1
+    }
+}
