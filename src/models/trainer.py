@@ -16,9 +16,6 @@ _project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '.
 MODEL_SAVE_DIR = os.path.join(_project_root, "src", "trained_models")
 LOG_SAVE_DIR = os.path.join(_project_root, "src", "logs_and_testing_results")
 
-# Global flag for printing feature structure once
-PRINTED_FEATURES = False
-
 
 def train_epoch(model, loader, criterion, optimizer, device):
     """Runs a single training epoch with gradient accumulation."""
@@ -43,16 +40,6 @@ def train_epoch(model, loader, criterion, optimizer, device):
         mask = batch['mask'].permute(0, 2, 1).to(device)
 
         edge_index = batch['edge_index'].to(device)
-
-        # --- Feature Inspection Block ---
-        if not PRINTED_FEATURES:
-            print("\n================ FINAL INPUT TENSOR STRUCTURE ================")
-            print(f"Shape (B, T, N, F_feat): {X_feat_input.shape}")
-            print(f"Sample (Time 0, Node 0): {X_feat_input[0, 0, 0, :]}")
-            print(f"Total Features (F_feat): {X_feat_input.shape[-1]}")
-            print("----------------------------------------------------------\n")
-            PRINTED_FEATURES = True
-        # --- End Inspection Block ---
 
         # 2. Forward Pass
         prediction = model(X_feat_input, edge_index)
