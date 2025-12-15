@@ -24,3 +24,9 @@ htmlcov/
 
 # scripts data
 src/app/scripts/data/
+
+# Kube config
+kubeconfig.yaml
+
+# Kubernetes secrets (contains passwords)
+k8s/secret.yaml

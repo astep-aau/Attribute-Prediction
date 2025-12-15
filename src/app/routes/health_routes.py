@@ -15,10 +15,21 @@ async def health_check():
     """
     return {"status": "healthy", "service": "Attribute-Prediction API"}
 
-@router.get("/db", status_code=status.HTTP_200_OK)
-async def health_check_database(db: AsyncSession = Depends(get_db)):
+@router.get("/live", status_code=status.HTTP_200_OK)
+async def liveness_probe():
     """
-    Health check with database connectivity verification
+    Kubernetes liveness probe - checks if app should be restarted
+
+    Returns:
+        Simple status indicating application is alive
+    """
+    return {"status": "alive"}
+
+@router.get("/ready", status_code=status.HTTP_200_OK)
+async def readiness_probe(db: AsyncSession = Depends(get_db)):
+    """
+    Kubernetes readiness probe - checks if app can accept traffic
+    Verifies database connectivity before marking pod as ready
 
     Args:
         db: Database session
@@ -27,7 +38,7 @@ async def health_check_database(db: AsyncSession = Depends(get_db)):
         Status message including database connectivity status
 
     Raises:
-        Exception: If database connection fails
+        Exception: If database connection fails (returns 500, pod marked not ready)
     """
     try:
         # Simple query to check database connectivity
