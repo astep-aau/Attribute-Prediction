@@ -2,7 +2,10 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from src.app.database_tables import ModelMetricsTable, HyperparamTable, LossTable
-from src.app.schemas import ModelMetricsResponse
+from src.app.schemas import (
+    ModelMetricsResponse,
+    ModelMetricsCreate,
+)
 from src.app.exceptions import InvalidUUIDException, NotFoundException
 
 async def find_metric(model_type: str, db: AsyncSession):
@@ -50,3 +53,18 @@ async def find_loss(model_id: UUID, db: AsyncSession):
         .where(LossTable.model_id == model_id)
         )
     return result.scalars().all()
+
+async def create_metric(metric_data: ModelMetricsCreate, db: AsyncSession):
+    new_metric = ModelMetricsTable(
+        model_type=metric_data.model_type,
+        train_time_min=metric_data.train_time_min,
+        bias=metric_data.bias,
+        gap=metric_data.gap,
+        path_to_save=metric_data.path_to_save
+    )
+
+    db.add(new_metric)
+    await db.commit()
+    await db.refresh(new_metric)
+
+    return new_metric
