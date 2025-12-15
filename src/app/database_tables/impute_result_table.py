@@ -8,7 +8,7 @@ class ImputeResultTable(Base):
     __table_args__ = {"schema": "models"}
 
     road_id = Column(String, primary_key=True)
-    model_id = Column(UUID(as_uuid=True), ForeignKey("model_metrics.id"), primary_key=True)
+    model_id = Column(UUID(as_uuid=True), ForeignKey("models.model_metrics.id"), primary_key=True)
     tms = Column(Integer, primary_key=True)
 
     value = Column(Float, nullable=False)

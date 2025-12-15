@@ -1,12 +1,19 @@
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
-from src.app.database_tables import ModelMetricsTable, HyperparamTable, LossTable
+from sqlalchemy.exc import IntegrityError
+from src.app.database_tables import (
+    ModelMetricsTable,
+    HyperparamTable,
+    LossTable
+)
 from src.app.schemas import (
     ModelMetricsResponse,
     ModelMetricsCreate,
+    Hyperparam,
+    ModelLoss
 )
-from src.app.exceptions import InvalidUUIDException, NotFoundException
+from src.app.exceptions import InvalidUUIDException, NotFoundException, ForeignKeyViolationException
 
 async def find_metric(model_type: str, db: AsyncSession):
     try:
@@ -64,7 +71,52 @@ async def create_metric(metric_data: ModelMetricsCreate, db: AsyncSession):
     )
 
     db.add(new_metric)
-    await db.commit()
-    await db.refresh(new_metric)
+    try:
+        await db.commit()
+        await db.refresh(new_metric)
+    except IntegrityError as e:
+        await db.rollback()
+        if "foreign key" in str(e).lower():
+            raise ForeignKeyViolationException(f"Invalid model_type ID: {metric_data.model_type}. Model type does not exist.")
+        raise
 
     return new_metric
+
+async def create_hyperparam(hyperparam_data: Hyperparam, db: AsyncSession):
+    new_hyperparam = HyperparamTable(
+        model_id = hyperparam_data.model_id,
+        param_name = hyperparam_data.param_name,
+        param_value = hyperparam_data.param_value
+    )
+
+    db.add(new_hyperparam)
+    try:
+        await db.commit()
+        await db.refresh(new_hyperparam)
+    except IntegrityError as e:
+        await db.rollback()
+        if "foreign key" in str(e).lower():
+            raise ForeignKeyViolationException(f"Invalid model_id: {hyperparam_data.model_id}. Model does not exist.")
+        raise
+
+    return new_hyperparam
+
+async def create_loss(loss_data: ModelLoss, db: AsyncSession):
+    new_loss = LossTable(
+        model_id = loss_data.model_id,
+        type = loss_data.type,
+        loss_value = loss_data.loss_value,
+        loss_unit = loss_data.loss_unit
+    )
+
+    db.add(new_loss)
+    try:
+        await db.commit()
+        await db.refresh(new_loss)
+    except IntegrityError as e:
+        await db.rollback()
+        if "foreign key" in str(e).lower():
+            raise ForeignKeyViolationException(f"Invalid model_id: {loss_data.model_id}. Model does not exist.")
+        raise
+
+    return new_loss

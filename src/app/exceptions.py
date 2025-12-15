@@ -19,3 +19,7 @@ class InvalidTimeRangeException(Exception):
 class ValidationException(Exception):
     """Raised for custom validation errors"""
     pass
+
+class ForeignKeyViolationException(Exception):
+    """Raised when a foreign key constraint is violated"""
+    pass

@@ -2,7 +2,7 @@ from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
 from src.app.routes import metric_routes, model_type_routes, impute_results_routes, download_model_routes
 from src.app.database import engine, Base
-from src.app.exceptions import NotFoundException, InvalidUUIDException
+from src.app.exceptions import NotFoundException, InvalidUUIDException, ForeignKeyViolationException
 from contextlib import asynccontextmanager
 
 
@@ -30,6 +30,13 @@ async def invalid_uuid_handler(request: Request, exc: InvalidUUIDException):
     return JSONResponse(
         status_code=400,
         content={"detail": str(exc) if str(exc) else "Invalid UUID format"}
+    )
+
+@app.exception_handler(ForeignKeyViolationException)
+async def foreign_key_violation_handler(request: Request, exc: ForeignKeyViolationException):
+    return JSONResponse(
+        status_code=400,
+        content={"detail": str(exc)}
     )
 
 @app.exception_handler(ValueError)
