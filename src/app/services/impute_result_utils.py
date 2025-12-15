@@ -15,6 +15,23 @@ async def find_impute_results(
         start_time: int,
         end_time: int,
         db: AsyncSession):
+    """
+    Find imputation results for a specific model and road within a time range
+
+    Args:
+        model_id: UUID string of the model
+        road_id: ID of the road
+        start_time: Start time as Unix timestamp
+        end_time: End time as Unix timestamp
+        db: Database session
+
+    Returns:
+        List of ImputeResultResponse objects with timestamps, values, and imputed flags
+
+    Raises:
+        InvalidUUIDException: If model_id is not a valid UUID
+        NotFoundException: If no results found for the given parameters
+    """
 
     try:
         uuid = UUID(model_id)
@@ -47,6 +64,20 @@ async def find_impute_results(
     return response
 
 async def find_road_ids(model_id: str, db: AsyncSession):
+    """
+    Find all distinct road IDs that have imputation data for a model
+
+    Args:
+        model_id: UUID string of the model
+        db: Database session
+
+    Returns:
+        List of RoadIdResponse objects containing unique road IDs
+
+    Raises:
+        InvalidUUIDException: If model_id is not a valid UUID
+        NotFoundException: If no roads found for the model
+    """
     try:
         uuid = UUID(model_id)
     except ValueError:
@@ -65,6 +96,21 @@ async def find_road_ids(model_id: str, db: AsyncSession):
     return [RoadIdResponse(road_id=road_id) for road_id in roads]
 
 async def find_timespan(model_id: str,  road_id: int, db: AsyncSession):
+    """
+    Find the minimum and maximum timestamps for imputation data
+
+    Args:
+        model_id: UUID string of the model
+        road_id: ID of the road
+        db: Database session
+
+    Returns:
+        TimeIntervalResponse with start_time and end_time as Unix timestamps
+
+    Raises:
+        InvalidUUIDException: If model_id is not a valid UUID
+        NotFoundException: If no timestamps found for the given model and road
+    """
     try:
         uuid = UUID(model_id)
     except ValueError:

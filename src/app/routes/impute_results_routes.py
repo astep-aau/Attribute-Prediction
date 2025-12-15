@@ -24,6 +24,23 @@ async def get_impute_result(
         end_time: int,
         db: AsyncSession = Depends(get_db)
     ):
+    """
+    Get imputation results for a specific model and road within a time range
+
+    Args:
+        model_id: UUID string of the model
+        road_id: ID of the road
+        start_time: Start time as Unix timestamp
+        end_time: End time as Unix timestamp
+        db: Database session
+
+    Returns:
+        List of imputation results with timestamps, values, and imputed flags
+
+    Raises:
+        InvalidUUIDException: If model_id is not a valid UUID
+        NotFoundException: If no results found for the given parameters
+    """
     response = await utils.find_impute_results(
         model_id=model_id,
         road_id=road_id,
@@ -39,6 +56,20 @@ async def get_impute_result(
         status_code=status.HTTP_200_OK
         )
 async def get_road_ids(model_id: str, db: AsyncSession = Depends(get_db)):
+    """
+    Get all distinct road IDs that have imputation results for a specific model
+
+    Args:
+        model_id: UUID string of the model
+        db: Database session
+
+    Returns:
+        List of road IDs with available imputation data
+
+    Raises:
+        InvalidUUIDException: If model_id is not a valid UUID
+        NotFoundException: If no roads found for the given model
+    """
     response = await utils.find_road_ids(model_id=model_id, db=db)
 
     return response
@@ -53,6 +84,21 @@ async def get_time_interval(
     road_id: str,
     db: AsyncSession = Depends(get_db)
     ):
+    """
+    Get the time range (earliest and latest timestamps) of available imputation data
+
+    Args:
+        model_id: UUID string of the model
+        road_id: ID of the road
+        db: Database session
+
+    Returns:
+        Time interval with start_time and end_time as Unix timestamps
+
+    Raises:
+        InvalidUUIDException: If model_id is not a valid UUID
+        NotFoundException: If no data found for the given model and road
+    """
 
     response = await utils.find_timespan(
         model_id=model_id,

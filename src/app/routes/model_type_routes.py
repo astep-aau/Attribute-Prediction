@@ -12,10 +12,16 @@ router = APIRouter(prefix="/model-types", tags=["models types"])
 @router.get("/", response_model=List[ModelTypeResponse], status_code=status.HTTP_200_OK)
 async def get_models(db: AsyncSession = Depends(get_db)):
     """
-    Retrieve all model types from the database.
+    Get all available model types
+
+    Args:
+        db: Database session
 
     Returns:
-        List of model type objects
+        List of all model types with their IDs and names
+
+    Raises:
+        NotFoundException: If no model types found in the database
     """
     result = await db.execute(select(ModelTypeTable))
     models = result.scalars().all()
