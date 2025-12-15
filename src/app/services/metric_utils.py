@@ -146,9 +146,9 @@ async def create_hyperparam(hyperparam_data: Hyperparam, db: AsyncSession):
         IntegrityError: For other database constraint violations
     """
     new_hyperparam = HyperparamTable(
-        model_id = hyperparam_data.model_id,
-        param_name = hyperparam_data.param_name,
-        param_value = hyperparam_data.param_value
+        model_id= hyperparam_data.model_id,
+        param_name= hyperparam_data.param_name,
+        param_value= hyperparam_data.param_value
     )
 
     db.add(new_hyperparam)
@@ -179,10 +179,10 @@ async def create_loss(loss_data: ModelLoss, db: AsyncSession):
         IntegrityError: For other database constraint violations
     """
     new_loss = LossTable(
-        model_id = loss_data.model_id,
-        type = loss_data.type,
-        loss_value = loss_data.loss_value,
-        loss_unit = loss_data.loss_unit
+        model_id= loss_data.model_id,
+        type= loss_data.type,
+        loss_value= loss_data.loss_value,
+        loss_unit= loss_data.loss_unit
     )
 
     db.add(new_loss)

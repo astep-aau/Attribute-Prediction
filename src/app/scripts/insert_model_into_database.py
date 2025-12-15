@@ -52,7 +52,7 @@ async def main():
         # Insert hyperparams into databse
         await insert_hyperparam(model_data_json, model_metric.id, db)
 
-        # Insert loss into databse
+        # Insert loss into database
         await insert_loss(model_data_json, model_metric.id, db)
 
         # TODO Add insertion of imputation data
