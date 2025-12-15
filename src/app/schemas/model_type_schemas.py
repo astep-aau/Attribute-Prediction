@@ -7,3 +7,8 @@ class ModelTypeResponse(BaseModel):
 
     id: UUID
     name: str
+
+class ModelTypeCreate(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    name: str

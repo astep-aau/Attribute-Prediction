@@ -5,7 +5,7 @@ from src.app.schemas.model_metrics_schemas import (
     Hyperparam,
     ModelLoss,
 )
-from src.app.schemas.model_type_schemas import ModelTypeResponse
+from src.app.schemas.model_type_schemas import ModelTypeResponse, ModelTypeCreate
 from src.app.schemas.impute_result_schemas import (
     RoadIdResponse,
     TimeIntervalResponse,
@@ -14,6 +14,7 @@ from src.app.schemas.impute_result_schemas import (
 
 __all__ = [
     "ModelMetricsResponse",
+    "ModelTypeCreate",
     "ModelTypeResponse",
     "RoadIdResponse",
     "TimeIntervalResponse",
