@@ -1,5 +1,5 @@
-#torch_geometric
-#torch
+torch_geometric
+torch
 pandas
 FastAPI
 uvicorn[standard]
