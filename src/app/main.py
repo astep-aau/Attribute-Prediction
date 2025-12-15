@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
-from src.app.routes import metric_routes, model_type_routes, impute_results_routes, download_model_routes
+from src.app.routes import metric_routes, model_type_routes, impute_results_routes, download_model_routes, health_routes
 from src.app.database import engine, Base
 from src.app.exceptions import NotFoundException, InvalidUUIDException, ForeignKeyViolationException
 from contextlib import asynccontextmanager
@@ -59,5 +59,6 @@ app.include_router(model_type_routes.router)
 app.include_router(metric_routes.router)
 app.include_router(impute_results_routes.router)
 app.include_router(download_model_routes.router)
+app.include_router(health_routes.router)
 
 # uvicorn src.app.main:app --reload

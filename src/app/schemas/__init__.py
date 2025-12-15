@@ -9,7 +9,8 @@ from src.app.schemas.model_type_schemas import ModelTypeResponse, ModelTypeCreat
 from src.app.schemas.impute_result_schemas import (
     RoadIdResponse,
     TimeIntervalResponse,
-    ImputeResultResponse
+    ImputeResultResponse,
+    ImputeResultCreate
 )
 
 __all__ = [
@@ -19,6 +20,7 @@ __all__ = [
     "RoadIdResponse",
     "TimeIntervalResponse",
     "ImputeResultResponse",
+    "ImputeResultCreate",
     "ModelMetricsCreate",
     "ModelMetricsCreateResponse",
     "Hyperparam",

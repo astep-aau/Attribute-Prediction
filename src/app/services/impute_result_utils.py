@@ -1,13 +1,15 @@
 from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
+from sqlalchemy.exc import IntegrityError
 from src.app.schemas import (
     ImputeResultResponse,
     RoadIdResponse,
     TimeIntervalResponse,
+    ImputeResultCreate,
 )
 from src.app.database_tables import ImputeResultTable
-from src.app.exceptions import NotFoundException, InvalidUUIDException
+from src.app.exceptions import NotFoundException, InvalidUUIDException, ForeignKeyViolationException
 
 async def find_impute_results(
         model_id: str,
@@ -133,3 +135,38 @@ async def find_timespan(model_id: str,  road_id: int, db: AsyncSession):
         raise NotFoundException(f"No max time found for model {model_id}, road {road_id}")
 
     return TimeIntervalResponse(start_time= min_time, end_time= max_time)
+
+async def create_impute_result(result_data: ImputeResultCreate, db: AsyncSession):
+    """
+    Create a new imputation result entry
+
+    Args:
+        result_data: Imputation result data including model_id, road_id, tms, value, and imputed
+        db: Database session
+
+    Returns:
+        Created ImputeResultTable object
+
+    Raises:
+        ForeignKeyViolationException: If model_id doesn't exist
+        IntegrityError: For other database constraint violations (e.g., duplicate primary key)
+    """
+    new_result = ImputeResultTable(
+        model_id=result_data.model_id,
+        road_id=result_data.road_id,
+        tms=result_data.tms,
+        value=result_data.value,
+        imputed=result_data.imputed
+    )
+
+    db.add(new_result)
+    try:
+        await db.commit()
+        await db.refresh(new_result)
+    except IntegrityError as e:
+        await db.rollback()
+        if "foreign key" in str(e).lower():
+            raise ForeignKeyViolationException(f"Invalid model_id: {result_data.model_id}. Model does not exist.")
+        raise
+
+    return new_result

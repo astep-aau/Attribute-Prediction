@@ -7,10 +7,37 @@ from src.app.schemas import (
     RoadIdResponse,
     TimeIntervalResponse,
     ImputeResultResponse,
+    ImputeResultCreate,
     )
 from src.app.exceptions import NotFoundException
 
 router = APIRouter(prefix="/impute-result", tags=["impute result"])
+
+@router.post(
+    "/",
+    response_model=ImputeResultResponse,
+    status_code=status.HTTP_201_CREATED
+)
+async def create_impute_result(
+    result_data: ImputeResultCreate,
+    db: AsyncSession = Depends(get_db)
+):
+    """
+    Create a new imputation result entry
+
+    Args:
+        result_data: Imputation result data including model_id, road_id, tms, value, and imputed
+        db: Database session
+
+    Returns:
+        Created imputation result
+
+    Raises:
+        ForeignKeyViolationException: If model_id doesn't exist
+        IntegrityError: If combination of model_id, road_id, and tms already exists
+    """
+    result = await utils.create_impute_result(result_data, db)
+    return result
 
 @router.get(
         "/{model_id}/{road_id}/{start_time}/{end_time}",

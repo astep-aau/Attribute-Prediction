@@ -1,5 +1,6 @@
 from pydantic import BaseModel, ConfigDict
 from typing import List
+from uuid import UUID
 
 class RoadIdResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
@@ -15,6 +16,13 @@ class TimeIntervalResponse(BaseModel):
 class ImputeResultResponse(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
+    tms: int
+    value: float
+    imputed: bool
+
+class ImputeResultCreate(BaseModel):
+    model_id: UUID
+    road_id: str
     tms: int
     value: float
     imputed: bool
