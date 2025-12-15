@@ -6,6 +6,8 @@ from dotenv import load_dotenv
 load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
+if not DATABASE_URL:
+    raise RuntimeError("The DATABASE_URL environment variable is not set. Please set it in your environment or .env file.")
 DEBUG = os.getenv("DEBUG", "false").lower() == "true"
 
 engine = create_async_engine(
