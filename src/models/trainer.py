@@ -9,92 +9,72 @@ import json
 from src.models.config import *
 from src.models.logging_utils import logger
 
-PRINTED_FEATURES = False
-
-# Define the project root path relative to this script's location (src/models)
+# Define the project root path relative to this script's location
 _project_root = os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..'))
 
 # Define the absolute paths for saving files
 MODEL_SAVE_DIR = os.path.join(_project_root, "src", "trained_models")
 LOG_SAVE_DIR = os.path.join(_project_root, "src", "logs_and_testing_results")
 
+# Global flag for printing feature structure once
+PRINTED_FEATURES = False
+
+
 def train_epoch(model, loader, criterion, optimizer, device):
-    """Runs a single training epoch."""
+    """Runs a single training epoch with gradient accumulation."""
 
     model.train()
     total_loss = 0
+    accumulate_steps = 8
 
     global PRINTED_FEATURES
 
-    accumulate_steps = 8
-
-    batch_start_time = time.time()
-    batches_to_log = 10
-
     for i, batch in enumerate(loader):
 
-        # 1. Get the combined feature tensor (B, N, T, F_feat)
+        # 1. Get and prepare input data
+        # x_combined is (B, N, T, F_feat) from SequenceDataset
         x_combined = batch['x_combined'].to(device)
 
-        # 2. Transpose to match the diagram input (T, N, F_feat) --> (B, T, N, F_feat)
-        # B, N, T, F_feat -> B, T, N, F_feat
+        # Input to model expects (B, T, N, F_feat)
         X_feat_input = x_combined.permute(0, 2, 1, 3)
 
         # Transpose y_true and mask from (B, N, T) to (B, T, N)
         y_true = batch['y_true'].permute(0, 2, 1).to(device)
         mask = batch['mask'].permute(0, 2, 1).to(device)
 
-        # Get Edge Index
         edge_index = batch['edge_index'].to(device)
 
-        # --- FEATURE INSPECTION BLOCK UPDATE ---
-        # Update print statements to reflect the new structure:
+        # --- Feature Inspection Block ---
         if not PRINTED_FEATURES:
             print("\n================ FINAL INPUT TENSOR STRUCTURE ================")
             print(f"Shape (B, T, N, F_feat): {X_feat_input.shape}")
-            # F_feat = 32
             print(f"Sample (Time 0, Node 0): {X_feat_input[0, 0, 0, :]}")
             print(f"Total Features (F_feat): {X_feat_input.shape[-1]}")
             print("----------------------------------------------------------\n")
             PRINTED_FEATURES = True
-        # --- END INSPECTION BLOCK ---
+        # --- End Inspection Block ---
 
-        # 3. Forward Pass
+        # 2. Forward Pass
         prediction = model(X_feat_input, edge_index)
 
-        if device.type == 'cuda':
-            torch.cuda.synchronize()
-
-        # 2. Loss Calculation
+        # 3. Loss Calculation
         loss_matrix = criterion(prediction, y_true)
 
-        # 3. Scale Loss: CRUCIAL STEP for accumulation
+        # Scale Loss by accumulation steps
         masked_loss = loss_matrix[mask].mean() / accumulate_steps
 
         # 4. Backward Pass: Accumulate gradients
         masked_loss.backward()
 
-        # 5. Optimization Step: Perform step only after 'accumulate_steps'
+        # 5. Optimization Step
         if (i + 1) % accumulate_steps == 0:
             optimizer.step()
-            optimizer.zero_grad()  # Clear gradients after stepping
-
-        if (i + 1) % batches_to_log == 0:
-            current_time = time.time()
-            time_elapsed_10_batches = current_time - batch_start_time
-            avg_time_per_batch = time_elapsed_10_batches / batches_to_log
-
-            # logger.info(
-            #     f"Batch {i + 1}/{len(loader)} - "
-            #     f"Avg Time per Batch over last {batches_to_log}: {avg_time_per_batch:.2f}s"
-            # )
-
-            # Reset the timer
-            batch_start_time = current_time
+            optimizer.zero_grad()
 
         # Un-scale the loss for accurate logging
         total_loss += masked_loss.item() * accumulate_steps
 
+    # Final step for remaining gradients
     if len(loader) % accumulate_steps != 0:
         optimizer.step()
         optimizer.zero_grad()
@@ -102,30 +82,22 @@ def train_epoch(model, loader, criterion, optimizer, device):
     return total_loss / len(loader) if len(loader) > 0 else float('nan')
 
 
-# ----------------------------------------------------
-# Helper Function for MAPE (Mean Absolute Percentage Error)
-# MAPE is calculated based on the masked, non-zero true values.
-# ----------------------------------------------------
 def calculate_mape_and_bias(prediction, y_true, mask):
     """Calculates MAPE and Bias for masked predictions."""
 
-    # 1. Mask Tensors
     y_true_masked = y_true[mask]
     prediction_masked = prediction[mask]
 
-    # 2. MAPE Calculation (Requires true values to be non-zero)
-    # We add a small epsilon to prevent division by zero in case of noise.
+    # MAPE Calculation (using a small epsilon to avoid division by zero)
     epsilon = 1e-5
-
-    # | (y_true - pred) / y_true |
     percentage_error = torch.abs((y_true_masked - prediction_masked) / (y_true_masked + epsilon))
-    mape = (100 * percentage_error.mean()).item()  # Convert to percentage and scalar
+    mape = (100 * percentage_error.mean()).item()
 
-    # 3. Bias Calculation (Average over- or under-prediction)
-    # (Prediction - True Value) / Number of Samples
+    # Bias Calculation
     bias = (prediction_masked - y_true_masked).mean().item()
 
     return mape, bias
+
 
 def evaluate(model, loader, criterion, device):
     """Evaluates the model on validation or test data."""
@@ -134,15 +106,16 @@ def evaluate(model, loader, criterion, device):
 
     with torch.no_grad():
         for batch in loader:
-            # Move data to device and preprocess (same logic as before)
-            x_dyn = batch['x_dynamic'].permute(0, 2, 1, 3).to(device)
+            # 1. Get and prepare input data
+            x_combined = batch['x_combined'].to(device)
+            X_feat_input = x_combined.permute(0, 2, 1, 3)
+
             y_true = batch['y_true'].permute(0, 2, 1).to(device)
             mask = batch['mask'].permute(0, 2, 1).to(device)
-            x_stat = batch['x_static'].to(device)
             edge_index = batch['edge_index'].to(device)
-            time_feats = batch['time_features'].to(device)
 
-            prediction = model(x_dyn, x_stat, edge_index, time_feats)
+            # 2. Forward Pass
+            prediction = model(X_feat_input, edge_index)
             loss_matrix = criterion(prediction, y_true)
 
             masked_loss = loss_matrix[mask].mean()
@@ -161,15 +134,13 @@ def run_training_and_testing(model, train_loader, val_loader, test_loader,
                              dropout_rate, gnn_layers):
     """Coordinates the full training, validation, and testing cycle."""
 
-    start_time_total = time.time()  # timer for total training time
+    start_time_total = time.time()
 
-    optimizer = optim.Adam(model.parameters(), lr=LEARNING_RATE)
+    optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     criterion = nn.MSELoss(reduction='none')
     best_val_loss = float('inf')
     best_model_state = None
     patience_counter = 0
-
-    val_loss_history = []  # To track overfitting gap
 
     # --- TRAINING AND VALIDATION LOOP ---
     for epoch in range(NUM_EPOCHS):
@@ -180,11 +151,10 @@ def run_training_and_testing(model, train_loader, val_loader, test_loader,
 
         # Validate
         avg_val_loss = evaluate(model, val_loader, criterion, DEVICE)
-        val_loss_history.append(avg_val_loss)  # Track validation loss
 
         epoch_time = time.time() - start_time_epoch
 
-        # --- Early Stopping Logic ---
+        # Early Stopping Logic
         if avg_val_loss < best_val_loss:
             best_val_loss = avg_val_loss
             best_model_state = model.state_dict()
@@ -201,13 +171,11 @@ def run_training_and_testing(model, train_loader, val_loader, test_loader,
             f"Train Loss: {avg_train_loss:.6f} | Validation Loss: {avg_val_loss:.6f}"
         )
 
-
-
         if patience_counter >= PATIENCE:
             print(f"Stopping early! Validation loss hasn't improved for {PATIENCE} epochs.")
             break
 
-    total_training_time = time.time() - start_time_total  # <-- Stop timer
+    total_training_time = time.time() - start_time_total
     print("\nTraining complete.")
 
     # --- FINAL TESTING PHASE ---
@@ -223,25 +191,21 @@ def run_training_and_testing(model, train_loader, val_loader, test_loader,
         test_rmse = avg_test_loss_mse ** 0.5
 
         # 3. Calculate MAPE and Bias
-        # Run one final loop to accumulate data for MAPE and Bias
         total_mape = 0
         total_bias = 0
         num_batches = 0
 
         with torch.no_grad():
             for batch in test_loader:
-                # Transpose x_dynamic from (B, N, T, F) to (B, T, N, F)
-                x_dyn = batch['x_dynamic'].permute(0, 2, 1, 3).to(DEVICE)
+                # 1. Get and prepare input data
+                x_combined = batch['x_combined'].to(DEVICE)
+                X_feat_input = x_combined.permute(0, 2, 1, 3)
 
-                # Transpose y_true and mask from (B, N, T) to (B, T, N)
                 y_true = batch['y_true'].permute(0, 2, 1).to(DEVICE)
                 mask = batch['mask'].permute(0, 2, 1).to(DEVICE)
-
-                x_stat = batch['x_static'].to(DEVICE)
                 edge_index = batch['edge_index'].to(DEVICE)
-                time_feats = batch['time_features'].to(DEVICE)
 
-                prediction = model(x_dyn, x_stat, edge_index, time_feats)
+                prediction = model(X_feat_input, edge_index)
 
                 batch_mape, batch_bias = calculate_mape_and_bias(prediction, y_true, mask)
 
@@ -259,35 +223,33 @@ def run_training_and_testing(model, train_loader, val_loader, test_loader,
 
         # --- SAVE RESULTS AND MODEL ---
 
-        overfitting_gap = avg_train_loss - best_val_loss
-
         # 1. Prepare JSON Data
         results_data = {
             "model_name": run_name,
             "gnn_model_used": gnn_model_name,
             "hyperparameters": {
-                    "SEQ_LEN": SEQ_LEN,
-                    "BATCH_SIZE": BATCH_SIZE,
-                    "MASK_RATE": MASK_RATE,
-                    "LEARNING_RATE": learning_rate,
-                    "GNN_HIDDEN_DIM": gnn_hidden_dim,
-                    "GRU_HIDDEN_DIM": gru_hidden_dim,
-                    "GNN_LAYERS": gnn_layers,
-                    "GRU_LAYERS": GRU_LAYERS,
-                    "GAT_HEADS": gat_heads,
-                    "DROPOUT": dropout_rate,
-                    "PATIENCE": PATIENCE
+                "SEQ_LEN": SEQ_LEN,
+                "BATCH_SIZE": BATCH_SIZE,
+                "MASK_RATE": MASK_RATE,
+                "LEARNING_RATE": learning_rate,
+                "GNN_HIDDEN_DIM": gnn_hidden_dim,
+                "GRU_HIDDEN_DIM": gru_hidden_dim,
+                "GNN_LAYERS": gnn_layers,
+                "GRU_LAYERS": GRU_LAYERS,
+                "GAT_HEADS": gat_heads,
+                "DROPOUT": dropout_rate,
+                "PATIENCE": PATIENCE
             },
             "metrics": {
                 "test_mse": avg_test_loss_mse,
                 "test_rmse": test_rmse,
                 "test_mape": final_mape,
                 "bias": final_bias,
-                "overfitting_gap_val_diff": overfitting_gap
+                "overfitting_gap_val_diff": avg_train_loss - best_val_loss
             },
             "Best_epoch_metrics": {
                 "Best_epoch_train_loss_mse": avg_train_loss,
-                "Best_epoch_val_loss_mse": avg_val_loss,
+                "Best_epoch_val_loss_mse": best_val_loss,
             },
             "timing": {
                 "total_training_time_s": total_training_time,
