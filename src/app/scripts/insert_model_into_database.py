@@ -72,7 +72,7 @@ async def insert_model_metric(model_data: dict, type_id: UUID, db: AsyncSession)
         train_time_min= int(model_data["timing"]["total_training_time_s"]),
         bias= model_data["metrics"]["bias"],
         gap= model_data["metrics"]["overfitting_gap_val_diff"],
-        path_to_save= f"src/app/scripts/saved_models{model_data["model_name"] + ".pth"}"
+        path_to_save= f"src/app/scripts/saved_models/{model_data["model_name"] + ".pth"}"
     )
     model_metric = await create_metric(new_metric, db)
     return model_metric
