@@ -4,7 +4,6 @@ on:
   push:
     branches:
       - main
-      - Many5900-patch-1
   workflow_dispatch:
 
 env:
