@@ -23,6 +23,8 @@ jobs:
           pip install --no-cache-dir -r requirements.txt
 
       - name: Run microservice tests
+        env:
+          DATABASE_URL: "sqlite+aiosqlite:///:memory:"
         run: |
           pytest tests/mircro_service/ -v --cov=src/app --cov-report=term --cov-report=html
 
