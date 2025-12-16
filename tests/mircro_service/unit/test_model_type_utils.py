@@ -88,8 +88,10 @@ async def test_get_model_type_by_name_found():
     mock_db = AsyncMock()
     model_type = ModelTypeTable(id=uuid.uuid4(), name="GraphSAGE")
 
+    mock_scalars = MagicMock()
+    mock_scalars.first.return_value = model_type
     mock_result = MagicMock()
-    mock_result.scalar_one_or_none.return_value = model_type
+    mock_result.scalars.return_value = mock_scalars
     mock_db.execute.return_value = mock_result
 
     # Act
@@ -107,8 +109,10 @@ async def test_get_model_type_by_name_not_found():
     # Arrange
     mock_db = AsyncMock()
 
+    mock_scalars = MagicMock()
+    mock_scalars.first.return_value = None
     mock_result = MagicMock()
-    mock_result.scalar_one_or_none.return_value = None
+    mock_result.scalars.return_value = mock_scalars
     mock_db.execute.return_value = mock_result
 
     # Act

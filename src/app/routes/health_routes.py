@@ -1,7 +1,10 @@
-from fastapi import APIRouter, status, Depends
+from fastapi import APIRouter, status, Depends, HTTPException
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import text
 from src.app.database import get_db
+import logging
+
+logger = logging.getLogger(__name__)
 
 router = APIRouter(prefix="/health", tags=["health"])
 
@@ -38,20 +41,26 @@ async def readiness_probe(db: AsyncSession = Depends(get_db)):
         Status message including database connectivity status
 
     Raises:
-        Exception: If database connection fails (returns 500, pod marked not ready)
+        HTTPException: 503 if database connection fails (pod marked not ready)
     """
     try:
         # Simple query to check database connectivity
+        logger.debug("Readiness probe: checking database connectivity")
         await db.execute(text("SELECT 1"))
+        logger.debug("Readiness probe: database connection successful")
         return {
-            "status": "healthy",
+            "status": "ready",
             "service": "Attribute-Prediction API",
             "database": "connected"
         }
     except Exception as e:
-        return {
-            "status": "unhealthy",
-            "service": "Attribute-Prediction API",
-            "database": "disconnected",
-            "error": str(e)
-        }
+        logger.error(f"Readiness probe: database connection failed - {str(e)}")
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE,
+            detail={
+                "status": "not ready",
+                "service": "Attribute-Prediction API",
+                "database": "disconnected",
+                "error": str(e)
+            }
+        )

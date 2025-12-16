@@ -35,7 +35,6 @@ async def test_health_readiness(client: AsyncClient):
     # Assert
     assert response.status_code == 200
     data = response.json()
-    assert "status" in data
-    assert "database" in data
-    # With test database, this should succeed
+    assert data["status"] == "ready"
     assert data["database"] == "connected"
+    assert data["service"] == "Attribute-Prediction API"
