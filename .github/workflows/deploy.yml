@@ -45,8 +45,8 @@ jobs:
           context: .
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/${{ steps.repo.outputs.repo_lower }}:latest
-            ghcr.io/${{ github.repository_owner }}/${{ steps.repo.outputs.repo_lower }}:${{ github.sha }}
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ steps.repo.outputs.repo_lower }}:latest
+            ${{ env.REGISTRY }}/${{ github.repository_owner }}/${{ steps.repo.outputs.repo_lower }}:${{ github.sha }}
 
   deploy:
     needs: build-and-push
