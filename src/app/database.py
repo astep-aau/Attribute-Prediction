@@ -3,7 +3,9 @@ from sqlalchemy.orm import declarative_base
 import os
 from dotenv import load_dotenv
 
-load_dotenv()
+# Only load .env file in local development (not in cluster/docker)
+if os.getenv("ENV") != "cluster":
+    load_dotenv()
 
 DATABASE_URL = os.getenv("DATABASE_URL")
 if not DATABASE_URL:

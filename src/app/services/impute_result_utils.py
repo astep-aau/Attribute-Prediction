@@ -2,6 +2,7 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select, func
 from sqlalchemy.exc import IntegrityError
+import logging
 from src.app.schemas import (
     ImputeResultResponse,
     RoadIdResponse,
@@ -10,6 +11,8 @@ from src.app.schemas import (
 )
 from src.app.database_tables import ImputeResultTable
 from src.app.exceptions import NotFoundException, InvalidUUIDException, ForeignKeyViolationException
+
+logger = logging.getLogger(__name__)
 
 async def find_impute_results(
         model_id: str,
@@ -38,8 +41,10 @@ async def find_impute_results(
     try:
         uuid = UUID(model_id)
     except ValueError:
+        logger.warning(f"Invalid UUID format for model_id: {model_id}")
         raise InvalidUUIDException(f"Invalid UUID format: {model_id}")
 
+    logger.debug(f"Querying impute results for model: {model_id}, road: {road_id}, time range: {start_time}-{end_time}")
     result = await db.execute(
         select(
             ImputeResultTable.tms,
@@ -55,8 +60,10 @@ async def find_impute_results(
     res = result.all()
 
     if not res:
+        logger.info(f"No impute results found for model {model_id}, road {road_id}")
         raise NotFoundException(f"No impute results found for model {model_id}, road {road_id}")
 
+    logger.info(f"Found {len(res)} impute results for model {model_id}, road {road_id}")
     response = [ImputeResultResponse(
         tms=r[0],
         value=r[1],
@@ -83,8 +90,10 @@ async def find_road_ids(model_id: str, db: AsyncSession):
     try:
         uuid = UUID(model_id)
     except ValueError:
+        logger.warning(f"Invalid UUID format for model_id: {model_id}")
         raise InvalidUUIDException(f"Invalid UUID format: {model_id}")
 
+    logger.debug(f"Querying road IDs for model: {model_id}")
     result = await db.execute(
         select(ImputeResultTable.road_id)
         .where(ImputeResultTable.model_id == uuid)
@@ -93,8 +102,10 @@ async def find_road_ids(model_id: str, db: AsyncSession):
     roads = result.scalars().all()
 
     if not roads:
+        logger.info(f"No roads found for model {model_id}")
         raise NotFoundException(f"No roads found for model {model_id}")
 
+    logger.info(f"Found {len(roads)} roads for model {model_id}")
     return [RoadIdResponse(road_id=road_id) for road_id in roads]
 
 async def find_timespan(model_id: str, road_id: str, db: AsyncSession):
@@ -151,6 +162,7 @@ async def create_impute_result(result_data: ImputeResultCreate, db: AsyncSession
         ForeignKeyViolationException: If model_id doesn't exist
         IntegrityError: For other database constraint violations (e.g., duplicate primary key)
     """
+    logger.info(f"Creating impute result for model: {result_data.model_id}, road: {result_data.road_id}, timestamp: {result_data.tms}")
     new_result = ImputeResultTable(
         model_id=result_data.model_id,
         road_id=result_data.road_id,
@@ -163,8 +175,10 @@ async def create_impute_result(result_data: ImputeResultCreate, db: AsyncSession
     try:
         await db.commit()
         await db.refresh(new_result)
+        logger.info(f"Impute result created successfully for road: {result_data.road_id}")
     except IntegrityError as e:
         await db.rollback()
+        logger.error(f"Integrity error creating impute result: {str(e)}")
         if "foreign key" in str(e).lower():
             raise ForeignKeyViolationException(f"Invalid model_id: {result_data.model_id}. Model does not exist.")
         raise
