@@ -7,7 +7,6 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.actor }}/attribute-prediction
   K8S_NAMESPACE: cs-25-sw-5-06
 
 jobs:
@@ -25,7 +24,9 @@ jobs:
 
       - name: Set image tag
         id: image
-        run: echo "tag=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" >> "$GITHUB_OUTPUT"
+        run: |
+          ACTOR_LOWER=$(echo "${{ github.actor }}" | tr '[:upper:]' '[:lower:]')
+          echo "tag=${{ env.REGISTRY }}/${ACTOR_LOWER}/attribute-prediction:latest" >> "$GITHUB_OUTPUT"
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
