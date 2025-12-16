@@ -7,7 +7,7 @@ on:
 
 env:
   REGISTRY: ghcr.io
-  IMAGE_NAME: ${{ github.repository_owner }}/attribute-prediction
+  IMAGE_NAME: ${{ github.actor }}/attribute-prediction
   K8S_NAMESPACE: cs-25-sw-5-06
 
 jobs:
