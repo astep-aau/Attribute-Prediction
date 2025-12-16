@@ -46,17 +46,10 @@ async def get_all_model_types(db: AsyncSession):
         db: Database session
 
     Returns:
-        List of all model types with their IDs and names
-
-    Raises:
-        NotFoundException: If no model types found in the database
+        List of all model types with their IDs and names (empty list if none found)
     """
     result = await db.execute(select(ModelTypeTable))
     models = result.scalars().all()
-
-    if not models:
-        raise NotFoundException("No model types found")
-
     return models
 
 
