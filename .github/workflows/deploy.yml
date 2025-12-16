@@ -35,9 +35,13 @@ jobs:
             password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
-        run: |
-          docker build -t ${{ steps.image.outputs.tag }} .
-          docker push ${{ steps.image.outputs.tag }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/${{ steps.repo.outputs.repo_lower }}:latest
+            ghcr.io/${{ github.repository_owner }}/${{ steps.repo.outputs.repo_lower }}:${{ github.sha }}
 
   deploy:
     needs: build-and-push
