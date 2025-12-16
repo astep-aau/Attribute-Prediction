@@ -2,6 +2,7 @@ from uuid import UUID
 from sqlalchemy.ext.asyncio import AsyncSession
 from sqlalchemy import select
 from sqlalchemy.exc import IntegrityError
+import logging
 from src.app.database_tables import (
     ModelMetricsTable,
     HyperparamTable,
@@ -14,6 +15,8 @@ from src.app.schemas import (
     ModelLoss
 )
 from src.app.exceptions import InvalidUUIDException, NotFoundException, ForeignKeyViolationException
+
+logger = logging.getLogger(__name__)
 
 async def find_metric(model_type: str, db: AsyncSession):
     """
@@ -33,7 +36,10 @@ async def find_metric(model_type: str, db: AsyncSession):
     try:
         uuid = UUID(model_type)
     except ValueError:
+        logger.warning(f"Invalid UUID format for model_type: {model_type}")
         raise InvalidUUIDException(f"Invalid UUID format: {model_type}")
+    
+    logger.debug(f"Querying metrics for model type: {model_type}")
     result = await db.execute(
         select(ModelMetricsTable)
         .where(ModelMetricsTable.model_type == uuid)
@@ -41,8 +47,10 @@ async def find_metric(model_type: str, db: AsyncSession):
 
     metric_seq = result.scalars().all()
     if not metric_seq:
+        logger.info(f"No metrics found for model type: {model_type}")
         raise NotFoundException(f"No metrics for type: {model_type}")
 
+    logger.info(f"Found {len(metric_seq)} metrics for model type: {model_type}")
     model_metrics_list = []
     for metric in metric_seq:
         m = ModelMetricsResponse(
@@ -107,6 +115,7 @@ async def create_metric(metric_data: ModelMetricsCreate, db: AsyncSession):
         ForeignKeyViolationException: If model_type ID doesn't exist
         IntegrityError: For other database constraint violations
     """
+    logger.info(f"Creating metric for model type: {metric_data.model_type}")
     new_metric = ModelMetricsTable(
         model_type=metric_data.model_type,
         train_time_min=metric_data.train_time_min,
@@ -119,8 +128,10 @@ async def create_metric(metric_data: ModelMetricsCreate, db: AsyncSession):
     try:
         await db.commit()
         await db.refresh(new_metric)
+        logger.info(f"Metric created successfully with ID: {new_metric.id}")
     except IntegrityError as e:
         await db.rollback()
+        logger.error(f"Integrity error creating metric: {str(e)}")
         if "foreign key" in str(e).lower():
             raise ForeignKeyViolationException(f"Invalid model_type ID: {metric_data.model_type}. Model type does not exist.")
         raise
@@ -142,6 +153,7 @@ async def create_hyperparam(hyperparam_data: Hyperparam, db: AsyncSession):
         ForeignKeyViolationException: If model_id doesn't exist
         IntegrityError: For other database constraint violations
     """
+    logger.info(f"Creating hyperparam '{hyperparam_data.param_name}' for model: {hyperparam_data.model_id}")
     new_hyperparam = HyperparamTable(
         model_id= hyperparam_data.model_id,
         param_name= hyperparam_data.param_name,
@@ -152,8 +164,10 @@ async def create_hyperparam(hyperparam_data: Hyperparam, db: AsyncSession):
     try:
         await db.commit()
         await db.refresh(new_hyperparam)
+        logger.info(f"Hyperparam created successfully with ID: {new_hyperparam.id}")
     except IntegrityError as e:
         await db.rollback()
+        logger.error(f"Integrity error creating hyperparam: {str(e)}")
         if "foreign key" in str(e).lower():
             raise ForeignKeyViolationException(f"Invalid model_id: {hyperparam_data.model_id}. Model does not exist.")
         raise
@@ -175,6 +189,7 @@ async def create_loss(loss_data: ModelLoss, db: AsyncSession):
         ForeignKeyViolationException: If model_id doesn't exist
         IntegrityError: For other database constraint violations
     """
+    logger.info(f"Creating loss record (type: {loss_data.type}) for model: {loss_data.model_id}")
     new_loss = LossTable(
         model_id= loss_data.model_id,
         type= loss_data.type,
@@ -186,8 +201,10 @@ async def create_loss(loss_data: ModelLoss, db: AsyncSession):
     try:
         await db.commit()
         await db.refresh(new_loss)
+        logger.info(f"Loss record created successfully with ID: {new_loss.id}")
     except IntegrityError as e:
         await db.rollback()
+        logger.error(f"Integrity error creating loss: {str(e)}")
         if "foreign key" in str(e).lower():
             raise ForeignKeyViolationException(f"Invalid model_id: {loss_data.model_id}. Model does not exist.")
         raise

@@ -4,18 +4,45 @@ from src.app.routes import metric_routes, model_type_routes, impute_results_rout
 from src.app.database import engine, Base
 from src.app.exceptions import NotFoundException, InvalidUUIDException, ForeignKeyViolationException
 from contextlib import asynccontextmanager
+import logging
+import os
+import time
+
+# Configure logging
+logging.basicConfig(
+    level=logging.INFO if os.getenv("ENV") == "cluster" else logging.DEBUG,
+    format="%(asctime)s - %(name)s - %(levelname)s - %(message)s"
+)
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Startup: Create tables if they don't exist
+    logger.info("Application startup - initializing database tables")
     async with engine.begin() as conn:
         await conn.run_sync(Base.metadata.create_all)
+    logger.info("Database tables initialized successfully")
     yield
     # Shutdown: Close connections
+    logger.info("Application shutdown - closing database connections")
     await engine.dispose()
+    logger.info("Database connections closed")
 
 app = FastAPI(lifespan=lifespan)
+
+# Request logging middleware
+@app.middleware("http")
+async def log_requests(request: Request, call_next):
+    start_time = time.time()
+    logger.info(f"Request: {request.method} {request.url.path}")
+
+    response = await call_next(request)
+
+    duration = time.time() - start_time
+    logger.info(f"Response: {response.status_code} | Duration: {duration:.3f}s")
+
+    return response
 
 # Exception handlers
 @app.exception_handler(NotFoundException)
@@ -48,8 +75,8 @@ async def value_error_handler(request: Request, exc: ValueError):
 
 @app.exception_handler(Exception)
 async def general_exception_handler(request: Request, exc: Exception):
-    # Log the error for debugging (you can add proper logging here)
-    print(f"Unexpected error: {type(exc).__name__}: {str(exc)}")
+    # Log the error for debugging in cluster logs
+    logger.error(f"Unexpected error: {type(exc).__name__}: {str(exc)}", exc_info=True)
     return JSONResponse(
         status_code=500,
         content={"detail": "Internal server error"}
