@@ -14,7 +14,7 @@ spec:
         app: attribute-prediction
     spec:
       containers:
-      - name: fastapi
+      - name: attribute-prediction
         image: ghcr.io/astep-aau/attribute-prediction:latest
         ports:
         - containerPort: 8000
