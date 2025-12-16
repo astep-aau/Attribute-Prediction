@@ -12,15 +12,23 @@ if not DATABASE_URL:
     raise RuntimeError("The DATABASE_URL environment variable is not set. Please set it in your environment or .env file.")
 DEBUG = os.getenv("DEBUG", "false").lower() == "true"
 
-engine = create_async_engine(
-    DATABASE_URL,
-    echo=DEBUG,
-    future=True,
-    pool_size=5,
-    max_overflow=10,
-    pool_pre_ping=True,
-    pool_recycle=1800
-)
+# Configure engine with PostgreSQL-specific pool settings only for PostgreSQL
+if "sqlite" in DATABASE_URL:
+    engine = create_async_engine(
+        DATABASE_URL,
+        echo=DEBUG,
+        future=True
+    )
+else:
+    engine = create_async_engine(
+        DATABASE_URL,
+        echo=DEBUG,
+        future=True,
+        pool_size=5,
+        max_overflow=10,
+        pool_pre_ping=True,
+        pool_recycle=1800
+    )
 
 AsyncSessionLocal = async_sessionmaker(
     engine,
