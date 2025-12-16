@@ -4,10 +4,9 @@ on:
   push:
     branches:
       - main
+  workflow_dispatch:
 
 env:
-  REGISTRY: ghcr.io
-  IMAGE_NAME: astep-aau/attribute-prediction
   K8S_NAMESPACE: cs-25-sw-5-06
 
 jobs:
@@ -16,40 +15,44 @@ jobs:
     permissions:
       contents: read
       packages: write
-    outputs:
-      image_tag: ${{ steps.image.outputs.tag }}
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
 
-      - name: Set image tag
-        id: image
-        run: echo "tag=${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest" >> "$GITHUB_OUTPUT"
+      - name: Set lowercase repo name
+        id: repo
+        run: echo "repo_lower=$(echo '${{ github.event.repository.name }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
-            registry: ghcr.io
-            username: ${{ github.actor }}
-            password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Build and push Docker image
-        run: |
-          docker build -t ${{ steps.image.outputs.tag }} .
-          docker push ${{ steps.image.outputs.tag }}
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: |
+            ghcr.io/${{ github.repository_owner }}/${{ steps.repo.outputs.repo_lower }}:latest
+            ghcr.io/${{ github.repository_owner }}/${{ steps.repo.outputs.repo_lower }}:${{ github.sha }}
 
   deploy:
     needs: build-and-push
     runs-on: self-hosted
     permissions:
       contents: read
-    env:
-      IMAGE: ${{ needs.build-and-push.outputs.image_tag }}
 
     steps:
       - name: Checkout Code
         uses: actions/checkout@v4
+
+      - name: Set lowercase repo name
+        id: repo
+        run: echo "repo_lower=$(echo '${{ github.event.repository.name }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
       - name: Check permissions
         run: |
@@ -61,13 +64,17 @@ jobs:
           kubectl apply -f k8s/deployment.yaml -n "${{ env.K8S_NAMESPACE }}"
           kubectl apply -f k8s/service.yaml -n "${{ env.K8S_NAMESPACE }}"
 
-      - name: Update deployment image
+      - name: Rollout restart deployment
         run: |
-          kubectl set image deployment/attribute-prediction attribute-prediction="${IMAGE}" -n "${{ env.K8S_NAMESPACE }}"
+          kubectl rollout restart deployment/attribute-prediction -n "${{ env.K8S_NAMESPACE }}"
+
+      - name: Wait for rollout to complete
+        run: |
           kubectl rollout status deployment/attribute-prediction -n "${{ env.K8S_NAMESPACE }}" --timeout=10m
 
       - name: Create deployment summary
         run: |
+          IMAGE="ghcr.io/${{ github.repository_owner }}/${{ steps.repo.outputs.repo_lower }}:latest"
           echo "## Deployment Summary" >> $GITHUB_STEP_SUMMARY
           echo "Image built and pushed: \`${IMAGE}\`" >> $GITHUB_STEP_SUMMARY
           echo "Deployed to namespace: \`${{ env.K8S_NAMESPACE }}\`" >> $GITHUB_STEP_SUMMARY
