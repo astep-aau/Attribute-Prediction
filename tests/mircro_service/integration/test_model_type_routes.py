@@ -6,7 +6,7 @@ from httpx import AsyncClient
 async def test_create_model_type_success(client: AsyncClient, sample_model_type_data):
     """Test POST /model-types/ creates a model type successfully"""
     # Act
-    response = await client.post("/model-types/", json=sample_model_type_data)
+    response = await client.post("/model-types/create", json=sample_model_type_data)
 
     # Assert
     assert response.status_code == 201
@@ -19,7 +19,7 @@ async def test_create_model_type_success(client: AsyncClient, sample_model_type_
 async def test_create_model_type_invalid_data(client: AsyncClient):
     """Test POST /model-types/ with invalid data returns 422"""
     # Act
-    response = await client.post("/model-types/", json={})
+    response = await client.post("/model-types/create", json={})
 
     # Assert
     assert response.status_code == 422
@@ -42,8 +42,8 @@ async def test_get_all_model_types_empty(client: AsyncClient):
 async def test_get_all_model_types_with_data(client: AsyncClient):
     """Test GET /model-types/ returns all model types"""
     # Arrange - Create some model types
-    await client.post("/model-types/", json={"name": "GraphSAGE"})
-    await client.post("/model-types/", json={"name": "GCN"})
+    await client.post("/model-types/create", json={"name": "GraphSAGE"})
+    await client.post("/model-types/create", json={"name": "GCN"})
 
     # Act
     response = await client.get("/model-types/")
@@ -58,12 +58,12 @@ async def test_get_all_model_types_with_data(client: AsyncClient):
 
 @pytest.mark.asyncio
 async def test_create_duplicate_model_type(client: AsyncClient):
-    """Test POST /model-types/ with duplicate name returns 400 error"""
+    """Test POST /model-types/create with duplicate name returns 400"""
     # Arrange - Create first model type
-    await client.post("/model-types/", json={"name": "GraphSAGE"})
+    await client.post("/model-types/create", json={"name": "GraphSAGE"})
 
     # Act - Try to create duplicate
-    response = await client.post("/model-types/", json={"name": "GraphSAGE"})
+    response = await client.post("/model-types/create", json={"name": "GraphSAGE"})
 
     # Assert
     assert response.status_code == 400

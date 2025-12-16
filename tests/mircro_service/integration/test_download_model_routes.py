@@ -35,7 +35,7 @@ async def test_download_model_not_found(client: AsyncClient):
 async def test_download_model_file_not_exists(mock_isfile, client: AsyncClient):
     """Test GET /download_model/{model_id} when file doesn't exist on disk returns 404"""
     # Arrange - Create model type and metric
-    model_type_response = await client.post("/model-types/", json={"name": "GraphSAGE"})
+    model_type_response = await client.post("/model-types/create", json={"name": "GraphSAGE"})
     model_type_id = model_type_response.json()["id"]
 
     metric_data = {
@@ -69,7 +69,7 @@ async def test_download_model_success(client: AsyncClient):
 
     try:
         # Create model type and metric pointing to the temp file
-        model_type_response = await client.post("/model-types/", json={"name": "GCN"})
+        model_type_response = await client.post("/model-types/create", json={"name": "GCN"})
         model_type_id = model_type_response.json()["id"]
 
         metric_data = {

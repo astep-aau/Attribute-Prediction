@@ -8,7 +8,7 @@ import time
 async def test_create_impute_result_success(client: AsyncClient):
     """Test POST /impute-result/ successfully creates an impute result"""
     # Arrange - Create model type and metric first
-    model_type_response = await client.post("/model-types/", json={"name": "GraphSAGE"})
+    model_type_response = await client.post("/model-types/create", json={"name": "GraphSAGE"})
     model_type_id = model_type_response.json()["id"]
 
     metric_data = {
@@ -63,7 +63,7 @@ async def test_create_impute_result_invalid_model_id(client: AsyncClient):
 async def test_get_impute_results_success(client: AsyncClient):
     """Test GET /impute-result/{model_id}/{road_id}/{start_time}/{end_time} returns results"""
     # Arrange - Create model, metric, and impute results
-    model_type_response = await client.post("/model-types/", json={"name": "GCN"})
+    model_type_response = await client.post("/model-types/create", json={"name": "GCN"})
     model_type_id = model_type_response.json()["id"]
 
     metric_data = {
@@ -129,7 +129,7 @@ async def test_get_impute_results_not_found(client: AsyncClient):
 async def test_get_road_ids_success(client: AsyncClient):
     """Test GET /impute-result/roads/{model_id} returns all road IDs"""
     # Arrange - Create model and impute results for multiple roads
-    model_type_response = await client.post("/model-types/", json={"name": "GraphSAGE"})
+    model_type_response = await client.post("/model-types/create", json={"name": "GraphSAGE"})
     model_type_id = model_type_response.json()["id"]
 
     metric_data = {
@@ -193,7 +193,7 @@ async def test_get_road_ids_not_found(client: AsyncClient):
 async def test_get_time_interval_success(client: AsyncClient):
     """Test GET /impute-result/time-interval/{model_id}/{road_id} returns time range"""
     # Arrange - Create model and multiple impute results with different timestamps
-    model_type_response = await client.post("/model-types/", json={"name": "GCN"})
+    model_type_response = await client.post("/model-types/create", json={"name": "GCN"})
     model_type_id = model_type_response.json()["id"]
 
     metric_data = {

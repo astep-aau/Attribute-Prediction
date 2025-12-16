@@ -10,7 +10,7 @@ from src.app.services.model_type_utils import (
 
 router = APIRouter(prefix="/model-types", tags=["models types"])
 
-@router.post("/", response_model=ModelTypeResponse, status_code=status.HTTP_201_CREATED)
+@router.post("/create", response_model=ModelTypeResponse, status_code=status.HTTP_201_CREATED)
 async def create_model_type(
     model_type_data: ModelTypeCreate,
     db: AsyncSession = Depends(get_db)

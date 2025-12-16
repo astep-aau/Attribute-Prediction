@@ -7,7 +7,7 @@ import uuid
 async def test_create_metric_success(client: AsyncClient):
     """Test POST /model-metrics/create successfully creates a metric"""
     # Arrange - Create model type first
-    model_type_response = await client.post("/model-types/", json={"name": "GraphSAGE"})
+    model_type_response = await client.post("/model-types/create", json={"name": "GraphSAGE"})
     model_type_id = model_type_response.json()["id"]
 
     metric_data = {
@@ -53,7 +53,7 @@ async def test_create_metric_invalid_model_type(client: AsyncClient):
 async def test_get_metrics_success(client: AsyncClient):
     """Test GET /model-metrics/{model_type} returns metrics"""
     # Arrange - Create model type and metric
-    model_type_response = await client.post("/model-types/", json={"name": "GCN"})
+    model_type_response = await client.post("/model-types/create", json={"name": "GCN"})
     model_type_id = model_type_response.json()["id"]
 
     metric_data = {
@@ -102,7 +102,7 @@ async def test_get_metrics_not_found(client: AsyncClient):
 async def test_create_hyperparam_success(client: AsyncClient):
     """Test POST /model-metrics/hyperparam/create successfully creates hyperparameter"""
     # Arrange - Create model type and metric
-    model_type_response = await client.post("/model-types/", json={"name": "GraphSAGE"})
+    model_type_response = await client.post("/model-types/create", json={"name": "GraphSAGE"})
     model_type_id = model_type_response.json()["id"]
 
     metric_data = {
@@ -152,7 +152,7 @@ async def test_create_hyperparam_invalid_model_id(client: AsyncClient):
 async def test_create_loss_success(client: AsyncClient):
     """Test POST /model-metrics/loss/create successfully creates loss record"""
     # Arrange - Create model type and metric
-    model_type_response = await client.post("/model-types/", json={"name": "GCN"})
+    model_type_response = await client.post("/model-types/create", json={"name": "GCN"})
     model_type_id = model_type_response.json()["id"]
 
     metric_data = {
