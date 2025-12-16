@@ -65,10 +65,12 @@ jobs:
           kubectl apply -f k8s/deployment.yaml -n "${{ env.K8S_NAMESPACE }}"
           kubectl apply -f k8s/service.yaml -n "${{ env.K8S_NAMESPACE }}"
 
-      - name: Update deployment image
+      - name: Rollout restart deployment
         run: |
-          IMAGE="ghcr.io/${{ github.repository_owner }}/${{ steps.repo.outputs.repo_lower }}:latest"
-          kubectl set image deployment/attribute-prediction attribute-prediction="${IMAGE}" -n "${{ env.K8S_NAMESPACE }}"
+          kubectl rollout restart deployment/attribute-prediction -n "${{ env.K8S_NAMESPACE }}"
+
+      - name: Wait for rollout to complete
+        run: |
           kubectl rollout status deployment/attribute-prediction -n "${{ env.K8S_NAMESPACE }}" --timeout=10m
 
       - name: Create deployment summary

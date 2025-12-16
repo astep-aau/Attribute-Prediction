@@ -16,6 +16,7 @@ spec:
       containers:
       - name: attribute-prediction
         image: ghcr.io/astep-aau/attribute-prediction:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8000
         env:
