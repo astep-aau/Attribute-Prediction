@@ -99,12 +99,30 @@ src/app/
    DEBUG=true
    ```
 
-5. **Run the application**
+5. **Setup SSH Tunnel (Required for Local Development)**
+
+   The PostgreSQL database is hosted on the university server and requires an SSH tunnel to connect from local development:
+
+   ```bash
+   ssh -L 5432:cs-astep02.srv.aau.dk:30432 username@student.aau.dk -N
+   ```
+
+   This forwards local port 5432 to the remote database port 30432. Keep this terminal window open while developing.
+
+   Update your `.env` file to connect through the tunnel:
+   ```
+   DATABASE_URL=postgresql+asyncpg://username:password@localhost:5432/attribute_prediction
+   DEBUG=true
+   ```
+
+   **Note**: Replace `username` and `password` with your actual database credentials.
+
+6. **Run the application**
    ```bash
    uvicorn src.app.main:app --reload --host 0.0.0.0 --port 8000
    ```
 
-6. **Access the API**
+7. **Access the API**
    - API: http://localhost:8000
    - Interactive docs: http://localhost:8000/docs
    - OpenAPI schema: http://localhost:8000/openapi.json
