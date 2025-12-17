@@ -5,6 +5,8 @@ metadata:
   namespace: cs-25-sw-5-06
 spec:
   replicas: 1
+  strategy:
+    type: Recreate
   selector:
     matchLabels:
       app: attribute-prediction
@@ -14,8 +16,9 @@ spec:
         app: attribute-prediction
     spec:
       containers:
-      - name: fastapi
+      - name: attribute-prediction
         image: ghcr.io/astep-aau/attribute-prediction:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8000
         env:
@@ -31,10 +34,10 @@ spec:
         resources:
           requests:
             memory: "512Mi"
-            cpu: "250m"
+            cpu: "300m"
           limits:
             memory: "1Gi"
-            cpu: "500m"
+            cpu: "600m"
         livenessProbe:
           httpGet:
             path: /health/live
