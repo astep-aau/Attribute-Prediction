@@ -35,9 +35,12 @@ Production FastAPI service for serving predictions and managing model metadata.
 # Install dependencies
 pip install -r requirements.txt
 
+# Setup SSH tunnel to database (Required for local development)
+ssh -L 5432:cs-astep02.srv.aau.dk:30432 username@student.aau.dk -N
+
 # Configure environment
 cp .env.example .env
-# Edit .env with your DATABASE_URL
+# Edit .env with your DATABASE_URL (postgresql+asyncpg://user:pass@localhost:5432/db)
 
 # Run locally
 uvicorn src.app.main:app --reload
