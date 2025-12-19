@@ -30,3 +30,6 @@ kubeconfig.yaml
 
 # Kubernetes secrets (contains passwords)
 k8s/secret.yaml
+
+# Pickle file used for auto generated when importing data to datbase
+imputed_lookup.pkl
