@@ -24,8 +24,6 @@ def train_epoch(model, loader, criterion, optimizer, device):
     total_loss = 0
     accumulate_steps = 8
 
-    global PRINTED_FEATURES
-
     for i, batch in enumerate(loader):
 
         # 1. Get and prepare input data

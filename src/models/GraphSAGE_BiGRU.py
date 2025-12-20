@@ -96,4 +96,6 @@ class GraphSAGE_BiGRU_Imputer(nn.Module):
         prediction = prediction.reshape(batch_size, num_nodes, seq_len)
         final_output = prediction.permute(0, 2, 1)
 
+        final_output = torch.relu(final_output)
+
         return final_output

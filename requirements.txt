@@ -2,3 +2,6 @@ torch_geometric
 torch
 pandas
 setproctitle
+
+pytest
+pytest-cov

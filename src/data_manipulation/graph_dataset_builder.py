@@ -5,9 +5,6 @@ from typing import Dict
 from src.data_manipulation.file_loader import FileLoader
 
 
-# Note: collections.defaultdict is not strictly used in the final version, removed.
-
-
 class GraphDatasetBuilder:
     def __init__(self, loader: FileLoader, day_of_week_index: int,
                  x: torch.Tensor, edge_index: torch.Tensor,

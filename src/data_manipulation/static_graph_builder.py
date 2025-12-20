@@ -55,7 +55,7 @@ class StaticGraphBuilder:
             self._adj_data["edge_id"].isin(self.edge_as_node_map.keys())
         ]
 
-        # 1. Build topological lookup (Edge ID -> OSM Way object/tuple)
+        # 1. Build lookup (Edge ID -> OSM Way object/tuple)
         edge_to_way = {}
         for way in self._meta_data.itertuples():
             if not hasattr(way, 'nodes'):
