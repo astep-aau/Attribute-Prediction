@@ -147,7 +147,7 @@ async def find_timespan(model_id: str, road_id: str, db: AsyncSession):
 
     return TimeIntervalResponse(start_time= min_time, end_time= max_time)
 
-async def create_impute_result(result_data: ImputeResultCreate, db: AsyncSession):
+async def create_impute_result(result_data: ImputeResultCreate, db: AsyncSession, commit: bool = True):
     """
     Create a new imputation result entry
 
@@ -172,15 +172,16 @@ async def create_impute_result(result_data: ImputeResultCreate, db: AsyncSession
     )
 
     db.add(new_result)
-    try:
-        await db.commit()
-        await db.refresh(new_result)
-        logger.info(f"Impute result created successfully for road: {result_data.road_id}")
-    except IntegrityError as e:
-        await db.rollback()
-        logger.error(f"Integrity error creating impute result: {str(e)}")
-        if "foreign key" in str(e).lower():
-            raise ForeignKeyViolationException(f"Invalid model_id: {result_data.model_id}. Model does not exist.")
-        raise
+    if commit:
+        try:
+            await db.commit()
+            await db.refresh(new_result)
+            logger.info(f"Impute result created successfully for road: {result_data.road_id}")
+        except IntegrityError as e:
+            await db.rollback()
+            logger.error(f"Integrity error creating impute result: {str(e)}")
+            if "foreign key" in str(e).lower():
+                raise ForeignKeyViolationException(f"Invalid model_id: {result_data.model_id}. Model does not exist.")
+            raise
 
     return new_result

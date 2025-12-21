@@ -1,24 +1,33 @@
 import sys
+import csv
+import datetime
+import pickle
+import os
 from pathlib import Path
+import time
 
 # Add project root to Python path
-project_root = Path(__file__).parent.parent.parent.parent
-sys.path.insert(0, str(project_root))
+PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
+sys.path.insert(0, str(PROJECT_ROOT))
 
 from src.app.services.metric_utils import (
     create_metric,
     create_hyperparam,
-    create_loss
+    create_loss,
 )
 from src.app.services.model_type_utils import (
     get_model_type_by_name,
     create_model_type
 )
+from src.app.services.impute_result_utils import (
+    create_impute_result
+)
 from src.app.schemas import (
     ModelTypeCreate,
     ModelMetricsCreate,
     Hyperparam,
-    ModelLoss
+    ModelLoss,
+    ImputeResultCreate
 )
 from src.app.database import AsyncSessionLocal
 from sqlalchemy.ext.asyncio import AsyncSession
@@ -26,14 +35,18 @@ import asyncio
 import json
 from uuid import UUID
 
-JSON_FILE_NAME = "GraphSAGE_HPT15_L0.002_GNN256_GRU256_D0.2_A1_results.json"
-IMPUTE_RESULT_FILE_NAME = "GraphSAGE_HPT15_L0.002_GNN256_GRU256_D0.2_A1.csv"
+
+
+JSON_FILE_NAME = "GAT_L1_LR0.0001_GNN300_GRU300_H2_D0.2_results.json"
+IMPUTE_RESULT_FILE_NAME = "GAT_L1_LR0.0001_GNN300_GRU300_H2_D0.2.csv"
+CACHE_PATH = "imputed_lookup.pkl"
+DATA_PATH = PROJECT_ROOT / "src" / "app" / "scripts" / "data"
 
 async def main():
     # Read files
-    data_path = project_root / "src" / "app" / "scripts" / "data"
-    json_path = str(data_path / JSON_FILE_NAME)
-    impute_result_path = str(data_path / IMPUTE_RESULT_FILE_NAME)
+
+    json_path = str(DATA_PATH / JSON_FILE_NAME)
+    impute_result_path = str(DATA_PATH / IMPUTE_RESULT_FILE_NAME)
 
     with open(json_path, 'r') as f:
         model_data_json = json.load(f)
@@ -55,7 +68,9 @@ async def main():
         # Insert loss into database
         await insert_loss(model_data_json, model_metric.id, db)
 
-        # TODO Add insertion of imputation data
+        # Insert imputation data
+        await insert_imputation(impute_result_path, model_metric.id, db)
+
 
 async def find_or_create_model_type_id(name: str, db: AsyncSession) -> UUID:
     model_type_entry = await get_model_type_by_name(name, db)
@@ -112,7 +127,7 @@ async def insert_loss(model_data: dict, metric_id: UUID,  db: AsyncSession):
         await create_loss(new_loss, db)
 
     # Add losses from best_epoch_metrics
-    for key, value in model_data["best_epoch_metrics"].items():
+    for key, value in model_data["Best_epoch_metrics"].items():
         if ("train" in key):
             loss_type = "train"
         elif ("val" in key):
@@ -128,5 +143,61 @@ async def insert_loss(model_data: dict, metric_id: UUID,  db: AsyncSession):
         )
         await create_loss(new_loss, db)
 
+async def insert_imputation(impute_result_path: str, metric_id: UUID, db: AsyncSession):
+    start_time = time.time()
+    impute_lookup_set = get_impute_set()
+
+    with open(impute_result_path, newline='') as f:
+        reader = csv.reader(f)
+        header = next(reader)
+        for row_idx, row in enumerate(reader, start=1):
+            clock = row[0]
+            hour, minutes = clock.split(':', 1)
+            unix = int(datetime.datetime(2014, 1, 2, int(hour), int(minutes)).timestamp())
+            for index, value in enumerate(row[1:], start=1):
+                road_id = header[index]
+                create_object = ImputeResultCreate(
+                    model_id=metric_id,
+                    road_id=road_id,
+                    tms=unix,
+                    value=value,
+                    imputed= (unix, road_id) in impute_lookup_set
+                )
+                await create_impute_result(create_object, db, False)
+            if row_idx % 10 == 0:
+                print(f"Processed {row_idx} rows")
+            await db.commit()
+
+        await db.commit()
+        print(f"{"="*60}\n\nTotal processing time for data: {int((time.time() - start_time)/60)}min\n\n{"="*60}")
+
+def get_impute_set():
+    if os.path.exists(CACHE_PATH):
+        with open(CACHE_PATH, "rb") as f:
+            return pickle.load(f)
+
+    imputed_lookup = set()
+    path = str(PROJECT_ROOT / "data"/ "edge_data_day7.csv")
+
+    with open(path, newline="") as f:
+        reader = csv.reader(f)
+        header = next(reader)
+
+        for row in reader:
+            clock = row[0]
+            hour, minutes = clock.split(":", 1)
+            unix = datetime.datetime(2014, 1, 2, int(hour), int(minutes)).timestamp()
+
+            for idx, value in enumerate(row[1:], start=1):
+                if value == "-1.0":
+                    imputed_lookup.add((int(unix), header[idx]))
+
+    # save cache
+    with open(CACHE_PATH, "wb") as f:
+        pickle.dump(imputed_lookup, f, protocol=pickle.HIGHEST_PROTOCOL)
+
+    return imputed_lookup
+
 if __name__ == "__main__":
     asyncio.run(main())
+    # 2nd jan 2014
