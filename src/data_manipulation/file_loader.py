@@ -1,38 +1,56 @@
-from src.data_manipulation.data_loader import DataLoader
-import pandas as pd
+# src/data_manipulation/file_loader.py
 
-class FileLoader(DataLoader):
-    def __init__(self, edge_data_paths: str, edge_connections_path, meta_data_path):
-        self.edge_data_paths = edge_data_paths.split(",")
+import pandas as pd
+from typing import List, Dict
+
+
+class FileLoader:
+    def __init__(self, edge_data_path: str, edge_connections_path: str, meta_data_path: str, master_cols: List[str]):
+        """
+        Initializes the FileLoader with file paths and the global master column list
+        to ensure data consistency across daily files.
+        """
+        self.edge_data_path = edge_data_path
         self.edge_connections_path = edge_connections_path
         self.meta_data_path = meta_data_path
+        self.master_cols = master_cols
 
-    def get_travel_data(self):
-        dataframes = [pd.read_csv(e) for e in self.edge_data_paths]
-        all_edges = set()
+    def get_travel_data(self) -> pd.DataFrame:
+        """
+        Loads the daily travel time data, ensures it conforms to the global master_cols
+        (padding missing columns with the sentinel value -1.0), and computes the 'Timestamp'.
+        """
+        df = pd.read_csv(self.edge_data_path)
 
-        for dataframe in dataframes:
-            all_edges |= set(dataframe.columns)
-        all_edges.discard("time_slot")
+        # 1. Pad missing columns (nodes) with -1.0 to ensure consistent node count (N)
+        missing_cols = [col for col in self.master_cols if col not in df.columns]
 
-        # Sort edges
-        edges_sorted = sorted(all_edges, key=lambda x: int(x.split("_")[0].replace("edge","")))
-        master_cols = ["time_slot"] + edges_sorted
-        new_dataframes = []
-        for i, df in enumerate(dataframes):
-            # Fill missing edges with -1
-            missing_cols = {col: -1 for col in master_cols if col not in df.columns}
-            if missing_cols:
-                df = pd.concat([df, pd.DataFrame(missing_cols, index=df.index)], axis=1)
-            df = df[master_cols]
-            df["day"] = i + 1
-            new_dataframes.append(df)
+        if missing_cols:
+            missing_data = pd.DataFrame({col: -1.0 for col in missing_cols}, index=df.index)
+            df = pd.concat([df, missing_data], axis=1)
 
-        return pd.concat(new_dataframes, ignore_index=True)
+        # 2. Ensure the final DataFrame has the exact global column order and set
+        df = df[self.master_cols]
 
-    def get_meta_data(self):
-        # Transpose so edge IDs become the index and columns are oneway, road_type, nodes
-        return pd.read_json(self.meta_data_path).T
+        # 3. Calculate Timestamp
+        base_date = pd.to_datetime("2025-11-26 00:00:00")
+        time_parts = df["time_slot"].str.split(':', expand=True).astype(int)
+        time_offset = pd.to_timedelta(time_parts[0], unit='h') + pd.to_timedelta(time_parts[1], unit='m')
+        df["Timestamp"] = base_date + time_offset
 
-    def get_adjacency(self):
-        return pd.read_csv(self.edge_connections_path)
+        return df
+
+    def get_adjacency(self) -> pd.DataFrame:
+        """
+        Loads the edge connectivity data (adjacency list).
+        """
+        df = pd.read_csv(self.edge_connections_path)
+        return df
+
+    def get_meta_data(self) -> pd.DataFrame:
+        """
+        Loads the OSM metadata, transposes it (rows are edges), and ensures the Edge ID index is an integer.
+        """
+        df = pd.read_json(self.meta_data_path).T
+        df.index = df.index.astype(int)
+        return df

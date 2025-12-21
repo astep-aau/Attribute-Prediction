@@ -1,164 +1,100 @@
-from src.data_manipulation.data_loader import DataLoader
 import torch
 from torch_geometric.data import Data
 import pandas as pd
-from collections import defaultdict
+from typing import Dict
+from src.data_manipulation.file_loader import FileLoader
+
 
 class GraphDatasetBuilder:
-    def __init__(self, loader: DataLoader, timestep: int = 0):
-        self._adjacency_df = loader.get_adjacency()
+    def __init__(self, loader: FileLoader, day_of_week_index: int,
+                 x: torch.Tensor, edge_index: torch.Tensor,
+                 edge_ids: torch.Tensor, edge_as_node_map: Dict[int, int]):
+
+        # Daily Data
         self._travel_data = loader.get_travel_data()
-        self._meta_data_df = loader.get_meta_data()
+        self._day_of_week_index = day_of_week_index
 
-        # Filter adjacency to only include edges that have travel data
-        self._filter_adjacency_to_travel_edges()
+        # Static Graph Components (PASSED IN)
+        self.x = x
+        self.edge_index = edge_index
+        self.edge_ids = edge_ids
+        self._edge_as_node_map = edge_as_node_map
 
-        # Map each edge to a consecutive line-graph node ID
-        self._edge_as_node_map = self._create_edge_as_node_map()
-
-        # Build line graph connectivity
-        self.edge_index = self._build_line_graph_edge_index()
-
-        # Build node features (per edge)
-        self.x = self._build_node_features()
-
-        # Build target vector (travel time) for the specified timestep
-        self.y = self._build_target_tensor(timestep=timestep)
-
-    def _filter_adjacency_to_travel_edges(self):
-        """
-        Filter adjacency to only include edges that have travel data.
-        In a line graph, each road segment (edge) becomes a node.
-        """
-        # Get edge_ids from travel data columns
-        travel_columns = [c for c in self._travel_data.columns
-                         if c.startswith("edge") and c.endswith("_traversal_time_sec")]
-
-        travel_edge_ids = set()
-        for col in travel_columns:
-            # Parse "edge123_traversal_time_sec" -> 123
-            edge_num_str = col.split('_')[0].replace("edge", "")
-            travel_edge_ids.add(int(edge_num_str))
-
-        original_count = len(self._adjacency_df)
-        self._adjacency_df = self._adjacency_df[self._adjacency_df["edge_id"].isin(travel_edge_ids)].copy()
-
-        print(f"Filtered from {original_count} edges to {len(self._adjacency_df)} edges with travel data")
-
-    def _create_edge_as_node_map(self):
-        # Map original edges to consecutive node IDs
-        return {old_edge_id: new_id for new_id, old_edge_id in enumerate(self._adjacency_df["edge_id"])}
-
-    def _build_line_graph_edge_index(self):
-        """
-        Build line graph edge connectivity.
-
-        directed edge A -> edge B exists if A's end vertex = B's start vertex
-        (traffic can flow from road A into road B)
-        """
-        # Directed: A -> B only if A ends where B starts
-        vertex_end_to_edges = defaultdict(list)  # Edges that START at this vertex
-        vertex_start_from_edges = {}  # Where each edge ENDS
-
-        for _, row in self._adjacency_df.iterrows():
-            edge_id = row["edge_id"]
-            vertex_end_to_edges[row["vertex_start_id"]].append(edge_id)
-            vertex_start_from_edges[edge_id] = row["vertex_end_id"]
-
-        line_edges = []
-        for edge_from, vertex_end in vertex_start_from_edges.items():
-            # Find all edges that start where edge_from ends
-            for edge_to in vertex_end_to_edges.get(vertex_end, []):
-                if edge_from != edge_to:  # No self-loops
-                    n1 = self._edge_as_node_map[edge_from]
-                    n2 = self._edge_as_node_map[edge_to]
-                    line_edges.append((n1, n2))
-
-        if not line_edges:
-            return torch.empty((2, 0), dtype=torch.long)
-
-        return torch.tensor(list(zip(*line_edges)), dtype=torch.long)
-
-
-    def _build_node_features(self):
-        """
-        Build the node features:
-            road_type : string -> one hot encoded
-            oneway : Boolean -> int
-        """
-        sorted_df = self._adjacency_df.sort_values(
-            by='edge_id',
-            key=lambda col: col.map(self._edge_as_node_map)
-        )
-
-        road_types = ["motorway", "trunk", "primary", "secondary", "tertiary", "unclassified",
-                      "residential", "motorway_link", "trunk_link", "primary_link", "secondary_link",
-                      "tertiary_link", "living_street", "service", "pedestrian", "track", "bus_guideway",
-                      "escape", "raceway", "road", "busway"]
-
-        # Build lookup by iterating ways first
-        edge_to_way = {}
-        for way in self._meta_data_df.itertuples():
-            nodes_set = set(way.nodes)
-
-            # Check which edges belong to this way
-            for row in sorted_df.itertuples():
-                start_str = str(row.vertex_start_id)
-                end_str = str(row.vertex_end_id)
-
-                if start_str in nodes_set and end_str in nodes_set:
-                    edge_to_way[row.edge_id] = way
-
-        feature_list = []
-        missing_count = 0
-        unknown_road_types = set()
-        for row in sorted_df.itertuples():
-            if row.edge_id in edge_to_way:
-                way = edge_to_way[row.edge_id]
-                oneway = 1 if way.oneway else 0
-                type_encoded = [1 if way.road_type == rt else 0 for rt in road_types]
-
-                # Track unknown road types
-                if way.road_type not in road_types:
-                    unknown_road_types.add(way.road_type)
-
-                feature_vector = type_encoded + [oneway]
-                feature_list.append(feature_vector)
-            else:
-                # Default features if no way found
-                feature_list.append([0] * (len(road_types) + 1))
-                #print(f"No meta data for edge: {row.edge_id}")
-                missing_count += 1
-
-        print(f"{missing_count} edges are missing metadata out of {len(sorted_df)}")
-        if unknown_road_types:
-            print(f"Warning: Found unknown road types: {unknown_road_types}")
-        return torch.tensor(feature_list, dtype=torch.float)
-
-    def _build_target_tensor(self, timestep=0):
-        # Pick a single timestep from travel data
-        row = self._travel_data.iloc[timestep]
-
-        # Columns corresponding to edges
-        travel_columns = [c for c in row.index
-                         if c.startswith("edge") and c.endswith("_traversal_time_sec")]
-
-        # Map travel times to edge_ids
-        travel_dict = {}
-        for c in travel_columns:
-            edge_num_str = c.split('_')[0].replace("edge", "")
-            edge_id = int(edge_num_str)
-            travel_dict[edge_id] = row[c]
-
-        # Build target tensor ordered by line graph node IDs
-        y_list = []
-        for edge_id in sorted(self._edge_as_node_map, key=lambda k: self._edge_as_node_map[k]):
-            if edge_id not in travel_dict:
-                raise ValueError(f"Edge {edge_id} missing travel data at timestep {timestep}")
-            y_list.append(travel_dict[edge_id])
-
-        return torch.tensor(y_list, dtype=torch.float)
+        # Dynamic/Daily Data Construction
+        self.temporal_features = self._generate_temporal_features()
 
     def get_data(self):
-        # Return as PyTorch Geometric Data object
-        return Data(x=self.x, edge_index=self.edge_index, y=self.y)
+        """
+        Returns the static graph structure as a PyTorch Geometric Data object.
+        Used primarily for accessing static components by the SequenceDataset.
+        """
+        return Data(x=self.x, edge_index=self.edge_index)
+
+    def get_full_traffic_matrix(self):
+        """
+        Returns a tensor of shape (TimeSteps, Num_Nodes).
+        Rows are timesteps, Columns are Nodes (sorted by _edge_as_node_map).
+        """
+        # 1. Identify travel time columns
+        travel_columns = [c for c in self._travel_data.columns
+                          if c.startswith("edge") and c.endswith("_traversal_time_sec")]
+
+        # 2. Map column names to their assigned line graph node IDs
+        col_to_node_id = {}
+        for col in travel_columns:
+            edge_id = int(col.split('_')[0].replace("edge", ""))
+            if edge_id in self._edge_as_node_map:
+                col_to_node_id[col] = self._edge_as_node_map[edge_id]
+
+        # 3. Sort columns based on Node ID to ensure consistent order
+        sorted_cols = sorted(col_to_node_id, key=col_to_node_id.get)
+
+        # 4. Extract data and convert to tensor
+        full_data = self._travel_data[sorted_cols].values
+        return torch.tensor(full_data, dtype=torch.float)
+
+    def _generate_temporal_features(self):
+        """
+        Generates time-of-day (sin/cos encoding) and day-of-week (one-hot) features
+        for the entire travel data timeline. Output shape is (TimeSteps, 9).
+        """
+        df = self._travel_data.copy()
+        num_timesteps = len(df)
+
+        # Time-of-Day (Cyclic Encoding)
+        # Total minutes in a day = 1440
+        minutes_in_day_series = df['Timestamp'].dt.hour * 60 + df['Timestamp'].dt.minute
+
+        # Convert Pandas Series to Tensor for PyTorch operations
+        minutes_in_day_tensor = torch.tensor(minutes_in_day_series.values, dtype=torch.float)
+
+        # Sin/Cos encoding (2 dimensions)
+        time_sin = torch.sin(2 * torch.pi * minutes_in_day_tensor / 1440).numpy()
+        time_cos = torch.cos(2 * torch.pi * minutes_in_day_tensor / 1440).numpy()
+
+        # Day-of-Week (One-Hot Encoding - 7 dimensions)
+        # Create a series where every row has the same day index
+        day_of_week_series = pd.Series(
+            [self._day_of_week_index] * num_timesteps,
+            index=df.index
+        )
+
+        # Convert to Categorical with all 7 categories explicitly defined
+        day_of_week_categorical = pd.Categorical(
+            day_of_week_series,
+            categories=list(range(7))
+        )
+
+        # Apply one-hot encoding
+        day_of_week_one_hot = pd.get_dummies(day_of_week_categorical, prefix='dow')
+
+        # Concatenate Time features and Day features
+        temporal_features_df = pd.DataFrame({
+            'time_sin': time_sin,
+            'time_cos': time_cos
+        }, index=df.index)
+
+        temporal_features_df = pd.concat([temporal_features_df, day_of_week_one_hot], axis=1).astype('float32')
+
+        # Convert final DataFrame to Tensor (T, 9)
+        return torch.tensor(temporal_features_df.values, dtype=torch.float)

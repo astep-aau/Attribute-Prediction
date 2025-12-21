@@ -1,0 +1,27 @@
+{
+    "model_name": "gs_exp1_h64",
+    "hyperparameters": {
+        "SEQ_LEN": 12,
+        "BATCH_SIZE": 2,
+        "MASK_RATE": 0.2,
+        "GNN_HIDDEN_DIM": 64,
+        "GRU_HIDDEN_DIM": 64,
+        "GRU_LAYERS": 1,
+        "GAT_HEADS": 2,
+        "DROPOUT": 0.3,
+        "LEARNING_RATE": 0.002,
+        "PATIENCE": 10
+    },
+    "metrics": {
+        "test_mse": 217.43383026123047,
+        "test_rmse": 14.745637668857542,
+        "test_mape": 352.12600326538086,
+        "best_val_mse": 185.4954128265381,
+        "bias": -0.9697819991658131,
+        "overfitting_gap_val_diff": -5.626299909736275
+    },
+    "timing": {
+        "total_training_time_s": 1134.931919336319,
+        "epochs_completed": 1
+    }
+}

@@ -2,6 +2,7 @@
 #torch_geometric
 #torch
 pandas
+setproctitle
 
 
 # App requirements

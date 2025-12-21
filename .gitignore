@@ -19,6 +19,8 @@ htmlcov/
 # vscode
 .vscode
 
+# .idea
+.idea
 # env
 .env
 
