@@ -1,0 +1,34 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+venv/
+env/
+*.egg-info/
+
+# Git
+.git/
+.gitignore
+
+# IDE
+.vscode/
+.idea/
+
+# Testing
+tests/
+*.md
+
+# Data (exclude large files from image)
+data/*.pth
+data/*.csv
+data/*.json
+
+# Kubernetes
+k8s/
+kubeconfig.yaml
+
+# Environment
+.env
+.env.*

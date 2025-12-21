@@ -1,7 +1,21 @@
-torch_geometric
-torch
+# Model requirements
+#torch_geometric
+#torch
 pandas
 setproctitle
 
+
+# App requirements
+FastAPI
+uvicorn[standard]
+sqlalchemy[asyncio]
+asyncpg
+pydantic
+pydantic-settings
+
+# Tests requirements
 pytest
 pytest-cov
+pytest_asyncio
+httpx
+aiosqlite
