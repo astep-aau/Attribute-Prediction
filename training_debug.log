@@ -19,3 +19,95 @@
 2025-12-12 09:50:42,552 - INFO - x_stat, mask done
 2025-12-12 09:50:42,552 - INFO - edge_index, mask done
 2025-12-12 09:50:42,552 - INFO - time_feats, mask done
+2026-01-22 00:18:17,731 - INFO - Using device: cpu
+2026-01-22 00:18:17,732 - INFO - Found 10 daily files
+2026-01-22 00:18:17,732 - INFO - Using edge_data_day9.csv for evaluation
+2026-01-22 00:18:17,732 - INFO - Building global edge set...
+2026-01-22 00:18:17,823 - INFO - Total edges: 6639
+2026-01-22 00:18:17,823 - INFO - Building static graph...
+2026-01-22 00:18:44,261 - INFO - Graph: N=6639 nodes, F=22 static features
+2026-01-22 00:18:44,261 - INFO - Building dataset...
+2026-01-22 00:20:44,893 - INFO - Using device: cpu
+2026-01-22 00:20:44,894 - INFO - Found 10 daily files
+2026-01-22 00:20:44,894 - INFO - Using edge_data_day9.csv for evaluation
+2026-01-22 00:20:44,894 - INFO - Building global edge set...
+2026-01-22 00:20:44,975 - INFO - Total edges: 6639
+2026-01-22 00:20:44,975 - INFO - Building static graph...
+2026-01-22 00:21:10,459 - INFO - Graph: N=6639 nodes, F=22 static features
+2026-01-22 00:21:10,459 - INFO - Building dataset...
+2026-01-22 00:21:10,957 - INFO - Traffic matrix shape: torch.Size([288, 6639])
+2026-01-22 00:21:10,957 - INFO - Temporal features shape: torch.Size([288, 9])
+2026-01-22 00:21:10,958 - INFO - Dataset ready: 24 samples, batch_size=1
+2026-01-22 00:21:10,962 - INFO - Model input features: 32
+2026-01-22 00:21:10,963 - INFO - Found 42 model checkpoints
+2026-01-22 00:21:10,963 - INFO - 
+================================================================================
+2026-01-22 00:21:10,963 - INFO - Evaluating: GAT_L1_LR0.0001_GNN200_GRU200_H1_D0.2
+2026-01-22 00:21:10,963 - INFO - ================================================================================
+2026-01-22 00:21:10,963 - INFO - Config: layers=1, gnn_dim=200, gru_dim=200, heads=1, dropout=0.2
+2026-01-22 00:21:11,069 - INFO - Model loaded successfully
+2026-01-22 00:21:11,069 - INFO - 
+Evaluating with 10% missingness...
+2026-01-22 00:21:11,793 - INFO -   Processed batch 0/24
+2026-01-22 00:21:24,327 - INFO - Results: MAE=21.8970, RMSE=38.2342, MAPE=108.49%, Masked values=191184
+2026-01-22 00:21:24,327 - INFO - 
+Evaluating with 20% missingness...
+2026-01-22 00:21:24,874 - INFO -   Processed batch 0/24
+2026-01-22 00:21:37,602 - INFO - Results: MAE=22.1344, RMSE=37.2513, MAPE=114.06%, Masked values=382392
+2026-01-22 00:21:37,602 - INFO - 
+Evaluating with 30% missingness...
+2026-01-22 00:21:38,151 - INFO -   Processed batch 0/24
+2026-01-22 00:21:50,721 - INFO - Results: MAE=22.4812, RMSE=36.9830, MAPE=117.71%, Masked values=573600
+2026-01-22 00:21:50,721 - INFO - 
+================================================================================
+2026-01-22 00:21:50,721 - INFO - Evaluating: GAT_L1_LR0.0001_GNN200_GRU200_H2_D0.2
+2026-01-22 00:21:50,721 - INFO - ================================================================================
+2026-01-22 00:21:50,721 - INFO - Config: layers=1, gnn_dim=200, gru_dim=200, heads=2, dropout=0.2
+2026-01-22 00:21:50,730 - INFO - Model loaded successfully
+2026-01-22 00:21:50,730 - INFO - 
+Evaluating with 10% missingness...
+2026-01-22 00:21:51,254 - INFO -   Processed batch 0/24
+2026-01-22 00:22:03,773 - INFO - Results: MAE=24.4861, RMSE=38.0166, MAPE=140.48%, Masked values=191184
+2026-01-22 00:22:03,773 - INFO - 
+Evaluating with 20% missingness...
+2026-01-22 00:22:04,384 - INFO -   Processed batch 0/24
+2026-01-22 00:22:17,373 - INFO - Results: MAE=24.5508, RMSE=37.8989, MAPE=140.25%, Masked values=382392
+2026-01-22 00:22:17,373 - INFO - 
+Evaluating with 30% missingness...
+2026-01-22 00:22:17,970 - INFO -   Processed batch 0/24
+2026-01-22 00:22:30,745 - INFO - Results: MAE=24.6623, RMSE=37.2358, MAPE=142.31%, Masked values=573600
+2026-01-22 00:22:30,745 - INFO - 
+================================================================================
+2026-01-22 00:22:30,745 - INFO - Evaluating: GAT_L1_LR0.0001_GNN200_GRU300_H1_D0.2
+2026-01-22 00:22:30,745 - INFO - ================================================================================
+2026-01-22 00:22:30,745 - INFO - Config: layers=1, gnn_dim=200, gru_dim=300, heads=1, dropout=0.2
+2026-01-22 00:22:30,760 - INFO - Model loaded successfully
+2026-01-22 00:22:30,760 - INFO - 
+Evaluating with 10% missingness...
+2026-01-22 00:22:31,780 - INFO -   Processed batch 0/24
+2026-01-22 00:22:55,063 - INFO - Results: MAE=22.4075, RMSE=36.9877, MAPE=115.62%, Masked values=191184
+2026-01-22 00:22:55,063 - INFO - 
+Evaluating with 20% missingness...
+2026-01-22 00:22:56,044 - INFO -   Processed batch 0/24
+2026-01-22 00:23:19,066 - INFO - Results: MAE=23.3522, RMSE=37.0984, MAPE=120.15%, Masked values=382392
+2026-01-22 00:23:19,066 - INFO - 
+Evaluating with 30% missingness...
+2026-01-22 00:23:20,060 - INFO -   Processed batch 0/24
+2026-01-22 00:23:45,705 - INFO - Results: MAE=24.1630, RMSE=37.6973, MAPE=126.74%, Masked values=573600
+2026-01-22 00:23:45,705 - INFO - 
+================================================================================
+2026-01-22 00:23:45,705 - INFO - FINAL RESULTS
+2026-01-22 00:23:45,705 - INFO - ================================================================================
+
+2026-01-22 00:23:45,712 - INFO -                                 model mask_rate       MAE      RMSE       MAPE  num_masked
+GAT_L1_LR0.0001_GNN200_GRU200_H1_D0.2       10% 21.897007 38.234165 108.487144      191184
+GAT_L1_LR0.0001_GNN200_GRU200_H1_D0.2       20% 22.134357 37.251289 114.064682      382392
+GAT_L1_LR0.0001_GNN200_GRU200_H1_D0.2       30% 22.481174 36.982967 117.713867      573600
+GAT_L1_LR0.0001_GNN200_GRU200_H2_D0.2       10% 24.486065 38.016617 140.477875      191184
+GAT_L1_LR0.0001_GNN200_GRU200_H2_D0.2       20% 24.550821 37.898880 140.254822      382392
+GAT_L1_LR0.0001_GNN200_GRU200_H2_D0.2       30% 24.662291 37.235821 142.312943      573600
+GAT_L1_LR0.0001_GNN200_GRU300_H1_D0.2       10% 22.407455 36.987713 115.619255      191184
+GAT_L1_LR0.0001_GNN200_GRU300_H1_D0.2       20% 23.352207 37.098408 120.150444      382392
+GAT_L1_LR0.0001_GNN200_GRU300_H1_D0.2       30% 24.163002 37.697311 126.736107      573600
+2026-01-22 00:23:45,712 - INFO - 
+Results saved to: C:\Users\jacob\OneDrive - Aalborg Universitet\AAU Uni\AAU 5. semester\P5\P5_Attribute_Prediction\Attribute-Prediction\imputation_evaluation_results.csv
