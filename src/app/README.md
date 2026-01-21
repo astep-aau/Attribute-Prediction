@@ -160,7 +160,7 @@ For detailed API documentation, run the server and visit `/docs`.
 
 ## Database Schema
 
-### Tables
+### Database Tables
 
 **model_types**
 - `id` (UUID, PK)
@@ -188,12 +188,15 @@ For detailed API documentation, run the server and visit `/docs`.
 - `loss_value` (Float)
 - `loss_unit` (String)
 
-**impute_results**
-- `model_id` (UUID, PK, FK → model_metrics)
-- `road_id` (String, PK)
-- `tms` (BigInteger, PK) - Unix timestamp
-- `value` (Float)
-- `imputed` (Boolean)
+### CSV File Storage
+
+**Imputation Results** (stored in `data/imputation_results/`)
+
+Imputation results are stored as CSV files (one per model) to reduce database storage overhead:
+- Filename: `{model_id}.csv`
+- Columns: `road_id`, `tms` (Unix timestamp), `value`, `imputed`
+- Location: Configurable via `IMPUTE_RESULTS_PATH` environment variable
+- Default path: `data/imputation_results/`
 
 ## Testing
 
@@ -215,8 +218,8 @@ pytest tests/mircro_service/unit/ -v
 
 ### Test Structure
 
-- **Unit Tests** (39 tests) - Service layer logic with mocked database
-- **Integration Tests** (32 tests) - Full API endpoint testing with SQLite
+- **Unit Tests** (39 tests) - Service layer logic with mocked CSV operations
+- **Integration Tests** (32 tests) - Full API endpoint testing with temporary CSV files
 - **Coverage**: 75% overall, 98-100% on service utilities
 
 See [tests/how_to_run_test.md](../../tests/how_to_run_test.md) for more details.
@@ -277,6 +280,7 @@ kubectl apply -f k8s/service.yaml -n cs-25-sw-5-06
 | `DATABASE_URL` | PostgreSQL connection string | - | Yes |
 | `DEBUG` | Enable SQL query logging | `false` | No |
 | `ENV` | Environment (local/cluster) | `local` | No |
+| `IMPUTE_RESULTS_PATH` | Path to store imputation result CSV files | `data/imputation_results` | No |
 
 ### Example Configurations
 
@@ -284,6 +288,7 @@ kubectl apply -f k8s/service.yaml -n cs-25-sw-5-06
 ```bash
 DATABASE_URL=postgresql+asyncpg://user:pass@localhost:5432/dbname
 DEBUG=true
+IMPUTE_RESULTS_PATH=data/imputation_results
 ```
 
 **Cluster (Kubernetes):**

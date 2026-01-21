@@ -12,6 +12,7 @@ sqlalchemy[asyncio]
 asyncpg
 pydantic
 pydantic-settings
+aiofiles
 
 # Tests requirements
 pytest

@@ -2,24 +2,29 @@ import pytest
 from httpx import AsyncClient
 import uuid
 import time
+import shutil
+from pathlib import Path
+from src.app.config import settings
+
+
+@pytest.fixture(autouse=True)
+def clean_csv_files():
+    """Clean up CSV files before and after each test"""
+    csv_dir = settings.impute_results_dir
+    if csv_dir.exists():
+        shutil.rmtree(csv_dir)
+    csv_dir.mkdir(parents=True, exist_ok=True)
+    yield
+    # Cleanup after test
+    if csv_dir.exists():
+        shutil.rmtree(csv_dir)
 
 
 @pytest.mark.asyncio
 async def test_create_impute_result_success(client: AsyncClient):
     """Test POST /impute-result/ successfully creates an impute result"""
-    # Arrange - Create model type and metric first
-    model_type_response = await client.post("/model-types/create", json={"name": "GraphSAGE"})
-    model_type_id = model_type_response.json()["id"]
-
-    metric_data = {
-        "model_type": model_type_id,
-        "train_time_min": 45,
-        "bias": 0.15,
-        "gap": 0.25,
-        "path_to_save": "/models/test_model.pth"
-    }
-    metric_response = await client.post("/model-metrics/create", json=metric_data)
-    model_id = metric_response.json()["id"]
+    # Arrange - Use a valid UUID (no need to create model in DB anymore)
+    model_id = str(uuid.uuid4())
 
     impute_data = {
         "model_id": model_id,
@@ -41,11 +46,11 @@ async def test_create_impute_result_success(client: AsyncClient):
 
 
 @pytest.mark.asyncio
-async def test_create_impute_result_invalid_model_id(client: AsyncClient):
-    """Test POST /impute-result/ with non-existent model_id returns 400"""
+async def test_create_impute_result_invalid_uuid(client: AsyncClient):
+    """Test POST /impute-result/ with invalid UUID returns 422 (Pydantic validation)"""
     # Arrange
     impute_data = {
-        "model_id": str(uuid.uuid4()),
+        "model_id": "invalid-uuid",
         "road_id": "123",
         "tms": int(time.time()),
         "value": 50.5,
@@ -55,26 +60,15 @@ async def test_create_impute_result_invalid_model_id(client: AsyncClient):
     # Act
     response = await client.post("/impute-result/", json=impute_data)
 
-    # Assert
-    assert response.status_code == 400
+    # Assert - Pydantic validation returns 422
+    assert response.status_code == 422
 
 
 @pytest.mark.asyncio
 async def test_get_impute_results_success(client: AsyncClient):
     """Test GET /impute-result/{model_id}/{road_id}/{start_time}/{end_time} returns results"""
-    # Arrange - Create model, metric, and impute results
-    model_type_response = await client.post("/model-types/create", json={"name": "GCN"})
-    model_type_id = model_type_response.json()["id"]
-
-    metric_data = {
-        "model_type": model_type_id,
-        "train_time_min": 30,
-        "bias": 0.1,
-        "gap": 0.2,
-        "path_to_save": "/models/gcn_model.pth"
-    }
-    metric_response = await client.post("/model-metrics/create", json=metric_data)
-    model_id = metric_response.json()["id"]
+    # Arrange - Create impute results
+    model_id = str(uuid.uuid4())
 
     # Create multiple impute results
     start_time = int(time.time())
@@ -126,21 +120,41 @@ async def test_get_impute_results_not_found(client: AsyncClient):
 
 
 @pytest.mark.asyncio
+async def test_get_impute_results_filtered_by_road(client: AsyncClient):
+    """Test GET /impute-result/ filters results by road_id"""
+    # Arrange
+    model_id = str(uuid.uuid4())
+    start_time = int(time.time())
+
+    # Create results for multiple roads
+    for road_id in ["111", "222"]:
+        for i in range(2):
+            impute_data = {
+                "model_id": model_id,
+                "road_id": road_id,
+                "tms": start_time + i * 60,
+                "value": 30.0 + float(road_id) + i,
+                "imputed": False
+            }
+            await client.post("/impute-result/", json=impute_data)
+
+    end_time = start_time + 180
+
+    # Act - Get only results for road 111
+    response = await client.get(f"/impute-result/{model_id}/111/{start_time}/{end_time}")
+
+    # Assert
+    assert response.status_code == 200
+    data = response.json()
+    assert len(data) == 2
+    # Verify all results are for road 111 (indirectly by checking count)
+
+
+@pytest.mark.asyncio
 async def test_get_road_ids_success(client: AsyncClient):
     """Test GET /impute-result/roads/{model_id} returns all road IDs"""
-    # Arrange - Create model and impute results for multiple roads
-    model_type_response = await client.post("/model-types/create", json={"name": "GraphSAGE"})
-    model_type_id = model_type_response.json()["id"]
-
-    metric_data = {
-        "model_type": model_type_id,
-        "train_time_min": 45,
-        "bias": 0.15,
-        "gap": 0.25,
-        "path_to_save": "/models/test_model.pth"
-    }
-    metric_response = await client.post("/model-metrics/create", json=metric_data)
-    model_id = metric_response.json()["id"]
+    # Arrange - Create impute results for multiple roads
+    model_id = str(uuid.uuid4())
 
     # Create results for different roads
     for road_id in ["101", "102", "103"]:
@@ -192,19 +206,8 @@ async def test_get_road_ids_not_found(client: AsyncClient):
 @pytest.mark.asyncio
 async def test_get_time_interval_success(client: AsyncClient):
     """Test GET /impute-result/time-interval/{model_id}/{road_id} returns time range"""
-    # Arrange - Create model and multiple impute results with different timestamps
-    model_type_response = await client.post("/model-types/create", json={"name": "GCN"})
-    model_type_id = model_type_response.json()["id"]
-
-    metric_data = {
-        "model_type": model_type_id,
-        "train_time_min": 30,
-        "bias": 0.1,
-        "gap": 0.2,
-        "path_to_save": "/models/gcn_model.pth"
-    }
-    metric_response = await client.post("/model-metrics/create", json=metric_data)
-    model_id = metric_response.json()["id"]
+    # Arrange - Create multiple impute results with different timestamps
+    model_id = str(uuid.uuid4())
 
     base_time = int(time.time())
     timestamps = [base_time, base_time + 300, base_time + 600]
@@ -252,3 +255,36 @@ async def test_get_time_interval_not_found(client: AsyncClient):
 
     # Assert
     assert response.status_code == 404
+
+
+@pytest.mark.asyncio
+async def test_create_impute_result_duplicate(client: AsyncClient):
+    """Test POST /impute-result/ with duplicate updates existing entry"""
+    # Arrange
+    model_id = str(uuid.uuid4())
+
+    impute_data_1 = {
+        "model_id": model_id,
+        "road_id": "555",
+        "tms": 1000,
+        "value": 50.5,
+        "imputed": False
+    }
+
+    impute_data_2 = {
+        "model_id": model_id,
+        "road_id": "555",
+        "tms": 1000,  # Same timestamp
+        "value": 75.0,  # Different value
+        "imputed": True  # Different imputed
+    }
+
+    # Act
+    response1 = await client.post("/impute-result/", json=impute_data_1)
+    response2 = await client.post("/impute-result/", json=impute_data_2)
+
+    # Assert
+    assert response1.status_code == 201
+    assert response2.status_code == 201
+    assert response2.json()["value"] == 75.0
+    assert response2.json()["imputed"] is True

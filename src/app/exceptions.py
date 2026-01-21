@@ -23,3 +23,11 @@ class ValidationException(Exception):
 class ForeignKeyViolationException(Exception):
     """Raised when a foreign key constraint is violated"""
     pass
+
+class FileOperationException(Exception):
+    """Raised when file operations (CSV read/write) fail"""
+    pass
+
+class CSVParseException(Exception):
+    """Raised when CSV parsing fails"""
+    pass
