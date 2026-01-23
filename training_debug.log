@@ -111,3 +111,898 @@ GAT_L1_LR0.0001_GNN200_GRU300_H1_D0.2       20% 23.352207 37.098408 120.150444  
 GAT_L1_LR0.0001_GNN200_GRU300_H1_D0.2       30% 24.163002 37.697311 126.736107      573600
 2026-01-22 00:23:45,712 - INFO - 
 Results saved to: C:\Users\jacob\OneDrive - Aalborg Universitet\AAU Uni\AAU 5. semester\P5\P5_Attribute_Prediction\Attribute-Prediction\imputation_evaluation_results.csv
+2026-01-23 01:40:44,265 - INFO - Using device: cpu
+2026-01-23 01:40:44,266 - INFO - Using edge_data_day9.csv for evaluation
+2026-01-23 01:40:44,349 - INFO - Total edges: 6639
+2026-01-23 01:41:10,287 - INFO - Dataset ready: 24 samples, batch_size=1
+2026-01-23 01:41:10,292 - INFO - Model input features: 32
+2026-01-23 01:41:10,293 - INFO - 
+================================================================================
+2026-01-23 01:41:10,293 - INFO - Evaluating: GAT_L1_LR0.0001_GNN200_GRU200_H1_D0.2
+2026-01-23 01:41:10,293 - INFO - ================================================================================
+2026-01-23 01:41:10,293 - INFO - Config: layers=1, gnn_dim=200, gru_dim=200, heads=1, dropout=0.2
+2026-01-23 01:41:10,364 - INFO - Model loaded successfully
+2026-01-23 01:41:10,364 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 01:41:11,001 - INFO -   Processed batch 0/24
+2026-01-23 01:41:23,399 - INFO - Results: MAE=21.7854, RMSE=35.7486, MAPE=108.35%, Masked values=191184
+2026-01-23 01:41:23,400 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 01:41:23,952 - INFO -   Processed batch 0/24
+2026-01-23 01:41:36,674 - INFO - Results: MAE=22.1806, RMSE=37.9310, MAPE=112.68%, Masked values=382392
+2026-01-23 01:41:36,674 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 01:41:37,236 - INFO -   Processed batch 0/24
+2026-01-23 01:41:51,057 - INFO - Results: MAE=22.5209, RMSE=37.9938, MAPE=118.15%, Masked values=573600
+2026-01-23 01:41:51,057 - INFO - 
+================================================================================
+2026-01-23 01:41:51,057 - INFO - Evaluating: GAT_L1_LR0.0001_GNN200_GRU200_H2_D0.2
+2026-01-23 01:41:51,058 - INFO - ================================================================================
+2026-01-23 01:41:51,058 - INFO - Config: layers=1, gnn_dim=200, gru_dim=200, heads=2, dropout=0.2
+2026-01-23 01:41:51,068 - INFO - Model loaded successfully
+2026-01-23 01:41:51,068 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 01:41:51,631 - INFO -   Processed batch 0/24
+2026-01-23 01:42:04,024 - INFO - Results: MAE=24.3324, RMSE=37.3166, MAPE=141.04%, Masked values=191184
+2026-01-23 01:42:04,024 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 01:42:04,542 - INFO -   Processed batch 0/24
+2026-01-23 01:42:16,875 - INFO - Results: MAE=24.5830, RMSE=39.1796, MAPE=140.17%, Masked values=382392
+2026-01-23 01:42:16,875 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 01:42:17,383 - INFO -   Processed batch 0/24
+2026-01-23 01:42:29,780 - INFO - Results: MAE=24.6726, RMSE=37.0224, MAPE=143.01%, Masked values=573600
+2026-01-23 01:42:29,780 - INFO - 
+================================================================================
+2026-01-23 01:42:29,781 - INFO - Evaluating: GAT_L1_LR0.0001_GNN200_GRU300_H1_D0.2
+2026-01-23 01:42:29,781 - INFO - ================================================================================
+2026-01-23 01:42:29,781 - INFO - Config: layers=1, gnn_dim=200, gru_dim=300, heads=1, dropout=0.2
+2026-01-23 01:42:29,795 - INFO - Model loaded successfully
+2026-01-23 01:42:29,795 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 01:42:30,779 - INFO -   Processed batch 0/24
+2026-01-23 01:42:53,907 - INFO - Results: MAE=22.4314, RMSE=37.9466, MAPE=114.29%, Masked values=191184
+2026-01-23 01:42:53,907 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 01:42:54,881 - INFO -   Processed batch 0/24
+2026-01-23 01:43:18,337 - INFO - Results: MAE=23.3353, RMSE=37.1086, MAPE=120.17%, Masked values=382392
+2026-01-23 01:43:18,337 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 01:43:19,345 - INFO -   Processed batch 0/24
+2026-01-23 01:43:42,148 - INFO - Results: MAE=24.2205, RMSE=38.5051, MAPE=126.81%, Masked values=573600
+2026-01-23 01:43:42,148 - INFO - 
+================================================================================
+2026-01-23 01:43:42,148 - INFO - Evaluating: GAT_L1_LR0.0001_GNN200_GRU300_H2_D0.2
+2026-01-23 01:43:42,149 - INFO - ================================================================================
+2026-01-23 01:43:42,149 - INFO - Config: layers=1, gnn_dim=200, gru_dim=300, heads=2, dropout=0.2
+2026-01-23 01:43:42,165 - INFO - Model loaded successfully
+2026-01-23 01:43:42,165 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 01:43:43,154 - INFO -   Processed batch 0/24
+2026-01-23 01:44:06,815 - INFO - Results: MAE=22.6943, RMSE=37.7886, MAPE=113.77%, Masked values=191184
+2026-01-23 01:44:06,815 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 01:44:07,792 - INFO -   Processed batch 0/24
+2026-01-23 01:44:31,139 - INFO - Results: MAE=23.4027, RMSE=39.1706, MAPE=119.42%, Masked values=382392
+2026-01-23 01:44:31,139 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 01:44:32,125 - INFO -   Processed batch 0/24
+2026-01-23 01:44:54,856 - INFO - Results: MAE=23.9739, RMSE=37.3713, MAPE=125.60%, Masked values=573600
+2026-01-23 01:44:54,857 - INFO - 
+================================================================================
+2026-01-23 01:44:54,857 - INFO - Evaluating: GAT_L1_LR0.0001_GNN300_GRU200_H1_D0.2
+2026-01-23 01:44:54,857 - INFO - ================================================================================
+2026-01-23 01:44:54,858 - INFO - Config: layers=1, gnn_dim=300, gru_dim=200, heads=1, dropout=0.2
+2026-01-23 01:44:54,871 - INFO - Model loaded successfully
+2026-01-23 01:44:54,871 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 01:44:55,487 - INFO -   Processed batch 0/24
+2026-01-23 01:45:08,729 - INFO - Results: MAE=20.6186, RMSE=37.6679, MAPE=110.48%, Masked values=191184
+2026-01-23 01:45:08,730 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 01:45:09,300 - INFO -   Processed batch 0/24
+2026-01-23 01:45:22,943 - INFO - Results: MAE=20.8119, RMSE=37.2074, MAPE=113.25%, Masked values=382392
+2026-01-23 01:45:22,943 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 01:45:23,555 - INFO -   Processed batch 0/24
+2026-01-23 01:45:36,878 - INFO - Results: MAE=21.1740, RMSE=37.0184, MAPE=115.83%, Masked values=573600
+2026-01-23 01:45:36,878 - INFO - 
+================================================================================
+2026-01-23 01:45:36,878 - INFO - Evaluating: GAT_L1_LR0.0001_GNN300_GRU200_H2_D0.2
+2026-01-23 01:45:36,878 - INFO - ================================================================================
+2026-01-23 01:45:36,878 - INFO - Config: layers=1, gnn_dim=300, gru_dim=200, heads=2, dropout=0.2
+2026-01-23 01:45:36,888 - INFO - Model loaded successfully
+2026-01-23 01:45:36,888 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 01:45:37,475 - INFO -   Processed batch 0/24
+2026-01-23 01:45:50,609 - INFO - Results: MAE=22.3707, RMSE=34.6313, MAPE=119.07%, Masked values=191184
+2026-01-23 01:45:50,609 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 01:45:51,191 - INFO -   Processed batch 0/24
+2026-01-23 01:46:04,434 - INFO - Results: MAE=22.8263, RMSE=37.2383, MAPE=121.81%, Masked values=382392
+2026-01-23 01:46:04,434 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 01:46:05,002 - INFO -   Processed batch 0/24
+2026-01-23 01:46:18,224 - INFO - Results: MAE=23.2295, RMSE=37.1784, MAPE=125.75%, Masked values=573600
+2026-01-23 01:46:18,224 - INFO - 
+================================================================================
+2026-01-23 01:46:18,225 - INFO - Evaluating: GAT_L1_LR0.0001_GNN300_GRU300_H1_D0.2
+2026-01-23 01:46:18,225 - INFO - ================================================================================
+2026-01-23 01:46:18,225 - INFO - Config: layers=1, gnn_dim=300, gru_dim=300, heads=1, dropout=0.2
+2026-01-23 01:46:18,240 - INFO - Model loaded successfully
+2026-01-23 01:46:18,240 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 01:46:19,323 - INFO -   Processed batch 0/24
+2026-01-23 01:46:43,522 - INFO - Results: MAE=22.4812, RMSE=37.8683, MAPE=118.40%, Masked values=191184
+2026-01-23 01:46:43,523 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 01:46:44,568 - INFO -   Processed batch 0/24
+2026-01-23 01:47:08,142 - INFO - Results: MAE=22.9394, RMSE=37.0382, MAPE=121.91%, Masked values=382392
+2026-01-23 01:47:08,142 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 01:47:09,137 - INFO -   Processed batch 0/24
+2026-01-23 01:47:32,869 - INFO - Results: MAE=23.4104, RMSE=36.5144, MAPE=127.08%, Masked values=573600
+2026-01-23 01:47:32,869 - INFO - 
+================================================================================
+2026-01-23 01:47:32,869 - INFO - Evaluating: GAT_L1_LR0.0001_GNN300_GRU300_H2_D0.2
+2026-01-23 01:47:32,869 - INFO - ================================================================================
+2026-01-23 01:47:32,869 - INFO - Config: layers=1, gnn_dim=300, gru_dim=300, heads=2, dropout=0.2
+2026-01-23 01:47:32,885 - INFO - Model loaded successfully
+2026-01-23 01:47:32,885 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 01:47:33,929 - INFO -   Processed batch 0/24
+2026-01-23 01:47:58,340 - INFO - Results: MAE=21.8619, RMSE=35.6177, MAPE=113.24%, Masked values=191184
+2026-01-23 01:47:58,340 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 01:47:59,383 - INFO -   Processed batch 0/24
+2026-01-23 01:48:23,442 - INFO - Results: MAE=22.3500, RMSE=38.2802, MAPE=118.28%, Masked values=382392
+2026-01-23 01:48:23,442 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 01:48:24,447 - INFO -   Processed batch 0/24
+2026-01-23 01:48:48,672 - INFO - Results: MAE=22.8804, RMSE=37.4867, MAPE=123.34%, Masked values=573600
+2026-01-23 01:48:48,673 - INFO - 
+================================================================================
+2026-01-23 01:48:48,673 - INFO - Evaluating: GAT_L1_LR0.0002_GNN200_GRU200_H1_D0.2
+2026-01-23 01:48:48,673 - INFO - ================================================================================
+2026-01-23 01:48:48,673 - INFO - Config: layers=1, gnn_dim=200, gru_dim=200, heads=1, dropout=0.2
+2026-01-23 01:48:48,681 - INFO - Model loaded successfully
+2026-01-23 01:48:48,682 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 01:48:49,223 - INFO -   Processed batch 0/24
+2026-01-23 01:49:01,535 - INFO - Results: MAE=22.0578, RMSE=36.9043, MAPE=121.07%, Masked values=191184
+2026-01-23 01:49:01,536 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 01:49:02,099 - INFO -   Processed batch 0/24
+2026-01-23 01:49:15,156 - INFO - Results: MAE=22.6586, RMSE=38.3511, MAPE=124.68%, Masked values=382392
+2026-01-23 01:49:15,156 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 01:49:15,754 - INFO -   Processed batch 0/24
+2026-01-23 01:49:30,108 - INFO - Results: MAE=23.1080, RMSE=36.1582, MAPE=129.64%, Masked values=573600
+2026-01-23 01:49:30,108 - INFO - 
+================================================================================
+2026-01-23 01:49:30,110 - INFO - Evaluating: GAT_L1_LR0.0002_GNN200_GRU200_H2_D0.2
+2026-01-23 01:49:30,110 - INFO - ================================================================================
+2026-01-23 01:49:30,110 - INFO - Config: layers=1, gnn_dim=200, gru_dim=200, heads=2, dropout=0.2
+2026-01-23 01:49:30,120 - INFO - Model loaded successfully
+2026-01-23 01:49:30,120 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 01:49:30,716 - INFO -   Processed batch 0/24
+2026-01-23 01:49:44,064 - INFO - Results: MAE=20.9732, RMSE=35.7134, MAPE=114.45%, Masked values=191184
+2026-01-23 01:49:44,065 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 01:49:44,644 - INFO -   Processed batch 0/24
+2026-01-23 01:49:58,106 - INFO - Results: MAE=21.6041, RMSE=35.7664, MAPE=117.60%, Masked values=382392
+2026-01-23 01:49:58,106 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 01:49:58,696 - INFO -   Processed batch 0/24
+2026-01-23 01:50:12,211 - INFO - Results: MAE=22.2431, RMSE=36.3618, MAPE=122.03%, Masked values=573600
+2026-01-23 01:50:12,212 - INFO - 
+================================================================================
+2026-01-23 01:50:12,212 - INFO - Evaluating: GAT_L1_LR0.0002_GNN200_GRU300_H1_D0.2
+2026-01-23 01:50:12,212 - INFO - ================================================================================
+2026-01-23 01:50:12,212 - INFO - Config: layers=1, gnn_dim=200, gru_dim=300, heads=1, dropout=0.2
+2026-01-23 01:50:12,227 - INFO - Model loaded successfully
+2026-01-23 01:50:12,228 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 01:50:13,285 - INFO -   Processed batch 0/24
+2026-01-23 01:50:37,975 - INFO - Results: MAE=24.6804, RMSE=40.2103, MAPE=138.68%, Masked values=191184
+2026-01-23 01:50:37,975 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 01:50:39,027 - INFO -   Processed batch 0/24
+2026-01-23 01:51:03,837 - INFO - Results: MAE=24.7586, RMSE=36.8696, MAPE=142.25%, Masked values=382392
+2026-01-23 01:51:03,838 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 01:51:04,912 - INFO -   Processed batch 0/24
+2026-01-23 01:51:29,663 - INFO - Results: MAE=24.8893, RMSE=36.5958, MAPE=144.97%, Masked values=573600
+2026-01-23 01:51:29,663 - INFO - 
+================================================================================
+2026-01-23 01:51:29,663 - INFO - Evaluating: GAT_L1_LR0.0002_GNN200_GRU300_H2_D0.2
+2026-01-23 01:51:29,663 - INFO - ================================================================================
+2026-01-23 01:51:29,664 - INFO - Config: layers=1, gnn_dim=200, gru_dim=300, heads=2, dropout=0.2
+2026-01-23 01:51:29,679 - INFO - Model loaded successfully
+2026-01-23 01:51:29,679 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 01:51:30,775 - INFO -   Processed batch 0/24
+2026-01-23 01:51:55,962 - INFO - Results: MAE=24.4582, RMSE=37.4967, MAPE=119.47%, Masked values=191184
+2026-01-23 01:51:55,963 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 01:51:57,019 - INFO -   Processed batch 0/24
+2026-01-23 01:52:22,208 - INFO - Results: MAE=25.8261, RMSE=38.6591, MAPE=131.17%, Masked values=382392
+2026-01-23 01:52:22,208 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 01:52:23,274 - INFO -   Processed batch 0/24
+2026-01-23 01:52:48,613 - INFO - Results: MAE=27.1664, RMSE=40.1737, MAPE=143.46%, Masked values=573600
+2026-01-23 01:52:48,614 - INFO - 
+================================================================================
+2026-01-23 01:52:48,614 - INFO - Evaluating: GAT_L1_LR0.0002_GNN300_GRU200_H1_D0.2
+2026-01-23 01:52:48,614 - INFO - ================================================================================
+2026-01-23 01:52:48,614 - INFO - Config: layers=1, gnn_dim=300, gru_dim=200, heads=1, dropout=0.2
+2026-01-23 01:52:48,625 - INFO - Model loaded successfully
+2026-01-23 01:52:48,625 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 01:52:49,232 - INFO -   Processed batch 0/24
+2026-01-23 01:53:03,850 - INFO - Results: MAE=23.3638, RMSE=36.8487, MAPE=126.44%, Masked values=191184
+2026-01-23 01:53:03,850 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 01:53:04,472 - INFO -   Processed batch 0/24
+2026-01-23 01:53:19,229 - INFO - Results: MAE=23.9570, RMSE=36.6249, MAPE=131.55%, Masked values=382392
+2026-01-23 01:53:19,230 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 01:53:19,903 - INFO -   Processed batch 0/24
+2026-01-23 01:53:36,146 - INFO - Results: MAE=24.4087, RMSE=37.9788, MAPE=135.53%, Masked values=573600
+2026-01-23 01:53:36,146 - INFO - 
+================================================================================
+2026-01-23 01:53:36,146 - INFO - Evaluating: GAT_L1_LR0.0002_GNN300_GRU200_H2_D0.2
+2026-01-23 01:53:36,146 - INFO - ================================================================================
+2026-01-23 01:53:36,146 - INFO - Config: layers=1, gnn_dim=300, gru_dim=200, heads=2, dropout=0.2
+2026-01-23 01:53:36,160 - INFO - Model loaded successfully
+2026-01-23 01:53:36,160 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 01:53:36,828 - INFO -   Processed batch 0/24
+2026-01-23 01:53:51,829 - INFO - Results: MAE=21.7370, RMSE=36.6201, MAPE=121.40%, Masked values=191184
+2026-01-23 01:53:51,829 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 01:53:52,450 - INFO -   Processed batch 0/24
+2026-01-23 01:54:06,757 - INFO - Results: MAE=22.3496, RMSE=36.8597, MAPE=125.14%, Masked values=382392
+2026-01-23 01:54:06,757 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 01:54:07,386 - INFO -   Processed batch 0/24
+2026-01-23 01:54:21,718 - INFO - Results: MAE=22.8851, RMSE=36.4403, MAPE=129.13%, Masked values=573600
+2026-01-23 01:54:21,718 - INFO - 
+================================================================================
+2026-01-23 01:54:21,718 - INFO - Evaluating: GAT_L1_LR0.0002_GNN300_GRU300_H1_D0.2
+2026-01-23 01:54:21,718 - INFO - ================================================================================
+2026-01-23 01:54:21,718 - INFO - Config: layers=1, gnn_dim=300, gru_dim=300, heads=1, dropout=0.2
+2026-01-23 01:54:21,740 - INFO - Model loaded successfully
+2026-01-23 01:54:21,741 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 01:54:22,859 - INFO -   Processed batch 0/24
+2026-01-23 01:54:49,156 - INFO - Results: MAE=25.1270, RMSE=37.6415, MAPE=139.49%, Masked values=191184
+2026-01-23 01:54:49,156 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 01:54:50,315 - INFO -   Processed batch 0/24
+2026-01-23 01:55:16,759 - INFO - Results: MAE=25.4556, RMSE=38.1662, MAPE=140.91%, Masked values=382392
+2026-01-23 01:55:16,759 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 01:55:17,904 - INFO -   Processed batch 0/24
+2026-01-23 01:55:44,394 - INFO - Results: MAE=25.7577, RMSE=38.3945, MAPE=143.70%, Masked values=573600
+2026-01-23 01:55:44,394 - INFO - 
+================================================================================
+2026-01-23 01:55:44,394 - INFO - Evaluating: GAT_L1_LR0.0002_GNN300_GRU300_H2_D0.2
+2026-01-23 01:55:44,394 - INFO - ================================================================================
+2026-01-23 01:55:44,394 - INFO - Config: layers=1, gnn_dim=300, gru_dim=300, heads=2, dropout=0.2
+2026-01-23 01:55:44,417 - INFO - Model loaded successfully
+2026-01-23 01:55:44,417 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 01:55:45,550 - INFO -   Processed batch 0/24
+2026-01-23 01:56:11,890 - INFO - Results: MAE=21.7587, RMSE=36.4032, MAPE=114.07%, Masked values=191184
+2026-01-23 01:56:11,890 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 01:56:13,007 - INFO -   Processed batch 0/24
+2026-01-23 01:56:39,335 - INFO - Results: MAE=22.7390, RMSE=36.4733, MAPE=118.29%, Masked values=382392
+2026-01-23 01:56:39,335 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 01:56:40,486 - INFO -   Processed batch 0/24
+2026-01-23 01:57:06,905 - INFO - Results: MAE=23.8226, RMSE=37.4381, MAPE=125.06%, Masked values=573600
+2026-01-23 01:57:06,905 - INFO - 
+================================================================================
+2026-01-23 01:57:06,905 - INFO - Evaluating: GAT_L3_LR0.0001_GNN200_GRU200_H1_D0.2
+2026-01-23 01:57:06,905 - INFO - ================================================================================
+2026-01-23 01:57:06,905 - INFO - Config: layers=3, gnn_dim=200, gru_dim=200, heads=1, dropout=0.2
+2026-01-23 01:57:06,922 - INFO - Model loaded successfully
+2026-01-23 01:57:06,922 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 01:57:07,579 - INFO -   Processed batch 0/24
+2026-01-23 01:57:22,666 - INFO - Results: MAE=19.3567, RMSE=36.2822, MAPE=110.75%, Masked values=191184
+2026-01-23 01:57:22,666 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 01:57:23,341 - INFO -   Processed batch 0/24
+2026-01-23 01:57:38,657 - INFO - Results: MAE=19.7141, RMSE=35.3681, MAPE=112.03%, Masked values=382392
+2026-01-23 01:57:38,657 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 01:57:39,301 - INFO -   Processed batch 0/24
+2026-01-23 01:57:55,106 - INFO - Results: MAE=20.0304, RMSE=36.4708, MAPE=115.05%, Masked values=573600
+2026-01-23 01:57:55,106 - INFO - 
+================================================================================
+2026-01-23 01:57:55,107 - INFO - Evaluating: GAT_L3_LR0.0001_GNN200_GRU200_H2_D0.2
+2026-01-23 01:57:55,107 - INFO - ================================================================================
+2026-01-23 01:57:55,107 - INFO - Config: layers=3, gnn_dim=200, gru_dim=200, heads=2, dropout=0.2
+2026-01-23 01:57:55,127 - INFO - Model loaded successfully
+2026-01-23 01:57:55,127 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 01:57:55,915 - INFO -   Processed batch 0/24
+2026-01-23 01:58:14,568 - INFO - Results: MAE=19.0826, RMSE=37.1313, MAPE=119.65%, Masked values=191184
+2026-01-23 01:58:14,568 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 01:58:15,407 - INFO -   Processed batch 0/24
+2026-01-23 01:58:34,334 - INFO - Results: MAE=20.2246, RMSE=35.9500, MAPE=126.20%, Masked values=382392
+2026-01-23 01:58:34,334 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 01:58:35,138 - INFO -   Processed batch 0/24
+2026-01-23 01:58:53,899 - INFO - Results: MAE=21.2781, RMSE=35.7139, MAPE=131.61%, Masked values=573600
+2026-01-23 01:58:53,899 - INFO - 
+================================================================================
+2026-01-23 01:58:53,899 - INFO - Evaluating: GAT_L3_LR0.0001_GNN200_GRU300_H1_D0.2
+2026-01-23 01:58:53,899 - INFO - ================================================================================
+2026-01-23 01:58:53,900 - INFO - Config: layers=3, gnn_dim=200, gru_dim=300, heads=1, dropout=0.2
+2026-01-23 01:58:53,937 - INFO - Model loaded successfully
+2026-01-23 01:58:53,937 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 01:58:55,185 - INFO -   Processed batch 0/24
+2026-01-23 01:59:22,915 - INFO - Results: MAE=19.5790, RMSE=33.5766, MAPE=114.98%, Masked values=191184
+2026-01-23 01:59:22,915 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 01:59:24,162 - INFO -   Processed batch 0/24
+2026-01-23 01:59:51,763 - INFO - Results: MAE=20.3074, RMSE=35.8382, MAPE=120.04%, Masked values=382392
+2026-01-23 01:59:51,763 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 01:59:53,029 - INFO -   Processed batch 0/24
+2026-01-23 02:00:20,782 - INFO - Results: MAE=20.8734, RMSE=35.2236, MAPE=124.40%, Masked values=573600
+2026-01-23 02:00:20,783 - INFO - 
+================================================================================
+2026-01-23 02:00:20,783 - INFO - Evaluating: GAT_L3_LR0.0001_GNN300_GRU200_H1_D0.2
+2026-01-23 02:00:20,783 - INFO - ================================================================================
+2026-01-23 02:00:20,783 - INFO - Config: layers=3, gnn_dim=300, gru_dim=200, heads=1, dropout=0.2
+2026-01-23 02:00:20,814 - INFO - Model loaded successfully
+2026-01-23 02:00:20,814 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:00:21,577 - INFO -   Processed batch 0/24
+2026-01-23 02:00:39,249 - INFO - Results: MAE=18.7490, RMSE=34.8072, MAPE=101.34%, Masked values=191184
+2026-01-23 02:00:39,249 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:00:40,029 - INFO -   Processed batch 0/24
+2026-01-23 02:00:58,219 - INFO - Results: MAE=19.1532, RMSE=37.0703, MAPE=103.07%, Masked values=382392
+2026-01-23 02:00:58,219 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:00:58,998 - INFO -   Processed batch 0/24
+2026-01-23 02:01:17,570 - INFO - Results: MAE=19.3375, RMSE=36.7141, MAPE=105.03%, Masked values=573600
+2026-01-23 02:01:17,570 - INFO - 
+================================================================================
+2026-01-23 02:01:17,570 - INFO - Evaluating: GAT_L3_LR0.0001_GNN300_GRU200_H2_D0.2
+2026-01-23 02:01:17,571 - INFO - ================================================================================
+2026-01-23 02:01:17,571 - INFO - Config: layers=3, gnn_dim=300, gru_dim=200, heads=2, dropout=0.2
+2026-01-23 02:01:17,597 - INFO - Model loaded successfully
+2026-01-23 02:01:17,597 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:01:18,571 - INFO -   Processed batch 0/24
+2026-01-23 02:01:41,303 - INFO - Results: MAE=18.7032, RMSE=34.9090, MAPE=112.37%, Masked values=191184
+2026-01-23 02:01:41,303 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:01:42,261 - INFO -   Processed batch 0/24
+2026-01-23 02:02:04,325 - INFO - Results: MAE=19.3386, RMSE=35.8421, MAPE=115.37%, Masked values=382392
+2026-01-23 02:02:04,326 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:02:05,280 - INFO -   Processed batch 0/24
+2026-01-23 02:02:27,189 - INFO - Results: MAE=19.8546, RMSE=35.6340, MAPE=117.43%, Masked values=573600
+2026-01-23 02:02:27,189 - INFO - 
+================================================================================
+2026-01-23 02:02:27,189 - INFO - Evaluating: GAT_L3_LR0.0002_GNN200_GRU200_H1_D0.2
+2026-01-23 02:02:27,189 - INFO - ================================================================================
+2026-01-23 02:02:27,189 - INFO - Config: layers=3, gnn_dim=200, gru_dim=200, heads=1, dropout=0.2
+2026-01-23 02:02:27,219 - INFO - Model loaded successfully
+2026-01-23 02:02:27,219 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:02:27,873 - INFO -   Processed batch 0/24
+2026-01-23 02:02:42,709 - INFO - Results: MAE=20.3859, RMSE=37.0174, MAPE=119.21%, Masked values=191184
+2026-01-23 02:02:42,709 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:02:43,351 - INFO -   Processed batch 0/24
+2026-01-23 02:02:58,249 - INFO - Results: MAE=20.9891, RMSE=35.5185, MAPE=124.67%, Masked values=382392
+2026-01-23 02:02:58,249 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:02:58,901 - INFO -   Processed batch 0/24
+2026-01-23 02:03:13,823 - INFO - Results: MAE=21.5877, RMSE=36.1365, MAPE=128.44%, Masked values=573600
+2026-01-23 02:03:13,823 - INFO - 
+================================================================================
+2026-01-23 02:03:13,824 - INFO - Evaluating: GAT_L3_LR0.0002_GNN200_GRU200_H2_D0.2
+2026-01-23 02:03:13,824 - INFO - ================================================================================
+2026-01-23 02:03:13,824 - INFO - Config: layers=3, gnn_dim=200, gru_dim=200, heads=2, dropout=0.2
+2026-01-23 02:03:13,854 - INFO - Model loaded successfully
+2026-01-23 02:03:13,854 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:03:14,615 - INFO -   Processed batch 0/24
+2026-01-23 02:03:31,855 - INFO - Results: MAE=18.9716, RMSE=34.1925, MAPE=118.43%, Masked values=191184
+2026-01-23 02:03:31,855 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:03:32,611 - INFO -   Processed batch 0/24
+2026-01-23 02:03:49,960 - INFO - Results: MAE=19.4289, RMSE=36.5697, MAPE=119.28%, Masked values=382392
+2026-01-23 02:03:49,960 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:03:50,729 - INFO -   Processed batch 0/24
+2026-01-23 02:04:08,061 - INFO - Results: MAE=19.6752, RMSE=36.2786, MAPE=121.79%, Masked values=573600
+2026-01-23 02:04:08,061 - INFO - 
+================================================================================
+2026-01-23 02:04:08,061 - INFO - Evaluating: GAT_L3_LR0.0002_GNN200_GRU300_H1_D0.2
+2026-01-23 02:04:08,061 - INFO - ================================================================================
+2026-01-23 02:04:08,061 - INFO - Config: layers=3, gnn_dim=200, gru_dim=300, heads=1, dropout=0.2
+2026-01-23 02:04:08,094 - INFO - Model loaded successfully
+2026-01-23 02:04:08,094 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:04:09,245 - INFO -   Processed batch 0/24
+2026-01-23 02:04:35,956 - INFO - Results: MAE=20.3190, RMSE=35.7658, MAPE=125.32%, Masked values=191184
+2026-01-23 02:04:35,956 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:04:37,109 - INFO -   Processed batch 0/24
+2026-01-23 02:05:03,838 - INFO - Results: MAE=21.3468, RMSE=34.6798, MAPE=132.36%, Masked values=382392
+2026-01-23 02:05:03,838 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:05:04,994 - INFO -   Processed batch 0/24
+2026-01-23 02:05:31,820 - INFO - Results: MAE=22.4796, RMSE=36.8849, MAPE=140.30%, Masked values=573600
+2026-01-23 02:05:31,820 - INFO - 
+================================================================================
+2026-01-23 02:05:31,820 - INFO - Evaluating: GAT_L3_LR0.0002_GNN300_GRU200_H1_D0.2
+2026-01-23 02:05:31,820 - INFO - ================================================================================
+2026-01-23 02:05:31,821 - INFO - Config: layers=3, gnn_dim=300, gru_dim=200, heads=1, dropout=0.2
+2026-01-23 02:05:31,851 - INFO - Model loaded successfully
+2026-01-23 02:05:31,851 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:05:32,585 - INFO -   Processed batch 0/24
+2026-01-23 02:05:49,346 - INFO - Results: MAE=21.2720, RMSE=37.8077, MAPE=121.45%, Masked values=191184
+2026-01-23 02:05:49,346 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:05:50,079 - INFO -   Processed batch 0/24
+2026-01-23 02:06:06,984 - INFO - Results: MAE=22.1995, RMSE=36.4931, MAPE=129.14%, Masked values=382392
+2026-01-23 02:06:06,984 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:06:07,720 - INFO -   Processed batch 0/24
+2026-01-23 02:06:24,631 - INFO - Results: MAE=23.1081, RMSE=37.4915, MAPE=136.02%, Masked values=573600
+2026-01-23 02:06:24,631 - INFO - 
+================================================================================
+2026-01-23 02:06:24,631 - INFO - Evaluating: GAT_L3_LR0.0002_GNN300_GRU200_H2_D0.2
+2026-01-23 02:06:24,631 - INFO - ================================================================================
+2026-01-23 02:06:24,631 - INFO - Config: layers=3, gnn_dim=300, gru_dim=200, heads=2, dropout=0.2
+2026-01-23 02:06:24,666 - INFO - Model loaded successfully
+2026-01-23 02:06:24,666 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:06:25,620 - INFO -   Processed batch 0/24
+2026-01-23 02:06:47,341 - INFO - Results: MAE=18.8426, RMSE=38.0385, MAPE=130.20%, Masked values=191184
+2026-01-23 02:06:47,341 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:06:48,285 - INFO -   Processed batch 0/24
+2026-01-23 02:07:10,067 - INFO - Results: MAE=18.3021, RMSE=37.2305, MAPE=128.32%, Masked values=382392
+2026-01-23 02:07:10,067 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:07:11,019 - INFO -   Processed batch 0/24
+2026-01-23 02:07:33,225 - INFO - Results: MAE=17.8766, RMSE=35.5153, MAPE=124.00%, Masked values=573600
+2026-01-23 02:07:33,226 - INFO - 
+================================================================================
+2026-01-23 02:07:33,226 - INFO - Evaluating: GraphSAGE_L1_LR0.0001_GNN200_GRU200_H1_D0.2
+2026-01-23 02:07:33,226 - INFO - ================================================================================
+2026-01-23 02:07:33,226 - INFO - Config: layers=1, gnn_dim=200, gru_dim=200, heads=1, dropout=0.2
+2026-01-23 02:07:33,331 - INFO - Model loaded successfully
+2026-01-23 02:07:33,331 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:07:33,932 - INFO -   Processed batch 0/24
+2026-01-23 02:07:47,237 - INFO - Results: MAE=38.1078, RMSE=50.6571, MAPE=101.31%, Masked values=191184
+2026-01-23 02:07:47,237 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:07:47,782 - INFO -   Processed batch 0/24
+2026-01-23 02:08:00,497 - INFO - Results: MAE=42.1413, RMSE=54.5136, MAPE=129.45%, Masked values=382392
+2026-01-23 02:08:00,498 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:08:01,039 - INFO -   Processed batch 0/24
+2026-01-23 02:08:13,778 - INFO - Results: MAE=45.3156, RMSE=55.9990, MAPE=165.76%, Masked values=573600
+2026-01-23 02:08:13,778 - INFO - 
+================================================================================
+2026-01-23 02:08:13,778 - INFO - Evaluating: GraphSAGE_L1_LR0.0001_GNN200_GRU300_H1_D0.2
+2026-01-23 02:08:13,778 - INFO - ================================================================================
+2026-01-23 02:08:13,779 - INFO - Config: layers=1, gnn_dim=200, gru_dim=300, heads=1, dropout=0.2
+2026-01-23 02:08:13,811 - INFO - Model loaded successfully
+2026-01-23 02:08:13,811 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:08:14,874 - INFO -   Processed batch 0/24
+2026-01-23 02:08:39,352 - INFO - Results: MAE=38.3786, RMSE=51.7432, MAPE=97.08%, Masked values=191184
+2026-01-23 02:08:39,352 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:08:40,408 - INFO -   Processed batch 0/24
+2026-01-23 02:09:04,990 - INFO - Results: MAE=42.7664, RMSE=54.8230, MAPE=124.67%, Masked values=382392
+2026-01-23 02:09:04,991 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:09:06,046 - INFO -   Processed batch 0/24
+2026-01-23 02:09:30,719 - INFO - Results: MAE=46.2723, RMSE=57.3474, MAPE=158.89%, Masked values=573600
+2026-01-23 02:09:30,720 - INFO - 
+================================================================================
+2026-01-23 02:09:30,720 - INFO - Evaluating: GraphSAGE_L1_LR0.0001_GNN300_GRU200_H1_D0.2
+2026-01-23 02:09:30,720 - INFO - ================================================================================
+2026-01-23 02:09:30,720 - INFO - Config: layers=1, gnn_dim=300, gru_dim=200, heads=1, dropout=0.2
+2026-01-23 02:09:30,748 - INFO - Model loaded successfully
+2026-01-23 02:09:30,748 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:09:31,319 - INFO -   Processed batch 0/24
+2026-01-23 02:09:44,782 - INFO - Results: MAE=29.9461, RMSE=43.5659, MAPE=84.74%, Masked values=191184
+2026-01-23 02:09:44,782 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:09:45,358 - INFO -   Processed batch 0/24
+2026-01-23 02:09:58,956 - INFO - Results: MAE=32.2206, RMSE=44.8191, MAPE=101.62%, Masked values=382392
+2026-01-23 02:09:58,957 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:09:59,508 - INFO -   Processed batch 0/24
+2026-01-23 02:10:12,264 - INFO - Results: MAE=33.9558, RMSE=44.6784, MAPE=126.10%, Masked values=573600
+2026-01-23 02:10:12,264 - INFO - 
+================================================================================
+2026-01-23 02:10:12,264 - INFO - Evaluating: GraphSAGE_L1_LR0.0001_GNN300_GRU300_H1_D0.2
+2026-01-23 02:10:12,265 - INFO - ================================================================================
+2026-01-23 02:10:12,265 - INFO - Config: layers=1, gnn_dim=300, gru_dim=300, heads=1, dropout=0.2
+2026-01-23 02:10:12,292 - INFO - Model loaded successfully
+2026-01-23 02:10:12,292 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:10:13,331 - INFO -   Processed batch 0/24
+2026-01-23 02:10:37,663 - INFO - Results: MAE=47.0019, RMSE=59.0424, MAPE=123.02%, Masked values=191184
+2026-01-23 02:10:37,663 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:10:38,819 - INFO -   Processed batch 0/24
+2026-01-23 02:11:06,299 - INFO - Results: MAE=52.8477, RMSE=66.1582, MAPE=161.91%, Masked values=382392
+2026-01-23 02:11:06,299 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:11:07,496 - INFO -   Processed batch 0/24
+2026-01-23 02:11:34,641 - INFO - Results: MAE=57.5214, RMSE=68.7435, MAPE=212.72%, Masked values=573600
+2026-01-23 02:11:34,641 - INFO - 
+================================================================================
+2026-01-23 02:11:34,641 - INFO - Evaluating: GraphSAGE_L1_LR0.0002_GNN200_GRU200_H1_D0.2
+2026-01-23 02:11:34,641 - INFO - ================================================================================
+2026-01-23 02:11:34,643 - INFO - Config: layers=1, gnn_dim=200, gru_dim=200, heads=1, dropout=0.2
+2026-01-23 02:11:34,666 - INFO - Model loaded successfully
+2026-01-23 02:11:34,667 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:11:35,243 - INFO -   Processed batch 0/24
+2026-01-23 02:11:48,616 - INFO - Results: MAE=42.8602, RMSE=56.4027, MAPE=104.29%, Masked values=191184
+2026-01-23 02:11:48,616 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:11:49,197 - INFO -   Processed batch 0/24
+2026-01-23 02:12:02,640 - INFO - Results: MAE=49.2174, RMSE=62.2129, MAPE=139.03%, Masked values=382392
+2026-01-23 02:12:02,641 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:12:03,217 - INFO -   Processed batch 0/24
+2026-01-23 02:12:16,660 - INFO - Results: MAE=54.1338, RMSE=65.7994, MAPE=181.57%, Masked values=573600
+2026-01-23 02:12:16,661 - INFO - 
+================================================================================
+2026-01-23 02:12:16,661 - INFO - Evaluating: GraphSAGE_L1_LR0.0002_GNN200_GRU300_H1_D0.2
+2026-01-23 02:12:16,661 - INFO - ================================================================================
+2026-01-23 02:12:16,661 - INFO - Config: layers=1, gnn_dim=200, gru_dim=300, heads=1, dropout=0.2
+2026-01-23 02:12:16,697 - INFO - Model loaded successfully
+2026-01-23 02:12:16,697 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:12:17,828 - INFO -   Processed batch 0/24
+2026-01-23 02:12:43,943 - INFO - Results: MAE=39.7083, RMSE=53.5157, MAPE=101.50%, Masked values=191184
+2026-01-23 02:12:43,943 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:12:45,076 - INFO -   Processed batch 0/24
+2026-01-23 02:13:11,324 - INFO - Results: MAE=45.0763, RMSE=57.5395, MAPE=130.86%, Masked values=382392
+2026-01-23 02:13:11,324 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:13:12,450 - INFO -   Processed batch 0/24
+2026-01-23 02:13:38,671 - INFO - Results: MAE=49.2557, RMSE=60.1892, MAPE=165.95%, Masked values=573600
+2026-01-23 02:13:38,671 - INFO - 
+================================================================================
+2026-01-23 02:13:38,671 - INFO - Evaluating: GraphSAGE_L1_LR0.0002_GNN300_GRU200_H1_D0.2
+2026-01-23 02:13:38,671 - INFO - ================================================================================
+2026-01-23 02:13:38,671 - INFO - Config: layers=1, gnn_dim=300, gru_dim=200, heads=1, dropout=0.2
+2026-01-23 02:13:38,694 - INFO - Model loaded successfully
+2026-01-23 02:13:38,694 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:13:39,304 - INFO -   Processed batch 0/24
+2026-01-23 02:13:53,618 - INFO - Results: MAE=34.2609, RMSE=46.7526, MAPE=89.26%, Masked values=191184
+2026-01-23 02:13:53,618 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:13:54,225 - INFO -   Processed batch 0/24
+2026-01-23 02:14:08,482 - INFO - Results: MAE=38.4524, RMSE=50.6677, MAPE=110.24%, Masked values=382392
+2026-01-23 02:14:08,482 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:14:09,093 - INFO -   Processed batch 0/24
+2026-01-23 02:14:23,436 - INFO - Results: MAE=41.5712, RMSE=52.6268, MAPE=137.90%, Masked values=573600
+2026-01-23 02:14:23,436 - INFO - 
+================================================================================
+2026-01-23 02:14:23,436 - INFO - Evaluating: GraphSAGE_L1_LR0.0002_GNN300_GRU300_H1_D0.2
+2026-01-23 02:14:23,436 - INFO - ================================================================================
+2026-01-23 02:14:23,436 - INFO - Config: layers=1, gnn_dim=300, gru_dim=300, heads=1, dropout=0.2
+2026-01-23 02:14:23,468 - INFO - Model loaded successfully
+2026-01-23 02:14:23,468 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:14:24,635 - INFO -   Processed batch 0/24
+2026-01-23 02:14:51,835 - INFO - Results: MAE=42.9380, RMSE=56.7614, MAPE=99.14%, Masked values=191184
+2026-01-23 02:14:51,835 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:14:53,005 - INFO -   Processed batch 0/24
+2026-01-23 02:15:20,434 - INFO - Results: MAE=51.1868, RMSE=64.4109, MAPE=132.82%, Masked values=382392
+2026-01-23 02:15:20,435 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:15:21,610 - INFO -   Processed batch 0/24
+2026-01-23 02:15:48,728 - INFO - Results: MAE=57.5468, RMSE=70.4990, MAPE=177.32%, Masked values=573600
+2026-01-23 02:15:48,728 - INFO - 
+================================================================================
+2026-01-23 02:15:48,729 - INFO - Evaluating: GraphSAGE_L3_LR0.0001_GNN200_GRU200_H1_D0.2
+2026-01-23 02:15:48,729 - INFO - ================================================================================
+2026-01-23 02:15:48,729 - INFO - Config: layers=3, gnn_dim=200, gru_dim=200, heads=1, dropout=0.2
+2026-01-23 02:15:48,754 - INFO - Model loaded successfully
+2026-01-23 02:15:48,754 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:15:49,431 - INFO -   Processed batch 0/24
+2026-01-23 02:16:05,167 - INFO - Results: MAE=30.9515, RMSE=44.3609, MAPE=72.67%, Masked values=191184
+2026-01-23 02:16:05,167 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:16:05,851 - INFO -   Processed batch 0/24
+2026-01-23 02:16:21,339 - INFO - Results: MAE=36.7679, RMSE=49.2296, MAPE=84.81%, Masked values=382392
+2026-01-23 02:16:21,339 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:16:22,040 - INFO -   Processed batch 0/24
+2026-01-23 02:16:37,921 - INFO - Results: MAE=41.1743, RMSE=54.5187, MAPE=101.62%, Masked values=573600
+2026-01-23 02:16:37,921 - INFO - 
+================================================================================
+2026-01-23 02:16:37,921 - INFO - Evaluating: GraphSAGE_L3_LR0.0001_GNN200_GRU300_H1_D0.2
+2026-01-23 02:16:37,921 - INFO - ================================================================================
+2026-01-23 02:16:37,921 - INFO - Config: layers=3, gnn_dim=200, gru_dim=300, heads=1, dropout=0.2
+2026-01-23 02:16:37,961 - INFO - Model loaded successfully
+2026-01-23 02:16:37,961 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:16:39,222 - INFO -   Processed batch 0/24
+2026-01-23 02:17:06,604 - INFO - Results: MAE=28.6677, RMSE=44.3927, MAPE=67.11%, Masked values=191184
+2026-01-23 02:17:06,605 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:17:07,675 - INFO -   Processed batch 0/24
+2026-01-23 02:17:35,130 - INFO - Results: MAE=34.9389, RMSE=49.2717, MAPE=78.64%, Masked values=382392
+2026-01-23 02:17:35,130 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:17:36,381 - INFO -   Processed batch 0/24
+2026-01-23 02:18:02,044 - INFO - Results: MAE=39.8047, RMSE=53.3532, MAPE=96.97%, Masked values=573600
+2026-01-23 02:18:02,044 - INFO - 
+================================================================================
+2026-01-23 02:18:02,044 - INFO - Evaluating: GraphSAGE_L3_LR0.0001_GNN300_GRU200_H1_D0.2
+2026-01-23 02:18:02,045 - INFO - ================================================================================
+2026-01-23 02:18:02,045 - INFO - Config: layers=3, gnn_dim=300, gru_dim=200, heads=1, dropout=0.2
+2026-01-23 02:18:02,069 - INFO - Model loaded successfully
+2026-01-23 02:18:02,070 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:18:02,768 - INFO -   Processed batch 0/24
+2026-01-23 02:18:20,346 - INFO - Results: MAE=31.0729, RMSE=46.8498, MAPE=72.20%, Masked values=191184
+2026-01-23 02:18:20,346 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:18:21,115 - INFO -   Processed batch 0/24
+2026-01-23 02:18:39,255 - INFO - Results: MAE=37.9787, RMSE=51.2470, MAPE=87.87%, Masked values=382392
+2026-01-23 02:18:39,256 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:18:40,038 - INFO -   Processed batch 0/24
+2026-01-23 02:18:58,236 - INFO - Results: MAE=42.5451, RMSE=55.8817, MAPE=104.69%, Masked values=573600
+2026-01-23 02:18:58,236 - INFO - 
+================================================================================
+2026-01-23 02:18:58,236 - INFO - Evaluating: GraphSAGE_L3_LR0.0001_GNN300_GRU300_H1_D0.2
+2026-01-23 02:18:58,237 - INFO - ================================================================================
+2026-01-23 02:18:58,237 - INFO - Config: layers=3, gnn_dim=300, gru_dim=300, heads=1, dropout=0.2
+2026-01-23 02:18:58,278 - INFO - Model loaded successfully
+2026-01-23 02:18:58,279 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:18:59,621 - INFO -   Processed batch 0/24
+2026-01-23 02:19:30,672 - INFO - Results: MAE=30.9688, RMSE=44.0896, MAPE=73.64%, Masked values=191184
+2026-01-23 02:19:30,673 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:19:32,008 - INFO -   Processed batch 0/24
+2026-01-23 02:20:02,990 - INFO - Results: MAE=38.1713, RMSE=51.9275, MAPE=84.56%, Masked values=382392
+2026-01-23 02:20:02,990 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:20:04,329 - INFO -   Processed batch 0/24
+2026-01-23 02:20:35,418 - INFO - Results: MAE=43.3813, RMSE=57.0093, MAPE=103.19%, Masked values=573600
+2026-01-23 02:20:35,418 - INFO - 
+================================================================================
+2026-01-23 02:20:35,418 - INFO - Evaluating: GraphSAGE_L3_LR0.0002_GNN200_GRU200_H1_D0.2
+2026-01-23 02:20:35,418 - INFO - ================================================================================
+2026-01-23 02:20:35,419 - INFO - Config: layers=3, gnn_dim=200, gru_dim=200, heads=1, dropout=0.2
+2026-01-23 02:20:35,445 - INFO - Model loaded successfully
+2026-01-23 02:20:35,445 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:20:36,110 - INFO -   Processed batch 0/24
+2026-01-23 02:20:51,799 - INFO - Results: MAE=35.4961, RMSE=50.6880, MAPE=87.29%, Masked values=191184
+2026-01-23 02:20:51,799 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:20:52,491 - INFO -   Processed batch 0/24
+2026-01-23 02:21:08,340 - INFO - Results: MAE=44.3733, RMSE=57.7236, MAPE=117.09%, Masked values=382392
+2026-01-23 02:21:08,341 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:21:09,020 - INFO -   Processed batch 0/24
+2026-01-23 02:21:24,761 - INFO - Results: MAE=50.8560, RMSE=63.8984, MAPE=159.35%, Masked values=573600
+2026-01-23 02:21:24,761 - INFO - 
+================================================================================
+2026-01-23 02:21:24,763 - INFO - Evaluating: GraphSAGE_L3_LR0.0002_GNN200_GRU300_H1_D0.2
+2026-01-23 02:21:24,763 - INFO - ================================================================================
+2026-01-23 02:21:24,763 - INFO - Config: layers=3, gnn_dim=200, gru_dim=300, heads=1, dropout=0.2
+2026-01-23 02:21:24,800 - INFO - Model loaded successfully
+2026-01-23 02:21:24,801 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:21:26,030 - INFO -   Processed batch 0/24
+2026-01-23 02:21:52,416 - INFO - Results: MAE=36.9532, RMSE=51.3620, MAPE=94.33%, Masked values=191184
+2026-01-23 02:21:52,416 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:21:53,657 - INFO -   Processed batch 0/24
+2026-01-23 02:22:18,858 - INFO - Results: MAE=46.4052, RMSE=60.6047, MAPE=124.09%, Masked values=382392
+2026-01-23 02:22:18,859 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:22:19,959 - INFO -   Processed batch 0/24
+2026-01-23 02:22:46,359 - INFO - Results: MAE=53.9280, RMSE=67.2766, MAPE=169.40%, Masked values=573600
+2026-01-23 02:22:46,360 - INFO - 
+================================================================================
+2026-01-23 02:22:46,360 - INFO - Evaluating: GraphSAGE_L3_LR0.0002_GNN300_GRU200_H1_D0.2
+2026-01-23 02:22:46,360 - INFO - ================================================================================
+2026-01-23 02:22:46,360 - INFO - Config: layers=3, gnn_dim=300, gru_dim=200, heads=1, dropout=0.2
+2026-01-23 02:22:46,389 - INFO - Model loaded successfully
+2026-01-23 02:22:46,389 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:22:47,130 - INFO -   Processed batch 0/24
+2026-01-23 02:23:05,193 - INFO - Results: MAE=29.9354, RMSE=43.7880, MAPE=71.95%, Masked values=191184
+2026-01-23 02:23:05,193 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:23:05,966 - INFO -   Processed batch 0/24
+2026-01-23 02:23:23,760 - INFO - Results: MAE=33.5491, RMSE=46.7057, MAPE=79.95%, Masked values=382392
+2026-01-23 02:23:23,761 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:23:24,453 - INFO -   Processed batch 0/24
+2026-01-23 02:23:41,166 - INFO - Results: MAE=35.9105, RMSE=48.3380, MAPE=88.17%, Masked values=573600
+2026-01-23 02:23:41,166 - INFO - 
+================================================================================
+2026-01-23 02:23:41,166 - INFO - Evaluating: GraphSAGE_L3_LR0.0002_GNN300_GRU300_H1_D0.2
+2026-01-23 02:23:41,167 - INFO - ================================================================================
+2026-01-23 02:23:41,167 - INFO - Config: layers=3, gnn_dim=300, gru_dim=300, heads=1, dropout=0.2
+2026-01-23 02:23:41,203 - INFO - Model loaded successfully
+2026-01-23 02:23:41,203 - INFO - 
+Evaluating with 10% missingness...
+2026-01-23 02:23:42,374 - INFO -   Processed batch 0/24
+2026-01-23 02:24:10,189 - INFO - Results: MAE=32.3913, RMSE=47.1151, MAPE=94.11%, Masked values=191184
+2026-01-23 02:24:10,190 - INFO - 
+Evaluating with 20% missingness...
+2026-01-23 02:24:11,424 - INFO -   Processed batch 0/24
+2026-01-23 02:24:39,562 - INFO - Results: MAE=43.6532, RMSE=57.7494, MAPE=120.71%, Masked values=382392
+2026-01-23 02:24:39,562 - INFO - 
+Evaluating with 30% missingness...
+2026-01-23 02:24:40,820 - INFO -   Processed batch 0/24
+2026-01-23 02:25:07,705 - INFO - Results: MAE=52.8743, RMSE=67.2661, MAPE=156.96%, Masked values=573600
+2026-01-23 02:25:07,710 - INFO - 
+================================================================================
+2026-01-23 02:25:07,710 - INFO - FINAL RESULTS
+2026-01-23 02:25:07,710 - INFO - ================================================================================
+
+2026-01-23 02:25:07,716 - INFO -                                       model mask_rate       MAE      RMSE       MAPE  num_masked
+      GAT_L1_LR0.0001_GNN200_GRU200_H1_D0.2       10% 21.785374 35.748642 108.347916      191184
+      GAT_L1_LR0.0001_GNN200_GRU200_H1_D0.2       20% 22.180611 37.931049 112.683037      382392
+      GAT_L1_LR0.0001_GNN200_GRU200_H1_D0.2       30% 22.520882 37.993793 118.153046      573600
+      GAT_L1_LR0.0001_GNN200_GRU200_H2_D0.2       10% 24.332399 37.316608 141.035156      191184
+      GAT_L1_LR0.0001_GNN200_GRU200_H2_D0.2       20% 24.582991 39.179611 140.173035      382392
+      GAT_L1_LR0.0001_GNN200_GRU200_H2_D0.2       30% 24.672634 37.022392 143.008011      573600
+      GAT_L1_LR0.0001_GNN200_GRU300_H1_D0.2       10% 22.431421 37.946644 114.287376      191184
+      GAT_L1_LR0.0001_GNN200_GRU300_H1_D0.2       20% 23.335274 37.108639 120.174515      382392
+      GAT_L1_LR0.0001_GNN200_GRU300_H1_D0.2       30% 24.220495 38.505142 126.807693      573600
+      GAT_L1_LR0.0001_GNN200_GRU300_H2_D0.2       10% 22.694273 37.788601 113.773277      191184
+      GAT_L1_LR0.0001_GNN200_GRU300_H2_D0.2       20% 23.402699 39.170628 119.416496      382392
+      GAT_L1_LR0.0001_GNN200_GRU300_H2_D0.2       30% 23.973877 37.371269 125.595154      573600
+      GAT_L1_LR0.0001_GNN300_GRU200_H1_D0.2       10% 20.618614 37.667912 110.477066      191184
+      GAT_L1_LR0.0001_GNN300_GRU200_H1_D0.2       20% 20.811937 37.207375 113.245178      382392
+      GAT_L1_LR0.0001_GNN300_GRU200_H1_D0.2       30% 21.173954 37.018406 115.834976      573600
+      GAT_L1_LR0.0001_GNN300_GRU200_H2_D0.2       10% 22.370728 34.631340 119.066452      191184
+      GAT_L1_LR0.0001_GNN300_GRU200_H2_D0.2       20% 22.826332 37.238316 121.807930      382392
+      GAT_L1_LR0.0001_GNN300_GRU200_H2_D0.2       30% 23.229527 37.178352 125.748741      573600
+      GAT_L1_LR0.0001_GNN300_GRU300_H1_D0.2       10% 22.481174 37.868282 118.404541      191184
+      GAT_L1_LR0.0001_GNN300_GRU300_H1_D0.2       20% 22.939432 37.038250 121.905754      382392
+      GAT_L1_LR0.0001_GNN300_GRU300_H1_D0.2       30% 23.410353 36.514385 127.084457      573600
+      GAT_L1_LR0.0001_GNN300_GRU300_H2_D0.2       10% 21.861853 35.617672 113.243523      191184
+      GAT_L1_LR0.0001_GNN300_GRU300_H2_D0.2       20% 22.350044 38.280155 118.283379      382392
+      GAT_L1_LR0.0001_GNN300_GRU300_H2_D0.2       30% 22.880417 37.486656 123.336014      573600
+      GAT_L1_LR0.0002_GNN200_GRU200_H1_D0.2       10% 22.057772 36.904282 121.067085      191184
+      GAT_L1_LR0.0002_GNN200_GRU200_H1_D0.2       20% 22.658573 38.351097 124.682060      382392
+      GAT_L1_LR0.0002_GNN200_GRU200_H1_D0.2       30% 23.107985 36.158211 129.644730      573600
+      GAT_L1_LR0.0002_GNN200_GRU200_H2_D0.2       10% 20.973190 35.713432 114.448105      191184
+      GAT_L1_LR0.0002_GNN200_GRU200_H2_D0.2       20% 21.604067 35.766369 117.599022      382392
+      GAT_L1_LR0.0002_GNN200_GRU200_H2_D0.2       30% 22.243090 36.361843 122.027840      573600
+      GAT_L1_LR0.0002_GNN200_GRU300_H1_D0.2       10% 24.680378 40.210293 138.677292      191184
+      GAT_L1_LR0.0002_GNN200_GRU300_H1_D0.2       20% 24.758589 36.869606 142.253784      382392
+      GAT_L1_LR0.0002_GNN200_GRU300_H1_D0.2       30% 24.889290 36.595795 144.967331      573600
+      GAT_L1_LR0.0002_GNN200_GRU300_H2_D0.2       10% 24.458218 37.496727 119.467865      191184
+      GAT_L1_LR0.0002_GNN200_GRU300_H2_D0.2       20% 25.826096 38.659065 131.166428      382392
+      GAT_L1_LR0.0002_GNN200_GRU300_H2_D0.2       30% 27.166353 40.173656 143.458344      573600
+      GAT_L1_LR0.0002_GNN300_GRU200_H1_D0.2       10% 23.363798 36.848690 126.443375      191184
+      GAT_L1_LR0.0002_GNN300_GRU200_H1_D0.2       20% 23.956987 36.624928 131.547348      382392
+      GAT_L1_LR0.0002_GNN300_GRU200_H1_D0.2       30% 24.408695 37.978752 135.530518      573600
+      GAT_L1_LR0.0002_GNN300_GRU200_H2_D0.2       10% 21.737049 36.620056 121.402908      191184
+      GAT_L1_LR0.0002_GNN300_GRU200_H2_D0.2       20% 22.349604 36.859711 125.140724      382392
+      GAT_L1_LR0.0002_GNN300_GRU200_H2_D0.2       30% 22.885118 36.440269 129.129974      573600
+      GAT_L1_LR0.0002_GNN300_GRU300_H1_D0.2       10% 25.127022 37.641525 139.487457      191184
+      GAT_L1_LR0.0002_GNN300_GRU300_H1_D0.2       20% 25.455580 38.166187 140.906815      382392
+      GAT_L1_LR0.0002_GNN300_GRU300_H1_D0.2       30% 25.757723 38.394520 143.699203      573600
+      GAT_L1_LR0.0002_GNN300_GRU300_H2_D0.2       10% 21.758686 36.403175 114.073601      191184
+      GAT_L1_LR0.0002_GNN300_GRU300_H2_D0.2       20% 22.738966 36.473270 118.290543      382392
+      GAT_L1_LR0.0002_GNN300_GRU300_H2_D0.2       30% 23.822580 37.438118 125.062630      573600
+      GAT_L3_LR0.0001_GNN200_GRU200_H1_D0.2       10% 19.356674 36.282192 110.754822      191184
+      GAT_L3_LR0.0001_GNN200_GRU200_H1_D0.2       20% 19.714127 35.368103 112.031105      382392
+      GAT_L3_LR0.0001_GNN200_GRU200_H1_D0.2       30% 20.030363 36.470848 115.052856      573600
+      GAT_L3_LR0.0001_GNN200_GRU200_H2_D0.2       10% 19.082634 37.131348 119.645348      191184
+      GAT_L3_LR0.0001_GNN200_GRU200_H2_D0.2       20% 20.224615 35.950027 126.202988      382392
+      GAT_L3_LR0.0001_GNN200_GRU200_H2_D0.2       30% 21.278088 35.713867 131.613419      573600
+      GAT_L3_LR0.0001_GNN200_GRU300_H1_D0.2       10% 19.578985 33.576622 114.976921      191184
+      GAT_L3_LR0.0001_GNN200_GRU300_H1_D0.2       20% 20.307373 35.838230 120.040062      382392
+      GAT_L3_LR0.0001_GNN200_GRU300_H1_D0.2       30% 20.873449 35.223640 124.395538      573600
+      GAT_L3_LR0.0001_GNN300_GRU200_H1_D0.2       10% 18.749041 34.807232 101.337219      191184
+      GAT_L3_LR0.0001_GNN300_GRU200_H1_D0.2       20% 19.153210 37.070271 103.072571      382392
+      GAT_L3_LR0.0001_GNN300_GRU200_H1_D0.2       30% 19.337494 36.714050 105.034790      573600
+      GAT_L3_LR0.0001_GNN300_GRU200_H2_D0.2       10% 18.703239 34.909027 112.370995      191184
+      GAT_L3_LR0.0001_GNN300_GRU200_H2_D0.2       20% 19.338583 35.842136 115.371262      382392
+      GAT_L3_LR0.0001_GNN300_GRU200_H2_D0.2       30% 19.854612 35.633961 117.431259      573600
+      GAT_L3_LR0.0002_GNN200_GRU200_H1_D0.2       10% 20.385902 37.017365 119.208862      191184
+      GAT_L3_LR0.0002_GNN200_GRU200_H1_D0.2       20% 20.989067 35.518471 124.667786      382392
+      GAT_L3_LR0.0002_GNN200_GRU200_H1_D0.2       30% 21.587675 36.136505 128.436401      573600
+      GAT_L3_LR0.0002_GNN200_GRU200_H2_D0.2       10% 18.971636 34.192547 118.431496      191184
+      GAT_L3_LR0.0002_GNN200_GRU200_H2_D0.2       20% 19.428907 36.569653 119.275818      382392
+      GAT_L3_LR0.0002_GNN200_GRU200_H2_D0.2       30% 19.675201 36.278648 121.788956      573600
+      GAT_L3_LR0.0002_GNN200_GRU300_H1_D0.2       10% 20.318953 35.765774 125.315628      191184
+      GAT_L3_LR0.0002_GNN200_GRU300_H1_D0.2       20% 21.346848 34.679794 132.360382      382392
+      GAT_L3_LR0.0002_GNN200_GRU300_H1_D0.2       30% 22.479561 36.884853 140.298965      573600
+      GAT_L3_LR0.0002_GNN300_GRU200_H1_D0.2       10% 21.271980 37.807655 121.447441      191184
+      GAT_L3_LR0.0002_GNN300_GRU200_H1_D0.2       20% 22.199484 36.493134 129.138641      382392
+      GAT_L3_LR0.0002_GNN300_GRU200_H1_D0.2       30% 23.108128 37.491489 136.016052      573600
+      GAT_L3_LR0.0002_GNN300_GRU200_H2_D0.2       10% 18.842594 38.038471 130.200272      191184
+      GAT_L3_LR0.0002_GNN300_GRU200_H2_D0.2       20% 18.302067 37.230549 128.323990      382392
+      GAT_L3_LR0.0002_GNN300_GRU200_H2_D0.2       30% 17.876629 35.515255 124.002121      573600
+GraphSAGE_L1_LR0.0001_GNN200_GRU200_H1_D0.2       10% 38.107792 50.657051 101.314880      191184
+GraphSAGE_L1_LR0.0001_GNN200_GRU200_H1_D0.2       20% 42.141270 54.513615 129.453400      382392
+GraphSAGE_L1_LR0.0001_GNN200_GRU200_H1_D0.2       30% 45.315628 55.999004 165.756821      573600
+GraphSAGE_L1_LR0.0001_GNN200_GRU300_H1_D0.2       10% 38.378613 51.743229  97.083168      191184
+GraphSAGE_L1_LR0.0001_GNN200_GRU300_H1_D0.2       20% 42.766361 54.822979 124.665031      382392
+GraphSAGE_L1_LR0.0001_GNN200_GRU300_H1_D0.2       30% 46.272259 57.347393 158.888779      573600
+GraphSAGE_L1_LR0.0001_GNN300_GRU200_H1_D0.2       10% 29.946136 43.565887  84.738647      191184
+GraphSAGE_L1_LR0.0001_GNN300_GRU200_H1_D0.2       20% 32.220585 44.819118 101.615952      382392
+GraphSAGE_L1_LR0.0001_GNN300_GRU200_H1_D0.2       30% 33.955814 44.678394 126.100433      573600
+GraphSAGE_L1_LR0.0001_GNN300_GRU300_H1_D0.2       10% 47.001888 59.042358 123.015915      191184
+GraphSAGE_L1_LR0.0001_GNN300_GRU300_H1_D0.2       20% 52.847652 66.158218 161.910095      382392
+GraphSAGE_L1_LR0.0001_GNN300_GRU300_H1_D0.2       30% 57.521389 68.743515 212.715332      573600
+GraphSAGE_L1_LR0.0002_GNN200_GRU200_H1_D0.2       10% 42.860229 56.402740 104.292442      191184
+GraphSAGE_L1_LR0.0002_GNN200_GRU200_H1_D0.2       20% 49.217358 62.212872 139.031952      382392
+GraphSAGE_L1_LR0.0002_GNN200_GRU200_H1_D0.2       30% 54.133793 65.799385 181.570084      573600
+GraphSAGE_L1_LR0.0002_GNN200_GRU300_H1_D0.2       10% 39.708294 53.515671 101.498703      191184
+GraphSAGE_L1_LR0.0002_GNN200_GRU300_H1_D0.2       20% 45.076324 57.539539 130.855316      382392
+GraphSAGE_L1_LR0.0002_GNN200_GRU300_H1_D0.2       30% 49.255707 60.189194 165.949066      573600
+GraphSAGE_L1_LR0.0002_GNN300_GRU200_H1_D0.2       10% 34.260876 46.752575  89.255066      191184
+GraphSAGE_L1_LR0.0002_GNN300_GRU200_H1_D0.2       20% 38.452431 50.667694 110.235535      382392
+GraphSAGE_L1_LR0.0002_GNN300_GRU200_H1_D0.2       30% 41.571171 52.626831 137.904846      573600
+GraphSAGE_L1_LR0.0002_GNN300_GRU300_H1_D0.2       10% 42.938015 56.761391  99.139908      191184
+GraphSAGE_L1_LR0.0002_GNN300_GRU300_H1_D0.2       20% 51.186775 64.410912 132.824295      382392
+GraphSAGE_L1_LR0.0002_GNN300_GRU300_H1_D0.2       30% 57.546844 70.499039 177.322647      573600
+GraphSAGE_L3_LR0.0001_GNN200_GRU200_H1_D0.2       10% 30.951500 44.360909  72.668251      191184
+GraphSAGE_L3_LR0.0001_GNN200_GRU200_H1_D0.2       20% 36.767925 49.229553  84.812119      382392
+GraphSAGE_L3_LR0.0001_GNN200_GRU200_H1_D0.2       30% 41.174274 54.518665 101.616394      573600
+GraphSAGE_L3_LR0.0001_GNN200_GRU300_H1_D0.2       10% 28.667715 44.392746  67.107956      191184
+GraphSAGE_L3_LR0.0001_GNN200_GRU300_H1_D0.2       20% 34.938904 49.271687  78.642448      382392
+GraphSAGE_L3_LR0.0001_GNN200_GRU300_H1_D0.2       30% 39.804653 53.353191  96.967438      573600
+GraphSAGE_L3_LR0.0001_GNN300_GRU200_H1_D0.2       10% 31.072945 46.849777  72.204514      191184
+GraphSAGE_L3_LR0.0001_GNN300_GRU200_H1_D0.2       20% 37.978703 51.247036  87.873863      382392
+GraphSAGE_L3_LR0.0001_GNN300_GRU200_H1_D0.2       30% 42.545055 55.881668 104.685959      573600
+GraphSAGE_L3_LR0.0001_GNN300_GRU300_H1_D0.2       10% 30.968758 44.089615  73.642967      191184
+GraphSAGE_L3_LR0.0001_GNN300_GRU300_H1_D0.2       20% 38.171257 51.927490  84.556152      382392
+GraphSAGE_L3_LR0.0001_GNN300_GRU300_H1_D0.2       30% 43.381332 57.009315 103.187897      573600
+GraphSAGE_L3_LR0.0002_GNN200_GRU200_H1_D0.2       10% 35.496078 50.688011  87.290176      191184
+GraphSAGE_L3_LR0.0002_GNN200_GRU200_H1_D0.2       20% 44.373276 57.723595 117.092072      382392
+GraphSAGE_L3_LR0.0002_GNN200_GRU200_H1_D0.2       30% 50.856026 63.898430 159.347717      573600
+GraphSAGE_L3_LR0.0002_GNN200_GRU300_H1_D0.2       10% 36.953224 51.361977  94.331406      191184
+GraphSAGE_L3_LR0.0002_GNN200_GRU300_H1_D0.2       20% 46.405186 60.604679 124.093140      382392
+GraphSAGE_L3_LR0.0002_GNN200_GRU300_H1_D0.2       30% 53.928032 67.276634 169.403305      573600
+GraphSAGE_L3_LR0.0002_GNN300_GRU200_H1_D0.2       10% 29.935406 43.788036  71.949944      191184
+GraphSAGE_L3_LR0.0002_GNN300_GRU200_H1_D0.2       20% 33.549053 46.705669  79.951492      382392
+GraphSAGE_L3_LR0.0002_GNN300_GRU200_H1_D0.2       30% 35.910549 48.337986  88.174461      573600
+GraphSAGE_L3_LR0.0002_GNN300_GRU300_H1_D0.2       10% 32.391315 47.115074  94.106071      191184
+GraphSAGE_L3_LR0.0002_GNN300_GRU300_H1_D0.2       20% 43.653172 57.749382 120.711861      382392
+GraphSAGE_L3_LR0.0002_GNN300_GRU300_H1_D0.2       30% 52.874344 67.266068 156.958313      573600
+2026-01-23 02:25:07,717 - INFO - 
+Results saved to: C:\Users\jacob\OneDrive - Aalborg Universitet\AAU Uni\AAU 5. semester\P5\P5_Attribute_Prediction\Attribute-Prediction\imputation_evaluation_results_chengdu.csv
