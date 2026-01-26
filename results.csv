@@ -1,0 +1,8 @@
+method/model,dataset,mask_rate,RMSE,MAPE
+Historical Average,Harbin,0.1,18.10,33.77
+Historical Average,Chengdu,0.1,85.50,81.81
+GraphSAGE_Chengdu,Chengdu,0.1,43.57,84.74
+GAT_Chengdu,Chengdu,0.1,33.58,114.98
+GraphSAGE_Harbin,Harbin,0.1,14.32,32.22
+GAT_Harbin,Harbin,0.1,19.66,181.37
+

@@ -18,21 +18,14 @@ HAR_DAY_FOLDER = PROJECT_ROOT / "src" / "TrainingData" / "days"
 CHENGDU_DAY_FOLDER = PROJECT_ROOT / "src" / "TrainingData" / "didi_chengdu_converted" / "days"
 RESULTS_PATH = PROJECT_ROOT / "imputation_results_historical_average.csv"
 MASK_RATE = 0.10
+SEQ_LEN = 12  # match Chengdu_imputation non-overlapping windows
 RANDOM_SEED = 42
 
 
-def get_master_columns(day_files: List[Path]) -> List[str]:
-    """Collect the full set of edge columns across provided day files."""
-    edge_cols = set()
-    for path in day_files:
-        try:
-            df = pd.read_csv(path, nrows=1)
-        except Exception as exc:
-            logger.warning("Skipping %s: %s", path.name, exc)
-            continue
-        cols = [c for c in df.columns if c.startswith("edge") and c.endswith("sec")]
-        edge_cols.update(cols)
-
+def get_master_columns_from_target(target_path: Path) -> List[str]:
+    """Match Chengdu_imputation: only use columns present in the target file."""
+    df = pd.read_csv(target_path, nrows=1)
+    edge_cols = [c for c in df.columns if c.startswith("edge") and c.endswith("sec")]
     ordered_edges = sorted(edge_cols, key=lambda x: int(x.split("_")[0].replace("edge", "")))
     return ["time_slot"] + ordered_edges
 
@@ -47,19 +40,32 @@ def load_day(path: Path, master_cols: List[str]) -> pd.DataFrame:
     return df[master_cols]
 
 
-def sample_mask(values: np.ndarray, mask_rate: float, seed: int) -> np.ndarray:
-    """Create a boolean mask over valid entries using the requested masking rate."""
+def sample_mask_windowed(values: np.ndarray, mask_rate: float, seed: int, seq_len: int) -> np.ndarray:
+    """Create a boolean mask using Chengdu_imputation's windowing:
+    - non-overlapping windows of length seq_len (step=seq_len)
+        - per-window mask count = int(valid_in_window * mask_rate)
+        - valid matches model path: all entries except NaN are eligible (original -1 holes are treated as valid because
+            Chengdu_imputation zero-fills them before masking)
+    """
     rng = np.random.default_rng(seed)
-    valid = (~np.isnan(values)) & (values != -1)
-    valid_idx = np.flatnonzero(valid)
-    num_to_mask = int(len(valid_idx) * mask_rate)
+    mask = np.zeros_like(values, dtype=bool)
 
-    mask_flat = np.zeros(values.size, dtype=bool)
-    if num_to_mask > 0:
+    total_steps = values.shape[0]
+    valid_global = ~np.isnan(values)
+
+    for start in range(0, max(0, total_steps - seq_len + 1), seq_len):
+        end = start + seq_len
+        win_valid = valid_global[start:end]
+        valid_idx = np.flatnonzero(win_valid)
+        num_to_mask = int(len(valid_idx) * mask_rate)
+        if num_to_mask <= 0:
+            continue
         chosen = rng.choice(valid_idx, size=num_to_mask, replace=False)
+        mask_flat = np.zeros(win_valid.size, dtype=bool)
         mask_flat[chosen] = True
+        mask[start:end] |= mask_flat.reshape(win_valid.shape)
 
-    return mask_flat.reshape(values.shape)
+    return mask
 
 
 def compute_historical_average(histories: List[np.ndarray]) -> np.ndarray:
@@ -87,9 +93,10 @@ def compute_metrics(true_vals: np.ndarray, pred_vals: np.ndarray) -> dict:
     mae = float(np.mean(np.abs(diff)))
     rmse = float(np.sqrt(np.mean(diff ** 2)))
 
-    non_zero = true_vals != 0
-    if np.any(non_zero):
-        mape = float(np.mean(np.abs((true_vals[non_zero] - pred_vals[non_zero]) / true_vals[non_zero])) * 100)
+    # Model-like MAPE: exclude zeros AND original holes (-1) from denominator
+    denom_mask = (true_vals != 0) & (true_vals != -1)
+    if np.any(denom_mask):
+        mape = float(np.mean(np.abs((true_vals[denom_mask] - pred_vals[denom_mask]) / true_vals[denom_mask])) * 100)
     else:
         mape = np.nan
 
@@ -105,7 +112,7 @@ def run_dataset(name: str, day_folder: Path, target_day: int, mask_rate: float) 
     if not target_path.exists():
         raise FileNotFoundError(f"Target day file missing: {target_path}")
 
-    master_cols = get_master_columns(day_files)
+    master_cols = get_master_columns_from_target(target_path)
     edge_cols = master_cols[1:]
 
     target_df = load_day(target_path, master_cols).set_index("time_slot")
@@ -125,11 +132,12 @@ def run_dataset(name: str, day_folder: Path, target_day: int, mask_rate: float) 
 
     ha = compute_historical_average(histories)
 
-    mask = sample_mask(target_values, mask_rate, RANDOM_SEED)
+    mask = sample_mask_windowed(target_values, mask_rate, RANDOM_SEED, SEQ_LEN)
     true_masked = target_values[mask]
     pred_masked = ha[mask]
 
-    valid = (~np.isnan(true_masked)) & (~np.isnan(pred_masked)) & (true_masked != -1)
+    # Count all non-NaN masked points (to match model counts), but compute MAPE excluding 0 and -1 internally
+    valid = (~np.isnan(true_masked)) & (~np.isnan(pred_masked))
     metrics = compute_metrics(true_masked[valid], pred_masked[valid])
 
     logger.info(
